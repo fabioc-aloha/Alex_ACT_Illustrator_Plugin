@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Heart with Axes — /render-chart demo report</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <style>
+      body {
+        font-family:
+          "Segoe UI",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+        max-width: 780px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+        color: #222;
+        background: #fafaf7;
+        line-height: 1.55;
+      }
+      h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 500;
+        color: #7a2828;
+        margin-bottom: 0.25rem;
+      }
+      .subtitle {
+        color: #666;
+        font-style: italic;
+        margin-top: 0;
+      }
+      .brief {
+        background: #fff;
+        border-left: 3px solid #c04a3a;
+        padding: 1rem 1.25rem;
+        margin: 1.5rem 0;
+        font-size: 0.94em;
+      }
+      .brief h2 {
+        margin-top: 0;
+        font-size: 1.05em;
+        color: #7a2828;
+      }
+      .brief ul {
+        padding-left: 1.2rem;
+      }
+      .brief li {
+        margin-bottom: 0.35rem;
+      }
+      .chart-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: 2rem 0;
+        padding: 1rem;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      }
+      .lineage {
+        background: #f0efe9;
+        padding: 1rem 1.25rem;
+        margin: 2rem 0 1rem;
+        font-size: 0.9em;
+        color: #555;
+      }
+      .lineage strong {
+        color: #333;
+      }
+      code {
+        background: #eee;
+        padding: 0.1em 0.35em;
+        border-radius: 3px;
+        font-size: 0.9em;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0.75rem 0;
+        font-size: 0.9em;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.4rem 0.6rem;
+        border-bottom: 1px solid #e5e2d8;
+      }
+      th {
+        background: #f5f2e9;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Heart with Axes</h1>
+    <p class="subtitle">
+      The heart shape, but now the axes mean something — Intimacy × Passion.
+    </p>
+
+    <div class="brief">
+      <h2>Chart Brief</h2>
+      <ul>
+        <li>
+          <strong>Big Idea</strong>: The heart shape traced onto the Intimacy ×
+          Passion plane isn't decoration — the two upper lobes sit in the
+          high-passion quadrants (infatuation to the left, consummate love to
+          the right), the two lower sides sit in the low-passion quadrants
+          (indifference to the left, companionate love to the right), and the
+          curve between them traces the emotional transitions. Love's iconic
+          silhouette <em>is</em> the four-archetype map.
+        </li>
+        <li>
+          <strong>Story arc</strong>: Relationship (with a decorative locus
+          overlay that reinforces, rather than replaces, the argument)
+        </li>
+        <li><strong>Audience</strong>: Read (30s) / General / Persuasive</li>
+        <li>
+          <strong>Style stance</strong>: INNOVATIVE — the heart-as-locus overlay
+          adds a visual mnemonic on top of the argumentative I × P plane. This
+          is the extra composition earning its cost by giving the reader a
+          memorable image to associate with the two-axis model.
+        </li>
+        <li>
+          <strong>chartType</strong>: layered
+          <code>connected_scatter_plot</code>
+          — shaded quadrant backgrounds + midpoint reference rules + the heart
+          curve as an ordered line + points at each parametric sample + faint
+          quadrant-region labels
+        </li>
+        <li>
+          <strong>Alternates considered</strong>: (a) Plain heart curve
+          (previous <code>2026-07-24-heart-chart/</code> demo) — chosen against
+          because it argues nothing; kept as a "decorative capability demo"
+          reference. (b) Bare I × P quadrant chart
+          (<code>2026-07-24-love-axes/</code>) — chosen against for this variant
+          because the user explicitly wanted the heart shape retained; kept as
+          the pure-argument reference.
+        </li>
+        <li>
+          <strong>Anti-patterns to avoid</strong>: don't let the heart's visual
+          weight overwhelm the axes (the axes are the argument, the heart is the
+          mnemonic); don't overload with too many archetype annotations (four is
+          legible, six starts to crowd the shape).
+        </li>
+      </ul>
+    </div>
+
+    <div class="chart-wrapper">
+      <div id="chart"></div>
+    </div>
+
+    <p
+      style="
+        text-align: center;
+        color: #888;
+        font-size: 0.85em;
+        margin-top: -1rem;
+      "
+    >
+      The heart curve is the standard parametric heart (x = 16 sin³(t), y = 13
+      cos(t) − 5 cos(2t) − 2 cos(3t) − cos(4t)), linearly rescaled to fit
+      centered in the Intimacy × Passion plane. Archetype coordinates are
+      illustrative.
+    </p>
+
+    <div class="lineage">
+      <strong>Sibling demos in the plugin dogfood report set:</strong>
+      <table>
+        <tr>
+          <th>Report</th>
+          <th>What it argues</th>
+          <th>Big Idea?</th>
+        </tr>
+        <tr>
+          <td><code>2026-07-24-heart-chart/</code></td>
+          <td>Just a heart shape</td>
+          <td>No — capability demo only</td>
+        </tr>
+        <tr>
+          <td><code>2026-07-24-love-axes/</code></td>
+          <td>I × P are the two orthogonal components of love</td>
+          <td>Yes — pure argument</td>
+        </tr>
+        <tr>
+          <td>
+            <strong><code>2026-07-24-heart-with-axes/</code></strong>
+            (this one)
+          </td>
+          <td>Both — heart mnemonic on the argumentative I × P plane</td>
+          <td>Yes — argument + mnemonic</td>
+        </tr>
+      </table>
+      <p style="margin-top: 0.5rem">
+        Three reports, three rhetorical modes, same MCP backend. Which one lands
+        the message depends entirely on the audience's reading time and the
+        argument you want to make.
+      </p>
+    </div>
+
+    <script>
+      // Parametric heart data (48 points), pre-computed x/y from the
+      // canonical parametric heart equations. Same source as
+      // .reports/2026-07-24-heart-chart/chart-input.json.
+      const heart_raw = [
+        { i: 0, x: 0.0, y: 5.0 },
+        { i: 1, x: 0.036, y: 5.345 },
+        { i: 2, x: 0.277, y: 6.313 },
+        { i: 3, x: 0.897, y: 7.71 },
+        { i: 4, x: 2.0, y: 9.258 },
+        { i: 5, x: 3.61, y: 10.651 },
+        { i: 6, x: 5.657, y: 11.607 },
+        { i: 7, x: 7.99, y: 11.922 },
+        { i: 8, x: 10.392, y: 11.5 },
+        { i: 9, x: 12.617, y: 10.358 },
+        { i: 10, x: 14.42, y: 8.609 },
+        { i: 11, x: 15.593, y: 6.426 },
+        { i: 12, x: 16.0, y: 4.0 },
+        { i: 13, x: 15.593, y: 1.501 },
+        { i: 14, x: 14.42, y: -0.949 },
+        { i: 15, x: 12.617, y: -3.287 },
+        { i: 16, x: 10.392, y: -5.5 },
+        { i: 17, x: 7.99, y: -7.602 },
+        { i: 18, x: 5.657, y: -9.607 },
+        { i: 19, x: 3.61, y: -11.507 },
+        { i: 20, x: 2.0, y: -13.258 },
+        { i: 21, x: 0.897, y: -14.781 },
+        { i: 22, x: 0.277, y: -15.973 },
+        { i: 23, x: 0.036, y: -16.737 },
+        { i: 24, x: 0.0, y: -17.0 },
+        { i: 25, x: -0.036, y: -16.737 },
+        { i: 26, x: -0.277, y: -15.973 },
+        { i: 27, x: -0.897, y: -14.781 },
+        { i: 28, x: -2.0, y: -13.258 },
+        { i: 29, x: -3.61, y: -11.507 },
+        { i: 30, x: -5.657, y: -9.607 },
+        { i: 31, x: -7.99, y: -7.602 },
+        { i: 32, x: -10.392, y: -5.5 },
+        { i: 33, x: -12.617, y: -3.287 },
+        { i: 34, x: -14.42, y: -0.949 },
+        { i: 35, x: -15.593, y: 1.501 },
+        { i: 36, x: -16.0, y: 4.0 },
+        { i: 37, x: -15.593, y: 6.426 },
+        { i: 38, x: -14.42, y: 8.609 },
+        { i: 39, x: -12.617, y: 10.358 },
+        { i: 40, x: -10.392, y: 11.5 },
+        { i: 41, x: -7.99, y: 11.922 },
+        { i: 42, x: -5.657, y: 11.607 },
+        { i: 43, x: -3.61, y: 10.651 },
+        { i: 44, x: -2.0, y: 9.258 },
+        { i: 45, x: -0.897, y: 7.71 },
+        { i: 46, x: -0.277, y: 6.313 },
+        { i: 47, x: -0.036, y: 5.345 },
+      ];
+
+      // Normalize onto the [0,1] × [0,1] Intimacy × Passion plane, centered
+      // at (0.5, 0.5) with the heart occupying ~75% of the plot area.
+      // x scales from [-16, 16] → [0.125, 0.875]
+      // y scales from [-17, 12] → [0.15, 0.85] (asymmetric raw range)
+      const heart_data = heart_raw.map((p) => ({
+        i: p.i,
+        intimacy: 0.5 + 0.375 * (p.x / 16),
+        passion: 0.5 + (p.y >= 0 ? 0.35 * (p.y / 12) : 0.35 * (p.y / 17)),
+      }));
+
+      const spec = {
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        width: 480,
+        height: 480,
+        padding: 20,
+        background: "#ffffff",
+        config: {
+          axis: {
+            labelFont: "Segoe UI",
+            titleFont: "Segoe UI",
+            titleFontSize: 12,
+            titleFontWeight: 600,
+            titleColor: "#333",
+            labelColor: "#666",
+            labelFontSize: 11,
+            domainColor: "#999",
+            tickColor: "#ccc",
+          },
+          view: { stroke: null },
+        },
+        layer: [
+          // 1. Shaded quadrant backgrounds
+          {
+            data: { values: [{ x1: 0.5, x2: 1, y1: 0.5, y2: 1 }] },
+            mark: { type: "rect", color: "#f3d8c9", opacity: 0.5 },
+            encoding: {
+              x: {
+                field: "x1",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+              },
+              x2: { field: "x2" },
+              y: {
+                field: "y1",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+              },
+              y2: { field: "y2" },
+            },
+          },
+          {
+            data: { values: [{ x1: 0, x2: 0.5, y1: 0, y2: 0.5 }] },
+            mark: { type: "rect", color: "#e8e8e0", opacity: 0.55 },
+            encoding: {
+              x: {
+                field: "x1",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+              },
+              x2: { field: "x2" },
+              y: {
+                field: "y1",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+              },
+              y2: { field: "y2" },
+            },
+          },
+
+          // 2. Faint quadrant region labels
+          {
+            data: {
+              values: [
+                { x: 0.15, y: 0.9, label: "INFATUATION" },
+                { x: 0.85, y: 0.9, label: "CONSUMMATE LOVE" },
+                { x: 0.15, y: 0.1, label: "INDIFFERENCE" },
+                { x: 0.85, y: 0.1, label: "FRIENDSHIP" },
+              ],
+            },
+            mark: {
+              type: "text",
+              fontSize: 10,
+              fontWeight: 500,
+              opacity: 0.45,
+              color: "#7a5842",
+              font: "Georgia",
+            },
+            encoding: {
+              x: {
+                field: "x",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+              },
+              y: {
+                field: "y",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+              },
+              text: { field: "label" },
+            },
+          },
+
+          // 3. Midpoint reference rules (dashed)
+          {
+            data: { values: [{ v: 0.5 }] },
+            mark: {
+              type: "rule",
+              color: "#b0a89f",
+              strokeDash: [4, 4],
+              strokeWidth: 1,
+            },
+            encoding: {
+              x: {
+                field: "v",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+              },
+            },
+          },
+          {
+            data: { values: [{ v: 0.5 }] },
+            mark: {
+              type: "rule",
+              color: "#b0a89f",
+              strokeDash: [4, 4],
+              strokeWidth: 1,
+            },
+            encoding: {
+              y: {
+                field: "v",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+              },
+            },
+          },
+
+          // 4. Heart curve — connected scatter, parametric order preserved
+          //    via the `order` channel bound to the sequential index.
+          {
+            data: { values: heart_data },
+            mark: {
+              type: "line",
+              color: "#c04a3a",
+              strokeWidth: 2.5,
+              opacity: 0.85,
+              interpolate: "cardinal",
+              tension: 0.5,
+            },
+            encoding: {
+              x: {
+                field: "intimacy",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+                axis: {
+                  title: ["Intimacy", "trust · vulnerability · shared meaning"],
+                  values: [0, 0.5, 1],
+                  labelExpr:
+                    "datum.value === 0 ? 'low' : datum.value === 0.5 ? '' : 'high'",
+                  grid: false,
+                  domain: true,
+                  ticks: true,
+                  titlePadding: 12,
+                },
+              },
+              y: {
+                field: "passion",
+                type: "quantitative",
+                scale: { domain: [0, 1] },
+                axis: {
+                  title: ["Passion", "desire · chemistry · excitement"],
+                  values: [0, 0.5, 1],
+                  labelExpr:
+                    "datum.value === 0 ? 'low' : datum.value === 0.5 ? '' : 'high'",
+                  grid: false,
+                  domain: true,
+                  ticks: true,
+                  titlePadding: 12,
+                },
+              },
+              order: { field: "i", type: "quantitative" },
+            },
+          },
+
+          // 5. Sample dots along the heart curve — subtle, so the line
+          //    remains dominant.
+          {
+            data: { values: heart_data },
+            mark: {
+              type: "circle",
+              color: "#c04a3a",
+              size: 30,
+              opacity: 0.5,
+            },
+            encoding: {
+              x: { field: "intimacy", type: "quantitative" },
+              y: { field: "passion", type: "quantitative" },
+              tooltip: [
+                { field: "intimacy", format: ".2f" },
+                { field: "passion", format: ".2f" },
+              ],
+            },
+          },
+
+          // 6. Archetype annotation dots — placed at the four HEART LOBES,
+          //    each of which sits naturally in the matching semantic quadrant:
+          //      - Consummate love: right upper lobe  (high I, high P)
+          //      - Infatuation:     left upper lobe   (low I,  high P)
+          //      - Companionate:    right lower curve (high I, low P)
+          //      - Indifference:    left lower curve  (low I,  low P)
+          //    This is the load-bearing visual move: the heart's four corners
+          //    ARE the four archetypes, and the curve traces the transitions.
+          {
+            data: {
+              values: [
+                {
+                  x: 0.75,
+                  y: 0.85,
+                  name: "Consummate",
+                  tag: "right upper lobe",
+                },
+                {
+                  x: 0.25,
+                  y: 0.85,
+                  name: "Infatuation",
+                  tag: "left upper lobe",
+                },
+                {
+                  x: 0.72,
+                  y: 0.25,
+                  name: "Companionate",
+                  tag: "right lower curve",
+                },
+                {
+                  x: 0.28,
+                  y: 0.25,
+                  name: "Indifference",
+                  tag: "left lower curve",
+                },
+              ],
+            },
+            mark: {
+              type: "circle",
+              size: 140,
+              color: "#7a2828",
+              stroke: "#ffffff",
+              strokeWidth: 2.5,
+              opacity: 0.95,
+            },
+            encoding: {
+              x: { field: "x", type: "quantitative" },
+              y: { field: "y", type: "quantitative" },
+              tooltip: [
+                { field: "name", title: "Archetype" },
+                { field: "tag", title: "On the heart" },
+              ],
+            },
+          },
+
+          // 7-10. Per-archetype labels (one layer each because dx is a mark
+          //    property, not an encoding channel — Vega-Lite gotcha).
+          {
+            data: { values: [{ x: 0.75, y: 0.85, name: "Consummate" }] },
+            mark: {
+              type: "text",
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#7a2828",
+              dy: -14,
+              align: "center",
+            },
+            encoding: {
+              x: { field: "x", type: "quantitative" },
+              y: { field: "y", type: "quantitative" },
+              text: { field: "name" },
+            },
+          },
+          {
+            data: { values: [{ x: 0.25, y: 0.85, name: "Infatuation" }] },
+            mark: {
+              type: "text",
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#333",
+              dy: -14,
+              align: "center",
+            },
+            encoding: {
+              x: { field: "x", type: "quantitative" },
+              y: { field: "y", type: "quantitative" },
+              text: { field: "name" },
+            },
+          },
+          {
+            data: { values: [{ x: 0.72, y: 0.25, name: "Companionate" }] },
+            mark: {
+              type: "text",
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#333",
+              dy: 18,
+              align: "center",
+            },
+            encoding: {
+              x: { field: "x", type: "quantitative" },
+              y: { field: "y", type: "quantitative" },
+              text: { field: "name" },
+            },
+          },
+          {
+            data: { values: [{ x: 0.28, y: 0.25, name: "Indifference" }] },
+            mark: {
+              type: "text",
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#333",
+              dy: 18,
+              align: "center",
+            },
+            encoding: {
+              x: { field: "x", type: "quantitative" },
+              y: { field: "y", type: "quantitative" },
+              text: { field: "name" },
+            },
+          },
+        ],
+      };
+
+      vegaEmbed("#chart", spec, { actions: false, renderer: "svg" });
+    </script>
+  </body>
+</html>

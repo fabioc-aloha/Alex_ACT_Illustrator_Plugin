@@ -30,6 +30,7 @@ That one sentence — the load-bearing output of the [`chart-big-idea`](.github/
 4. **Step 5 — emit the Chart Brief.** The brief is what `/render-chart` then handed to the [`flint-chart`](.github/skills/flint-chart/SKILL.md) skill for chartType selection and rendering.
 
 This one chart sits inside a rhetorical spectrum worth naming. The same MCP backend can render a plain parametric heart curve with axes labelled "x" and "y" — **decoration only, no Big Idea**. It can render a bare Intimacy × Passion quadrant scatter with no heart shape — **pure argument, no mnemonic**. Or it can render the fusion you see above — **argument + mnemonic**. Three modes, one backend. The `chart-big-idea` skill is what tells you which mode you're in _before_ you author the spec.
+All three rendered demos ship in [`demos/`](demos/) — each folder has an interactive `report.html` you can open in any browser, plus a folder README with the Chart Brief and layer breakdown. Design decisions and the plugin's own genesis live in [`docs/`](docs/).
 
 ## Architecture — two skills, one prompt
 
