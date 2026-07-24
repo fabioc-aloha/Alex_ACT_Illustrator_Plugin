@@ -14,13 +14,22 @@ Three capabilities in one plugin:
 
 ### Demo — the heart chart, with meaning
 
-The heart shape traced onto an Intimacy × Passion plane — the two upper lobes land in the high-passion quadrants (infatuation left, consummate love right), the two lower sides land in the low-passion quadrants (indifference left, companionate love right). The heart's iconic silhouette *is* the four-archetype map of love. Rendered via a 12-layer Vega-Lite spec: shaded quadrants + midpoint reference rules + the parametric heart curve + archetype dots + axis subtitles carrying the plain-word descriptors.
+> **Big Idea** — *Love's iconic silhouette **is** the four-archetype map of love: the heart's two upper lobes sit in the high-passion quadrants (infatuation left, consummate right), and its two lower sides sit in the low-passion quadrants (indifference left, companionate right).*
+
+That one sentence — the load-bearing output of the [`chart-big-idea`](.github/skills/chart-big-idea/SKILL.md) skill — is what makes this a chart *with meaning* instead of *decoration*. Everything downstream is a direct consequence of it: the story arc (Relationship with quadrant annotation), the audience read (Read / General / Persuasive), the TRADITIONAL-vs-INNOVATIVE stance (INNOVATIVE, because the heart-as-mnemonic argument is irreducibly geometric), the chartType (layered `scatter_plot`), the 12-layer composition (shaded quadrants → midpoint rules → parametric heart curve → archetype dots → axis subtitles), and the archetype placement (each of the heart's four lobes lands in its matching semantic quadrant).
 
 <p align="center">
   <img src="assets/heart-chart.svg" alt="A heart-shaped curve traced onto an Intimacy × Passion plane, rendered as a layered Vega-Lite chart via the flint-chart MCP server. The x-axis is Intimacy (subtitle: trust, vulnerability, shared meaning), the y-axis is Passion (subtitle: desire, chemistry, excitement). Both axes run from low to high. Dashed lines partition the plot into four quadrants labelled INFATUATION (top left), CONSUMMATE LOVE (top right, on a warm cream background), INDIFFERENCE (bottom left, on a cool grey background), and FRIENDSHIP (bottom right). A red heart curve fills the plane; four bold dots sit at the heart's lobes, each labelled with an archetype that matches its semantic quadrant." width="480" />
 </p>
 
-The full walkthrough lives under `.reports/2026-07-24-heart-with-axes/` in the [dogfood workspace](https://github.com/microsoft/flint-chart) — alongside two sibling demos that show the rhetorical spectrum: `2026-07-24-heart-chart/` (decoration only, no Big Idea) and `2026-07-24-love-axes/` (pure argument, no mnemonic). Three demos, three modes, one MCP backend — the `chart-big-idea` skill is what tells you which mode you're in before you author the spec.
+**Skill-to-chart flow** — what the `chart-big-idea` skill did before the first line of the Vega-Lite spec was authored:
+
+1. **Step 0 — read context.** The Big Idea was distilled from a written essay on the orthogonality of intimacy and passion, not asked cold from the user.
+2. **Step 1 — draft the sentence.** Subject (heart silhouette) + verb (*is*) + implication (the four-archetype map). No 3-question elicitation ladder needed because Step 0 surfaced enough.
+3. **Steps 2–4 — story arc + audience + style stance.** Relationship-with-annotation, general-audience read, INNOVATIVE (justified because the argument itself is 2D-geometric).
+4. **Step 5 — emit the Chart Brief.** The brief is what `/render-chart` then handed to the [`flint-chart`](.github/skills/flint-chart/SKILL.md) skill for chartType selection and rendering.
+
+The full walkthrough lives under `.reports/2026-07-24-heart-with-axes/` in the [dogfood workspace](https://github.com/microsoft/flint-chart) — alongside two sibling demos that show the rhetorical spectrum: `2026-07-24-heart-chart/` (decoration only, **no Big Idea**) and `2026-07-24-love-axes/` (pure argument, **no mnemonic**). Three demos, three rhetorical modes, one MCP backend — the `chart-big-idea` skill is what tells you which mode you're in *before* you author the spec.
 
 ## Architecture — two skills, one prompt
 
