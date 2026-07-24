@@ -1,0 +1,77 @@
+{
+  "plugin": "flint-chart-plugin",
+  "version": "0.2.0",
+  "shape": "two-skill + one-prompt + mcp-sidecar",
+  "description": "Pick the right chart for the user's data + question, then render it locally via the flint-chart MCP server. Alex — ACT Edition plugin.",
+  "homepage": "https://github.com/fabioc-aloha/flint-chart-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Fabio Correa",
+      "role": "plugin packaging + chart-big-idea skill + /render-chart prompt"
+    },
+    {
+      "name": "Microsoft Corporation",
+      "role": "flint-chart authoring skill body (forked from microsoft/flint-chart/agent-skills/flint-chart-author) + flint-chart-mcp npm package"
+    }
+  ],
+  "assets": {
+    "skills": [
+      {
+        "name": "chart-big-idea",
+        "path": ".github/skills/chart-big-idea/SKILL.md",
+        "install_to": ".github/skills/local/chart-big-idea/SKILL.md",
+        "role": "framing (invoked before chart selection)",
+        "frontmatter": {
+          "description": "Distill the one-sentence Big Idea, story arc, audience, and style stance for a chart BEFORE picking a chart type. Reads the surrounding docs / prose / ticket for an existing Big Idea first, then helps the user articulate one via a 3-question elicitation ladder if none is found. Asks whether the user wants a TRADITIONAL (safe) or INNOVATIVE (higher-impact, higher-risk) treatment. Use before invoking the flint-chart skill or the /render-chart prompt whenever the user's ask is 'chart this', 'visualize', 'make a chart', 'show the data', or when framing is unclear."
+        }
+      },
+      {
+        "name": "flint-chart",
+        "path": ".github/skills/flint-chart/SKILL.md",
+        "install_to": ".github/skills/local/flint-chart/SKILL.md",
+        "role": "selection + rendering (consumes the Chart Brief)",
+        "frontmatter": {
+          "description": "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
+        }
+      }
+    ],
+    "prompts": [
+      {
+        "name": "render-chart",
+        "path": ".github/prompts/render-chart.prompt.md",
+        "install_to": ".github/prompts/local/render-chart.prompt.md",
+        "role": "verb-prompt workflow entry point (/render-chart)",
+        "frontmatter": {
+          "description": "Pick the right chart for the user's data + question, then author and render it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, then the flint-chart skill for selection and rendering."
+        }
+      }
+    ],
+    "mcp": {
+      "path": "mcp.json",
+      "server_name": "flint",
+      "command": "npx",
+      "args": ["-y", "flint-chart-mcp@^0.2.2"],
+      "transport": "stdio",
+      "merge_target": "workspace-root .mcp.json",
+      "notes": "Bump args to '^0.3.0' when flint-chart-mcp@0.3.0 publishes to npm (git tag exists but not on npm as of 2026-07-24)."
+    }
+  },
+  "handoff_flow": [
+    "/render-chart prompt fires",
+    "load chart-big-idea skill → Step 0 (read surrounding context) → Steps 1-5 (Big Idea → arc → audience → style → Brief)",
+    "load flint-chart skill → §0.2 selection constrained by the Brief → §0.4 Flint-coverage check",
+    "author ChartAssemblyInput per Steps 1-N",
+    "render via flint MCP server (create_chart_view | render_chart | validate_chart | compile_chart)"
+  ],
+  "prerequisites": {
+    "node": ">=18",
+    "mcp_host": "VS Code Copilot 1.118+ | Claude Desktop | Cursor | any MCP stdio client",
+    "alex_edition": ">=3.x with local/ skill+prompt roots registered"
+  },
+  "upstream": {
+    "flint_chart": "https://github.com/microsoft/flint-chart",
+    "flint_chart_mcp_npm": "https://www.npmjs.com/package/flint-chart-mcp",
+    "alex_act_edition": "https://github.com/fabioc-aloha/Alex_ACT_Edition"
+  }
+}

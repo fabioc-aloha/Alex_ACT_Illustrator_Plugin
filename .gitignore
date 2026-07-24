@@ -1,0 +1,49 @@
+# OS / editor / tooling scratch — the plugin repo itself ships only markdown,
+# JSON, and prompt files; no node_modules, dist output, or build artefacts.
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# VS Code
+.vscode/
+!.vscode/settings.json.example
+
+# JetBrains
+.idea/
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Node (nothing published from this repo — no package.json — but in case
+# a contributor scaffolds a local script harness)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local env / secrets — do NOT commit
+.env
+.env.*
+!.env.example
+
+# Local logs / scratch
+*.log
+.tmp/
+tmp/
+scratch/
+
+# Alex ACT Edition heir-local paths (not part of this repo's shipping shape;
+# guard against accidental commits if a heir clones the repo into a workspace)
+.github/skills/local/
+.github/prompts/local/
+.github/agents/local/
+.github/instructions/local/
+.github/scripts/local/
