@@ -12,15 +12,15 @@ Three capabilities in one plugin:
 2. **Chart selection.** When you ask _"which chart should I use?"_, the `flint-chart` skill walks a compact question → family → chartType framework (Comparison / Trend / Distribution / Relationship / Proportion / Flow / KPI) distilled from Knaflic, Kirk, Few, and Wexler — constrained by the Brief. For deep per-chart design tips, it escalates to [_The Defensible Decision_ gallery](https://www.thedefensibledecision.com/gallery/chart-gallery.html) on demand.
 3. **Chart rendering.** When you're ready to draw, the skill authors a compact `ChartAssemblyInput` and the bundled MCP server renders it locally (PNG / SVG) or opens an interactive chart panel via `create_chart_view`. No data leaves the machine.
 
-### Demo — the heart chart
+### Demo — the heart chart, with meaning
 
-Rendered end-to-end via `/render-chart` from a 48-point parametric-heart dataset (`{x, y, hue}`), Vega-Lite backend, `Connected Scatter Plot` chartType with a `reds` color scheme:
+The heart shape traced onto an Intimacy × Passion plane — the two upper lobes land in the high-passion quadrants (infatuation left, consummate love right), the two lower sides land in the low-passion quadrants (indifference left, companionate love right). The heart's iconic silhouette *is* the four-archetype map of love. Rendered via a 12-layer Vega-Lite spec: shaded quadrants + midpoint reference rules + the parametric heart curve + archetype dots + axis subtitles carrying the plain-word descriptors.
 
 <p align="center">
-  <img src="assets/heart-chart.svg" alt="A heart-shaped chart plotted as a connected scatter plot using Vega-Lite via the flint-chart MCP server. 48 points arranged along the parametric heart curve x = 16 sin³(t), y = 13 cos(t) − 5 cos(2t) − 2 cos(3t) − cos(4t), connected in order, coloured in a red scheme." width="480" />
+  <img src="assets/heart-chart.svg" alt="A heart-shaped curve traced onto an Intimacy × Passion plane, rendered as a layered Vega-Lite chart via the flint-chart MCP server. The x-axis is Intimacy (subtitle: trust, vulnerability, shared meaning), the y-axis is Passion (subtitle: desire, chemistry, excitement). Both axes run from low to high. Dashed lines partition the plot into four quadrants labelled INFATUATION (top left), CONSUMMATE LOVE (top right, on a warm cream background), INDIFFERENCE (bottom left, on a cool grey background), and FRIENDSHIP (bottom right). A red heart curve fills the plane; four bold dots sit at the heart's lobes, each labelled with an archetype that matches its semantic quadrant." width="480" />
 </p>
 
-The full demo — dataset, `ChartAssemblyInput` JSON, and the interactive HTML report — lives under `.reports/2026-07-24-heart-chart/` in the [dogfood workspace](https://github.com/microsoft/flint-chart) where this plugin was developed. Any `flint-chart` chartType listed on the [canonical gallery](https://microsoft.github.io/flint-chart/#/gallery/vegalite) is fair game.
+The full walkthrough lives under `.reports/2026-07-24-heart-with-axes/` in the [dogfood workspace](https://github.com/microsoft/flint-chart) — alongside two sibling demos that show the rhetorical spectrum: `2026-07-24-heart-chart/` (decoration only, no Big Idea) and `2026-07-24-love-axes/` (pure argument, no mnemonic). Three demos, three modes, one MCP backend — the `chart-big-idea` skill is what tells you which mode you're in before you author the spec.
 
 ## Architecture — two skills, one prompt
 
