@@ -4,6 +4,7 @@ Long-form documentation about the plugin's design, decisions, and open questions
 
 ## Contents
 
+- **[`publishing-to-mall.md`](publishing-to-mall.md)** — step-by-step runbook for vendoring this plugin (or a new version of it) into the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). Read this before running a publish.
 - [`plans/`](plans/) — decision documents that captured the plugin's genesis, including locked-decisions tables and post-hoc amendments
   - [`2026-07-24-mall-plugin.md`](plans/2026-07-24-mall-plugin.md) — original plan (9 tasks, 7 locked decisions D1–D7, 5 sub-decisions S1–S5) + amendment covering the two-skill + prompt + MCP-sidecar reshape
 

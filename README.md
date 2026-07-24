@@ -217,6 +217,22 @@ Then update the fragment:
 - Handle Power BI, Tableau, or other BI tools — Flint targets Vega-Lite, ECharts, and Chart.js only
 - Ship the MCP server code — it downloads from npm on demand (bundling would be 80-120 MB per plugin across 6 OS/arch native-binary variants)
 
+## Publishing to the Mall
+
+This repo is the source-of-truth. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors a specific version at `plugins/data-analytics/flint-chart-plugin/`. To publish a new version — or refresh the Mall's vendored README after upstream doc edits — follow the step-by-step runbook in **[`docs/publishing-to-mall.md`](docs/publishing-to-mall.md)**.
+
+Short version: vendor the four installable payload files (2 skills + 1 prompt + `mcp.json`) byte-for-byte into the Mall's plugin folder, copy the README with image `src` rewritten to absolute `raw.githubusercontent.com` URLs, update the Mall's `plugin.json` version, append a curation-log entry, rebase on the Mall's `main`, commit with a severity tag, push. The runbook has the exact commands and a verification checklist.
+
+## Contributing
+
+Issues and PRs welcome. See [`.github/copilot-instructions.md`](.github/copilot-instructions.md) for the repo's conventions (commit-message severity tags, frontmatter rules, lint discipline, falsifiability) — those instructions load automatically for AI agents but are also useful for human contributors.
+
+This repo pairs with:
+
+- Upstream flint-chart (Microsoft): <https://github.com/microsoft/flint-chart>
+- Alex ACT Edition (host framework): <https://github.com/fabioc-aloha/Alex_ACT_Edition>
+- Alex ACT Plugin Mall (distribution): <https://github.com/fabioc-aloha/Alex_Skill_Mall>
+
 ## Attribution
 
 **Chart-selection framework** distilled from standard visualization literature:
@@ -241,10 +257,3 @@ For live examples of every Flint `chartType` across all backends, organized by s
 ## License
 
 MIT (dual-copyright — see [`LICENSE`](LICENSE)).
-
-## Contributing
-
-Issues and PRs welcome. This repo pairs with:
-
-- Upstream flint-chart: <https://github.com/microsoft/flint-chart>
-- Alex ACT Edition: <https://github.com/fabioc-aloha/Alex_ACT_Edition>
