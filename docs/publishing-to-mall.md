@@ -153,9 +153,14 @@ foreach ($p in @(
 
 # plugin.json + README parse OK
 Get-Content "$ma\plugin.json" -Raw | ConvertFrom-Json | Select-Object name, version
+
+# plugin.json version matches upstream manifest.json version
+$upVersion = (Get-Content "$up\manifest.json" -Raw | ConvertFrom-Json).version
+$maVersion = (Get-Content "$ma\plugin.json" -Raw | ConvertFrom-Json).version
+"upstream=$upVersion  mall=$maVersion  $(if($upVersion -eq $maVersion){'MATCH'}else{'MISMATCH — fix plugin.json before commit'})"
 ```
 
-All four vendored payload files should report `IDENT`. `plugin.json` should parse and return the correct `name` + `version`.
+All four vendored payload files should report `IDENT`. `plugin.json` should parse and return the correct `name` + `version`, and the version-consistency line should report `MATCH`.
 
 ### 7. Commit and push
 
@@ -199,7 +204,7 @@ Before declaring the publish complete:
 
 - **`gh repo create --push` uses SSH by default.** When creating a new sibling repo, `gh` configures `origin` as `git@github.com:…` — which needs SSH keys. If keys aren't set up, the initial push fails silently. Fix: `git remote set-url origin https://github.com/<owner>/<repo>.git` and re-push. `gh`'s HTTPS credential helper handles auth automatically once the URL is HTTPS.
 - **Mall README drift is expected between publishes.** The vendored README is a snapshot at publish time; subsequent doc-only edits in this repo won't reach the Mall until the next explicit publish (or the weekly automated catalog-refresh cron, whichever comes first).
-- **Weekly catalog-refresh cron.** The Mall runs an automated `[behaviour] catalog refresh` commit weekly. Always rebase before push (Step 5 does this, and step 7 does it again — both are cheap).
+- **Weekly catalog-refresh cron.** The Mall runs an automated `[behaviour] catalog refresh` commit weekly. Always rebase before push (Step 1 does this before you start, and Step 7 does it again — both are cheap).
 - **Backtick hazard on commit messages.** Multi-line commit messages containing backticks require a temp file: `git commit -F <tempfile>` instead of `-m "…\`…\`…"`. See Alex ACT Edition's `terminal-command-safety.instructions.md`for the full pattern. In practice, if the message is short and backtick-free,`-m "…" -m "…"` works fine.
 
 ## What NOT to include in the Mall
@@ -208,7 +213,7 @@ Before declaring the publish complete:
 - `demos/` — capability-demo reports, tied to this repo's structure
 - `docs/` — internal design docs and this publishing runbook itself
 - `LICENSE`, `CHANGELOG.md` — remain in this repo only
-- `.gitignore`, `.markdownlintignore`, `.github/copilot-instructions.md` — repo-tooling, not shipping payload
+- `.gitignore`, `.markdownlint.json`, `.markdownlintignore`, `.github/copilot-instructions.md` — repo-tooling, not shipping payload
 
 ## Related
 
