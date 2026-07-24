@@ -12,6 +12,16 @@ Three capabilities in one plugin:
 2. **Chart selection.** When you ask _"which chart should I use?"_, the `flint-chart` skill walks a compact question → family → chartType framework (Comparison / Trend / Distribution / Relationship / Proportion / Flow / KPI) distilled from Knaflic, Kirk, Few, and Wexler — constrained by the Brief. For deep per-chart design tips, it escalates to [_The Defensible Decision_ gallery](https://www.thedefensibledecision.com/gallery/chart-gallery.html) on demand.
 3. **Chart rendering.** When you're ready to draw, the skill authors a compact `ChartAssemblyInput` and the bundled MCP server renders it locally (PNG / SVG) or opens an interactive chart panel via `create_chart_view`. No data leaves the machine.
 
+### Demo — the heart chart
+
+Rendered end-to-end via `/render-chart` from a 48-point parametric-heart dataset (`{x, y, hue}`), Vega-Lite backend, `Connected Scatter Plot` chartType with a `reds` color scheme:
+
+<p align="center">
+  <img src=".github/assets/heart-chart.svg" alt="A heart-shaped chart plotted as a connected scatter plot using Vega-Lite via the flint-chart MCP server. 48 points arranged along the parametric heart curve x = 16 sin³(t), y = 13 cos(t) − 5 cos(2t) − 2 cos(3t) − cos(4t), connected in order, coloured in a red scheme." width="480" />
+</p>
+
+The full demo — dataset, `ChartAssemblyInput` JSON, and the interactive HTML report — lives under `.reports/2026-07-24-heart-chart/` in the [dogfood workspace](https://github.com/microsoft/flint-chart) where this plugin was developed. Any `flint-chart` chartType listed on the [canonical gallery](https://microsoft.github.io/flint-chart/#/gallery/vegalite) is fair game.
+
 ## Architecture — two skills, one prompt
 
 ```text
