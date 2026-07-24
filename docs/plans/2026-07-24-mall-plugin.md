@@ -1,5 +1,13 @@
 # flint-chart Mall Plugin — Implementation Plan
 
+> **Amendments since original plan (2026-07-24 initial release):**
+>
+> This document is genesis history. Current-state facts live in [`manifest.json`](../../manifest.json), [`../../README.md`](../../README.md), and [`../../CHANGELOG.md`](../../CHANGELOG.md).
+>
+> - **Node prerequisite bumped from ≥ 18 to ≥ 22** (see 0.3.0 changelog entry). The `Node.js ≥ 18` references in this document (Assumptions #2, section 4 of the README plan) reflect the original 0.2.0 shape, not current.
+> - **Demo footprint reduced from 3 to 1.** The plan didn't originally scope demos; a `demos/` folder shipping three rhetorical-spectrum examples (`heart-chart/`, `love-axes/`, `heart-with-axes/`) was added post-hoc, then reduced to just `heart-with-axes/` as the load-bearing demo.
+> - **Would Revise If added to `flint-chart` skill.** The plan's Falsifiability section already listed proposed criteria; those are now inline in the skill body as a real *Would Revise If* section.
+
 **Goal:** Ship `flint-chart` as a Mall plugin so any Alex — ACT Edition heir can `/mall-install flint-chart` and get (a) a super-skilled chart-designer skill that helps pick the right chart for the scenario, (b) an optional slash-command entry point, and (c) an auto-configured MCP server (`flint-chart-mcp`) for rendering.
 
 **Architecture:** Reference model, not bundle. The plugin ships ~15 KB of metadata + guidance; the MCP server is pulled from npm on demand via `npx -y flint-chart-mcp@^0.3.0`. Chart-selection knowledge follows the **hybrid pattern**: compact question→family→chartType decision framework baked into the skill (fast, offline, no license concern), with a deliberate escalation to fetch [`https://www.thedefensibledecision.com/gallery/chart-gallery.html`](https://www.thedefensibledecision.com/gallery/chart-gallery.html) when the user asks for deep per-chart tips or the compact table doesn't cover the case.

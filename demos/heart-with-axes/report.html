@@ -61,16 +61,6 @@
         border-radius: 8px;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
       }
-      .lineage {
-        background: #f0efe9;
-        padding: 1rem 1.25rem;
-        margin: 2rem 0 1rem;
-        font-size: 0.9em;
-        color: #555;
-      }
-      .lineage strong {
-        color: #333;
-      }
       code {
         background: #eee;
         padding: 0.1em 0.35em;
@@ -132,13 +122,12 @@
           quadrant-region labels
         </li>
         <li>
-          <strong>Alternates considered</strong>: (a) Plain heart curve
-          (previous <code>2026-07-24-heart-chart/</code> demo) — chosen against
-          because it argues nothing; kept as a "decorative capability demo"
-          reference. (b) Bare I × P quadrant chart
-          (<code>2026-07-24-love-axes/</code>) — chosen against for this variant
-          because the user explicitly wanted the heart shape retained; kept as
-          the pure-argument reference.
+          <strong>Alternates considered</strong>: (a) Plain heart curve on
+          <code>x</code>/<code>y</code> axes — chosen against because it
+          argues nothing; the shape without the semantic plane is decoration
+          only. (b) Bare I × P quadrant chart with archetype dots — chosen
+          against because the user explicitly wanted the heart shape retained
+          as a visual mnemonic on top of the argument.
         </li>
         <li>
           <strong>Anti-patterns to avoid</strong>: don't let the heart's visual
@@ -167,44 +156,9 @@
       illustrative.
     </p>
 
-    <div class="lineage">
-      <strong>Sibling demos in the plugin dogfood report set:</strong>
-      <table>
-        <tr>
-          <th>Report</th>
-          <th>What it argues</th>
-          <th>Big Idea?</th>
-        </tr>
-        <tr>
-          <td><code>2026-07-24-heart-chart/</code></td>
-          <td>Just a heart shape</td>
-          <td>No — capability demo only</td>
-        </tr>
-        <tr>
-          <td><code>2026-07-24-love-axes/</code></td>
-          <td>I × P are the two orthogonal components of love</td>
-          <td>Yes — pure argument</td>
-        </tr>
-        <tr>
-          <td>
-            <strong><code>2026-07-24-heart-with-axes/</code></strong>
-            (this one)
-          </td>
-          <td>Both — heart mnemonic on the argumentative I × P plane</td>
-          <td>Yes — argument + mnemonic</td>
-        </tr>
-      </table>
-      <p style="margin-top: 0.5rem">
-        Three reports, three rhetorical modes, same MCP backend. Which one lands
-        the message depends entirely on the audience's reading time and the
-        argument you want to make.
-      </p>
-    </div>
-
     <script>
       // Parametric heart data (48 points), pre-computed x/y from the
-      // canonical parametric heart equations. Same source as
-      // .reports/2026-07-24-heart-chart/chart-input.json.
+      // canonical parametric heart equations.
       const heart_raw = [
         { i: 0, x: 0.0, y: 5.0 },
         { i: 1, x: 0.036, y: 5.345 },

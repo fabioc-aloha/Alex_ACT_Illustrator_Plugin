@@ -1,10 +1,6 @@
 # Heart with Axes — `/render-chart` demo report
 
-The synthesis of the two prior demos in this folder:
-
-- [`heart-chart/`](../heart-chart/) — heart shape without meaning (decoration only)
-- [`love-axes/`](../love-axes/) — Intimacy × Passion quadrant argument without the mnemonic
-- **This one** — heart shape AND semantic argument, unified
+A fusion demo: the parametric heart shape plotted onto a semantic Intimacy × Passion plane, with each of the heart's four lobes landing in its matching archetype quadrant. This is the demo referenced from the plugin's top-level [`README.md`](../../README.md#demo--the-heart-chart-with-meaning).
 
 ## Big Idea
 
@@ -48,7 +44,7 @@ Per-archetype labels are separate layers because Vega-Lite's `dx`/`dy` are **mar
 
 ## Data provenance
 
-Same 48 parametric heart points as `heart-chart/chart-input.json`, computed from:
+48 parametric heart points computed from:
 
 $$x = 16 \sin^3(t) \qquad y = 13 \cos(t) - 5 \cos(2t) - 2 \cos(3t) - \cos(4t)$$
 
@@ -71,4 +67,4 @@ Archetype coordinates are illustrative — chosen so each lobe of the heart sits
 
 ## What this teaches about the plugin
 
-Three demos, three rhetorical modes, one MCP backend. Which one lands the message depends entirely on the audience's reading time and the argument you want to make. `chart-big-idea` is what tells you which mode you're in **before** you author the spec.
+A chart earns its argument when the Big Idea is load-bearing — not when the visual is pretty. The heart shape here isn't decoration; it's the four-archetype map. `chart-big-idea` is what tells you whether your chart has that kind of argument **before** you author the spec.

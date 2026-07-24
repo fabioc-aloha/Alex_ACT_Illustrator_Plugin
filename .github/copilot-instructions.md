@@ -2,7 +2,7 @@
 
 Context for AI agents (and humans) working in this repo. Loaded automatically by GitHub Copilot Chat when the repo is open.
 
-This repo is *not* an [Alex — ACT Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) heir workspace — it ships one of the Edition's plugins. Alex ACT Edition's full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring, memory triggers) is *not* loaded here. This file gives agents the essentials.
+This repo is _not_ an [Alex — ACT Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) heir workspace — it ships one of the Edition's plugins. Alex ACT Edition's full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring, memory triggers) is _not_ loaded here. This file gives agents the essentials.
 
 ## What this repo is
 
@@ -16,17 +16,17 @@ This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.
 
 ## Repo layout
 
-| Path                                | Purpose                                                          |
-| ----------------------------------- | ---------------------------------------------------------------- |
-| `.github/skills/chart-big-idea/`    | Installable skill (framing)                                      |
-| `.github/skills/flint-chart/`       | Installable skill (selection + rendering)                        |
-| `.github/prompts/`                  | Installable prompt (`/render-chart`)                             |
-| `mcp.json`                          | MCP server sidecar (merges into a heir's workspace `.mcp.json`)  |
-| `manifest.json`                     | Plugin manifest — enumerates all shipping assets                 |
-| `assets/`                           | README-only images (**NOT** part of the installable payload)     |
-| `demos/`                            | Three self-contained demo reports (rhetorical spectrum)          |
-| `docs/`                             | Long-form design docs, plans, publishing runbook                 |
-| `LICENSE`, `README.md`, `CHANGELOG.md` | Standard repo files                                           |
+| Path                                   | Purpose                                                         |
+| -------------------------------------- | --------------------------------------------------------------- |
+| `.github/skills/chart-big-idea/`       | Installable skill (framing)                                     |
+| `.github/skills/flint-chart/`          | Installable skill (selection + rendering)                       |
+| `.github/prompts/`                     | Installable prompt (`/render-chart`)                            |
+| `mcp.json`                             | MCP server sidecar (merges into a heir's workspace `.mcp.json`) |
+| `manifest.json`                        | Plugin manifest — enumerates all shipping assets                |
+| `assets/`                              | README-only images (**NOT** part of the installable payload)    |
+| `demos/`                               | Self-contained demo report (heart-with-axes)                    |
+| `docs/`                                | Long-form design docs, plans, publishing runbook                |
+| `LICENSE`, `README.md`, `CHANGELOG.md` | Standard repo files                                             |
 
 ## Conventions
 
@@ -34,12 +34,12 @@ This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.
 
 Use severity-tagged prefixes for material changes (adapted from Alex ACT Edition's `severity-tagged-commits.instructions.md`):
 
-| Tag                | When to use                                                            |
-| ------------------ | ---------------------------------------------------------------------- |
-| `[typo]`           | Spelling, broken link, dead reference, single-character render fix     |
-| `[clarification]`  | Prose rewording, no behaviour change; user-visible text tweak          |
-| `[behaviour]`      | Functional change — skill content, manifest, MCP config, new asset     |
-| `[constitutional]` | LICENSE, plugin architecture, contract with the Mall or with heirs    |
+| Tag                | When to use                                                        |
+| ------------------ | ------------------------------------------------------------------ |
+| `[typo]`           | Spelling, broken link, dead reference, single-character render fix |
+| `[clarification]`  | Prose rewording, no behaviour change; user-visible text tweak      |
+| `[behaviour]`      | Functional change — skill content, manifest, MCP config, new asset |
+| `[constitutional]` | LICENSE, plugin architecture, contract with the Mall or with heirs |
 
 Conventional prefixes (`docs:`, `refactor:`, `feat:`, `fix:`) are also acceptable for narrow-scope changes that don't warrant a severity tag.
 
@@ -60,7 +60,7 @@ Markdown files must pass markdownlint on commit. If `get_errors` reports a findi
 
 ### Falsifiability
 
-Each skill and prompt carries a *Would Revise If* section naming specific conditions that trigger a review. When adding new content that codifies a rule or pattern, include a falsifier — either a specific date (`Revise by 2026-10-22 or sooner if…`) or an observable event (`Revise if …`).
+Each skill and prompt carries a _Would Revise If_ section naming specific conditions that trigger a review. When adding new content that codifies a rule or pattern, include a falsifier — either a specific date (`Revise by 2026-10-22 or sooner if…`) or an observable event (`Revise if …`).
 
 ## Publishing to the Alex ACT Plugin Mall
 
@@ -84,11 +84,11 @@ Short version: vendor the current asset files into `Alex_ACT_Plugin_Mall/plugins
 
 ## Related
 
-| Resource                       | URL                                                              |
-| ------------------------------ | ---------------------------------------------------------------- |
-| Upstream flint-chart           | <https://github.com/microsoft/flint-chart>                       |
-| Alex ACT Edition (host)        | <https://github.com/fabioc-aloha/Alex_ACT_Edition>               |
-| Alex ACT Plugin Mall (distro)  | <https://github.com/fabioc-aloha/Alex_Skill_Mall>                |
-| flint-chart-mcp on npm         | <https://www.npmjs.com/package/flint-chart-mcp>                  |
-| Canonical Flint chart gallery  | <https://microsoft.github.io/flint-chart/#/gallery/vegalite>     |
-| The Defensible Decision        | <https://www.thedefensibledecision.com/gallery/chart-gallery.html> |
+| Resource                      | URL                                                                |
+| ----------------------------- | ------------------------------------------------------------------ |
+| Upstream flint-chart          | <https://github.com/microsoft/flint-chart>                         |
+| Alex ACT Edition (host)       | <https://github.com/fabioc-aloha/Alex_ACT_Edition>                 |
+| Alex ACT Plugin Mall (distro) | <https://github.com/fabioc-aloha/Alex_Skill_Mall>                  |
+| flint-chart-mcp on npm        | <https://www.npmjs.com/package/flint-chart-mcp>                    |
+| Canonical Flint chart gallery | <https://microsoft.github.io/flint-chart/#/gallery/vegalite>       |
+| The Defensible Decision       | <https://www.thedefensibledecision.com/gallery/chart-gallery.html> |

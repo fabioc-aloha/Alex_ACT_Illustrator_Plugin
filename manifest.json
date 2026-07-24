@@ -1,6 +1,6 @@
 {
   "plugin": "flint-chart-plugin",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "shape": "two-skill + one-prompt + mcp-sidecar",
   "description": "Pick the right chart for the user's data + question, then render it locally via the flint-chart MCP server. Alex — ACT Edition plugin.",
   "homepage": "https://github.com/fabioc-aloha/flint-chart-plugin",
@@ -65,7 +65,7 @@
     "render via flint MCP server (create_chart_view | render_chart | validate_chart | compile_chart)"
   ],
   "prerequisites": {
-    "node": ">=18",
+    "node": ">=22",
     "mcp_host": "VS Code Copilot 1.118+ | Claude Desktop | Cursor | any MCP stdio client",
     "alex_edition": ">=3.x with local/ skill+prompt roots registered"
   },

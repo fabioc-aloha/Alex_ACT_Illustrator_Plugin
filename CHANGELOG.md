@@ -5,6 +5,47 @@ All notable changes to this plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-07-24
+
+Maintenance release. No shipping-payload behavior change, but the Node
+prerequisite bump is user-visible for anyone installing on Node 18 or 20,
+which justifies a minor bump.
+
+### Changed
+
+- **Node prerequisite raised from ≥ 18 to ≥ 22.** Reflected in
+  [`manifest.json`](manifest.json) and [`README.md`](README.md). Rationale:
+  Node 18 reached end-of-life on 2025-04-30 and Node 20 enters maintenance-only
+  in April 2026; pinning to ≥ 22 (current active LTS) keeps `npx flint-chart-mcp`
+  on a supported runtime for the plugin's usable life.
+- **`flint-chart` skill gained a `Would Revise If` section** codifying the five
+  falsifier conditions (Defensible Decision URL churn, `flint-chart-mcp`
+  breaking change, §0.2 recommendation refuted, §0.5 not exercised, upstream
+  fork base revised). Aligns the skill with the plugin-wide convention that all
+  installable files carry a falsifier.
+
+### Removed
+
+- **Two of three demo reports** (`demos/heart-chart/`, `demos/love-axes/`)
+  removed to keep the demo surface focused. `demos/heart-with-axes/` — the
+  fusion demo referenced from the top-level README — remains. Narrative in
+  `demos/README.md`, `heart-with-axes/README.md`, and `heart-with-axes/report.html`
+  updated to reflect the single-demo shape.
+
+### Added
+
+- **`.markdownlint.json`** — scoped config disabling MD013 (long semantic
+  lines are intentional) and allowing MD033 for `p`/`img`/`br`/`sub`/`sup`
+  (the standard README centered-image escape hatch). Makes markdownlint
+  behavior consistent across contributors regardless of their VS Code defaults.
+
+### Notes
+
+- `flint-chart-mcp` version pin unchanged (`^0.2.2`). Bump to `^0.3.0` when
+  the upstream 0.3.0 git tag publishes to npm.
+- Plan doc [`docs/plans/2026-07-24-mall-plugin.md`](docs/plans/2026-07-24-mall-plugin.md)
+  now carries an Amendments header pointing to this changelog for current state.
+
 ## [0.2.0] — 2026-07-24
 
 Initial public release. Spun out of dogfood work in `microsoft/flint-chart`
