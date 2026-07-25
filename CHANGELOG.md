@@ -5,6 +5,43 @@ All notable changes to this plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] — 2026-07-25
+
+Acts on four review findings from an adopting workspace that installed 0.3.1 via
+GitHub Copilot CLI. All four were reproduced before being acted on.
+
+### Added
+
+- **`scripts/verify-install.mjs`** — an executable version of check 1 in the
+  README's verification ladder. Reads the pin from
+  [`.vscode/mcp.json`](.vscode/mcp.json) so it verifies the version the workspace
+  actually requests rather than a hardcoded copy of it, handshakes with
+  `flint-chart-mcp` over stdio, and asserts all five tools are advertised; exit 0
+  means the server half is healthy and the fault is client-side. Zero
+  dependencies, host-independent, CI-runnable. Rationale: check 1 previously read
+  "ask the agent to probe over stdio", which is the one step that must not depend
+  on the agent — the agent may be what's broken. Note that Mall installs do not
+  include `scripts/`; the README gives the manual probe as the fallback.
+- **GitHub Copilot CLI added to every host table** (README, `flint-chart` skill,
+  [`manifest.json`](manifest.json)). Its config lives at
+  `~/.copilot/mcp-config.json` (overridable via `$COPILOT_HOME`) and its
+  top-level key is **`mcpServers`**, not `servers`. This fails harder than the
+  bug 0.3.1 fixed: wrong path _and_ wrong schema, still with no error. Verified
+  against a live CLI config and the GitHub docs. Users are pointed at the CLI's
+  own `/mcp add` rather than hand-editing JSON.
+- **A PowerShell variant of the manual install block.** The install steps were
+  bash-only (`mkdir -p`, `cp -r`, `/tmp/`), which is a translation step for the
+  Windows-heavy Alex ACT Edition audience.
+
+### Fixed
+
+- **"copy as-is" replaced with merge guidance for the MCP config.** The README
+  told VS Code users to copy [`.vscode/mcp.json`](.vscode/mcp.json) as-is; an
+  adopter with an existing file would silently lose their other servers. The
+  `settings.json` asset already carried an additive-merge caution — the MCP
+  asset now does too, in the README, the skill body, and a new `merge` field in
+  [`manifest.json`](manifest.json).
+
 ## [0.3.1] — 2026-07-25
 
 Bug-fix release. The MCP install path this plugin documented was wrong for

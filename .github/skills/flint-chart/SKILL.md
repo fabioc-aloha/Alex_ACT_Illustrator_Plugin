@@ -49,17 +49,27 @@ authoring a spec no one can render.
 
    **Put the file in the right place — this is the single most common failure.**
 
-   | Host                         | Path                          |
-   | ---------------------------- | ----------------------------- |
-   | **VS Code** (workspace)      | `.vscode/mcp.json`            |
-   | Claude Code / Claude Desktop | `.mcp.json` at workspace root |
-   | Cursor                       | `.cursor/mcp.json`            |
+   | Host                         | Path                          | Top-level key |
+   | ---------------------------- | ----------------------------- | ------------- |
+   | **VS Code** (workspace)      | `.vscode/mcp.json`            | `servers`     |
+   | Claude Code / Claude Desktop | `.mcp.json` at workspace root | `servers`     |
+   | Cursor                       | `.cursor/mcp.json`            | `servers`     |
+   | GitHub Copilot CLI           | `~/.copilot/mcp-config.json`  | `mcpServers`  |
 
-   The schema is identical across hosts, which is exactly why the wrong path
-   looks like it should work. **VS Code never reads a workspace-root
+   The schema is identical across the first three, which is exactly why the
+   wrong path looks like it should work. **VS Code never reads a workspace-root
    `.mcp.json`** — and it reports no error, because it isn't parsing a broken
    file, it's reading no file at all. If a user says "I added the config and
    nothing happened," check the path before anything else.
+
+   **Copilot CLI differs twice over:** different path _and_ a different
+   top-level key (`mcpServers`, not `servers`). A `servers` block pasted there
+   fails just as silently. Prefer telling the user to run `/mcp add` inside a
+   CLI session and let it write the file. The path is overridable via
+   `$COPILOT_HOME`.
+
+   Always **merge** into any existing config rather than overwriting it —
+   clobbering the file destroys whatever other servers the user had.
 
    ```jsonc
    // .vscode/mcp.json (VS Code) — merge with any existing "servers" map
@@ -95,11 +105,13 @@ authoring a spec no one can render.
    returns the chart catalog, the server is up.
 
 5. **If the tools still do not appear, isolate which half is broken before
-   guessing.** The server and the client fail identically from chat, so probe
-   the server on its own — pipe a handshake plus a `tools/list` into the
-   binary over stdio and read the response. A `serverInfo` block followed by a
-   `tools` array proves the server is healthy and the fault is config, trust,
-   or session staleness. Then work down this list:
+   guessing.** The server and the client fail identically from chat. If the
+   user has the plugin repo checked out, `node scripts/verify-install.mjs`
+   does this in one step; otherwise probe the server yourself — pipe a
+   handshake plus a `tools/list` into the binary over stdio and read the
+   response. A `serverInfo` block followed by a `tools` array proves the server
+   is healthy and the fault is config, trust, or session staleness. Then work
+   down this list:
    1. **Trust prompt.** VS Code will not start a local stdio server until you
       approve it. `Ctrl+Shift+P` → **MCP: List Servers** → pick `flint` →
       **Start**, and watch for the approval dialog.

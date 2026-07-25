@@ -60,7 +60,12 @@ Alex_ACT_Plugin_Mall/plugins/data-analytics/flint-chart-plugin/
 The Mall stores the MCP fragment flat as `mcp.json`; the heir installs it to
 `.vscode/mcp.json`. That install path is declared in `plugin.json` — see Step 4.
 
-Do **not** vendor `assets/`, `demos/`, `docs/`, `LICENSE`, `CHANGELOG.md`, `.gitignore`, or `.markdownlintignore` — those live only in this repo.
+`.vscode/settings.json` is a declared asset in this repo's `manifest.json` but is
+deliberately **not** vendored. It registers the `local/` discovery roots, which
+Alex ACT Edition heirs already provide (`requires_edition >=3.0.0`); it is only
+needed on a plain VS Code workspace. `plugin.json`'s `install_notes` says so.
+
+Do **not** vendor `assets/`, `demos/`, `docs/`, `scripts/`, `LICENSE`, `CHANGELOG.md`, `.gitignore`, or `.markdownlintignore` — those live only in this repo.
 
 ## Steps
 
@@ -94,20 +99,35 @@ Copy-Item "$up\.vscode\mcp.json"                        -Destination "$ma\mcp.js
 Copy-Item "$up\README.md" -Destination "$ma\README.md" -Force
 ```
 
-### 3. Rewrite image references in the vendored README
+### 3. Rewrite relative references in the vendored README
 
-The Mall does **not** vendor the `assets/` folder — the vendored README must use absolute `raw.githubusercontent.com` URLs for images that would otherwise resolve to `assets/…`. This lets the vendored copy stay self-contained AND auto-track upstream image changes without re-vendoring.
+The Mall vendors only five files — no `assets/`, no `docs/`, no `.vscode/`. Every relative reference in the vendored README therefore resolves inside the Mall plugin folder and 404s. Rewrite both images **and** links to absolute upstream URLs. This keeps the vendored copy self-contained AND auto-tracking upstream changes without re-vendoring.
 
 ```pwsh
 $readmePath = "$ma\README.md"
-$content = Get-Content $readmePath -Raw
-$new = $content -replace 'src="assets/', 'src="https://raw.githubusercontent.com/fabioc-aloha/flint-chart-plugin/main/assets/'
-Set-Content -Path $readmePath -Value $new -Encoding UTF8 -NoNewline
-# Verify: should show no remaining "src=\"assets/" refs
-(Select-String -Path $readmePath -Pattern 'src="assets/' -AllMatches).Matches.Count
+$base = 'https://github.com/fabioc-aloha/flint-chart-plugin'
+
+# Images: assets/… -> raw.githubusercontent.com
+$c = Get-Content $readmePath -Raw
+$c = $c -replace 'src="assets/', "src=$([char]34)https://raw.githubusercontent.com/fabioc-aloha/flint-chart-plugin/main/assets/"
+
+# Links: any relative ](path) -> absolute blob/main (files) or tree/main (dirs)
+$c = [regex]::Replace($c, '\]\((?!https?://|#)([^)]+)\)', {
+  param($m)
+  $t = $m.Groups[1].Value
+  $kind = if ($t.EndsWith('/')) { 'tree' } else { 'blob' }
+  "]($base/$kind/main/$t)"
+})
+
+Set-Content -Path $readmePath -Value $c -Encoding UTF8 -NoNewline
+
+# Verify: both counts must be 0
+$v = Get-Content $readmePath -Raw
+'relative img refs: {0}' -f ([regex]::Matches($v, 'src="assets/')).Count
+'relative links:    {0}' -f ([regex]::Matches($v, '\]\((?!https?://|#)([^)]+)\)')).Count
 ```
 
-Expected output: `0`.
+Both counts must report `0`.
 
 ### 4. Update the Mall's plugin.json
 
@@ -118,6 +138,8 @@ The Mall's `plugin.json` is _not_ a copy of this repo's `manifest.json` — it u
 - `upstream.ref` — usually `main`; can be a specific commit SHA if pinning
 - `artifacts.skills`, `artifacts.prompts`, `artifacts.mcp` — paths _inside the Mall folder_ (e.g. `skills/chart-big-idea/SKILL.md`, not `.github/skills/…`)
 - `install_paths.*` — where a heir installs each artifact (`.github/skills/local/…`, `.vscode/mcp.json`, etc.)
+- `install_paths.mcp.merge_target` — **check this every time.** It is authored independently of the vendored files, so a wrong value here ships the bug even when all four payload files are byte-perfect. It must read `.vscode/mcp.json`.
+- `token_cost` — no script derives it; scale the previous value by the measured payload-size change rather than switching estimator
 - `frontmatter.description` under each asset — copy the current description from the source file's frontmatter
 
 Open the current file at `Alex_ACT_Plugin_Mall\plugins\data-analytics\flint-chart-plugin\plugin.json` for the template. Update `version` and any frontmatter descriptions that changed since last publish.
@@ -197,6 +219,9 @@ Before declaring the publish complete:
 
 - [ ] Byte-identical vendored files (2 skills, 1 prompt, mcp.json) — `Get-FileHash` matches
 - [ ] `plugin.json` version matches upstream `manifest.json` version
+- [ ] `plugin.json` `install_paths.mcp.merge_target` reads `.vscode/mcp.json`
+- [ ] Mall README has zero relative image refs **and** zero relative links
+- [ ] `node scripts/validate-catalog.cjs` passes in the Mall clone
 - [ ] Mall README image `src` attributes use `raw.githubusercontent.com/...` (no `src="assets/…"` remains)
 - [ ] Curation-log entry present with today's date and correct tag
 - [ ] Commit tagged appropriately (`[behaviour]` version bump, `[typo]` doc-only, `[PLUGIN-ADDITION]` first publish)

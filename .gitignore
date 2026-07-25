@@ -1,5 +1,6 @@
-# OS / editor / tooling scratch — the plugin repo itself ships only markdown,
-# JSON, and prompt files; no node_modules, dist output, or build artefacts.
+# OS / editor / tooling scratch — the plugin's installable payload is markdown
+# and JSON only. `scripts/` holds repo tooling (not shipped); no node_modules,
+# dist output, or build artefacts.
 
 # macOS
 .DS_Store

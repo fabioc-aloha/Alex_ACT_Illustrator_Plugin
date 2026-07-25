@@ -18,20 +18,26 @@ Some materials that informed the plugin live outside this repo and are not vendo
 
 ## Known failure modes
 
-This plugin has one characteristic bug shape: **a config file in the wrong place
-does nothing, and says nothing.** Both instances found so far produce no error,
-no warning, and no log line — the host isn't parsing a broken file, it's reading
-no file at all. Check the path before debugging anything else.
+This plugin has one characteristic bug shape: **misconfiguration that does
+nothing and says nothing.** The first four rows below produce no error, no
+warning, and no log line — the host isn't parsing a broken file, it's reading no
+file at all, or reading a key it doesn't recognise. Check the path and the schema
+before debugging anything else. The last row is the inverse failure: silent
+damage rather than silent inaction.
 
 | Symptom                                 | Cause                                                                    | Fix                                                                                          |
 | --------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
 | `flint` MCP tools never appear          | Config placed at workspace-root `.mcp.json` — the Claude Code convention | Move to `.vscode/mcp.json`. Identical `servers` schema, which is why the wrong path deceives |
+| Same, but on GitHub Copilot CLI         | Wrong path _and_ wrong schema key                                        | `~/.copilot/mcp-config.json`, top-level key `mcpServers` not `servers`. Prefer `/mcp add`    |
 | Skills and `/render-chart` never appear | Installed under `local/`, which VS Code does not search                  | Register `chat.agentSkillsLocations` / `chat.promptFilesLocations` (keep them additive)      |
 | A skill silently fails to load          | Frontmatter `name` doesn't match its parent directory name               | Rename one to match the other                                                                |
+| Other MCP servers vanish after install  | The config was overwritten rather than merged                            | Merge the `flint` entry into the existing server map; never copy the file over one in place  |
 
-Both path bugs shipped in v0.3.0 and were corrected in v0.3.1. The plan that
-specified the wrong paths, [`plans/2026-07-24-mall-plugin.md`](plans/2026-07-24-mall-plugin.md),
-is deliberately left uncorrected so the decision trail survives.
+The two VS Code path bugs shipped in v0.3.0 and were corrected in v0.3.1; the
+Copilot CLI schema trap and the overwrite hazard were documented in v0.3.2. The
+plan that specified the wrong paths,
+[`plans/2026-07-24-mall-plugin.md`](plans/2026-07-24-mall-plugin.md), is
+deliberately left uncorrected so the decision trail survives.
 
 ## Governance
 

@@ -24,6 +24,7 @@ This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.
 | `.vscode/mcp.json`                     | MCP server sidecar — the path VS Code actually reads         |
 | `.vscode/settings.json`                | Registers the `local/` skill + prompt discovery roots        |
 | `manifest.json`                        | Plugin manifest — enumerates all shipping assets             |
+| `scripts/`                             | Repo tooling (`verify-install.mjs`) — **not** shipping payload |
 | `assets/`                              | README-only images (**NOT** part of the installable payload) |
 | `demos/`                               | Self-contained demo report (heart-with-axes)                 |
 | `docs/`                                | Long-form design docs, plans, publishing runbook             |
