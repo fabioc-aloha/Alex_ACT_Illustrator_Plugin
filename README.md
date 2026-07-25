@@ -147,6 +147,29 @@ If the `flint` tools are missing after a reload:
 2. **Read the server output.** Same menu → **Show Output**. Startup crashes surface there and nowhere else.
 3. **Restart the chat session.** A window reload is not always enough — the agent's tool inventory can stay stale until the session restarts.
 
+### Verify your install
+
+Four checks, in this order. Each isolates a different half of the system, so the
+first one that fails tells you where the fault is.
+
+1. **Server.** Ask the agent to probe `npx -y flint-chart-mcp` over stdio with an
+   `initialize` handshake followed by `tools/list`. A `serverInfo` block plus a
+   `tools` array means the server is healthy and any remaining fault is on the
+   client side — config, trust, or a stale session. This one step rules out
+   "maybe the npm install is broken" without touching VS Code.
+2. **Client.** Ask the agent whether it can see `render_chart`, `compile_chart`,
+   `validate_chart`, `list_chart_types`, and `create_chart_view`. All five, or
+   `.vscode/mcp.json` isn't being read.
+3. **Skills and prompt.** Type `/` in chat. `chart-big-idea`, `flint-chart`, and
+   `render-chart` should all appear. If the MCP tools work but these don't, the
+   discovery roots above are missing.
+4. **Render.** Ask for any chart. `list_chart_types` should return 34 Vega-Lite
+   chart types, and a render should produce an image.
+
+This repo runs the same four checks against its own [`.vscode/`](.vscode/) config —
+last verified 2026-07-25 against `flint-chart-mcp` 0.2.2 (MCP protocol
+`2024-11-05`).
+
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).
 
 ## Usage patterns

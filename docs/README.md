@@ -16,6 +16,23 @@ Some materials that informed the plugin live outside this repo and are not vendo
 - **`flint-chart` skill body** — forked from [`microsoft/flint-chart/agent-skills/flint-chart-author/SKILL.md`](https://github.com/microsoft/flint-chart/blob/main/agent-skills/flint-chart-author/SKILL.md) (MIT). The plugin prepends a `§0 Chart Selection` framework distilled from _The Defensible Decision_ chart gallery. See the top-level [Attribution](../README.md#attribution).
 - **`flint-chart-mcp` server** — [Microsoft Corporation on npm](https://www.npmjs.com/package/flint-chart-mcp) (MIT). Invoked via `npx` from the plugin's [`.vscode/mcp.json`](../.vscode/mcp.json).
 
+## Known failure modes
+
+This plugin has one characteristic bug shape: **a config file in the wrong place
+does nothing, and says nothing.** Both instances found so far produce no error,
+no warning, and no log line — the host isn't parsing a broken file, it's reading
+no file at all. Check the path before debugging anything else.
+
+| Symptom                                 | Cause                                                                    | Fix                                                                                          |
+| --------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `flint` MCP tools never appear          | Config placed at workspace-root `.mcp.json` — the Claude Code convention | Move to `.vscode/mcp.json`. Identical `servers` schema, which is why the wrong path deceives |
+| Skills and `/render-chart` never appear | Installed under `local/`, which VS Code does not search                  | Register `chat.agentSkillsLocations` / `chat.promptFilesLocations` (keep them additive)      |
+| A skill silently fails to load          | Frontmatter `name` doesn't match its parent directory name               | Rename one to match the other                                                                |
+
+Both path bugs shipped in v0.3.0 and were corrected in v0.3.1. The plan that
+specified the wrong paths, [`plans/2026-07-24-mall-plugin.md`](plans/2026-07-24-mall-plugin.md),
+is deliberately left uncorrected so the decision trail survives.
+
 ## Governance
 
 - **License** — MIT dual-copyright (Fabio Correa + Microsoft Corporation). See [`LICENSE`](../LICENSE).

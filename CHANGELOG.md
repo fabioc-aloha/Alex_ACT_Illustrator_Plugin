@@ -43,6 +43,20 @@ VS Code, which silently produced "the tools never appear" with no error.
   [`.vscode/mcp.json`](.vscode/mcp.json) and
   [`.vscode/settings.json`](.vscode/settings.json) make this repo dogfood its own
   install wiring, so a path regression breaks here before it reaches adopters.
+- **A "Verify your install" section** in [`README.md`](README.md) — four ordered
+  checks (server probe → client tools → skills/prompt → render), each isolating a
+  different half of the system so the first failure localises the fault.
+
+### Verified
+
+- **End-to-end on 2026-07-25**, VS Code against `flint-chart-mcp` 0.2.2 (MCP
+  protocol `2024-11-05`): server healthy over stdio with all 5 tools; both skills
+  loaded from `.github/skills/local/`; `list_chart_types` returned 34 Vega-Lite
+  chart types; `validate_chart` clean; `render_chart` produced SVG;
+  `create_chart_view` opened an interactive panel.
+- **Not covered:** the run could not distinguish the `local/` skill copies from
+  the source copies at `.github/skills/`, since this repo carries both and they
+  are identical. A `local/`-only adopter install is inferred, not demonstrated.
 
 ### Removed
 
