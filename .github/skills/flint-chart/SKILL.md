@@ -345,9 +345,30 @@ editor).
 weight vs mpg"). Jump to Step 1 and author the spec. Otherwise, work down this
 list before choosing a `chartType`.
 
-### 0.1 One-sentence message
+### 0.1 One-sentence message — the Big Idea
 
-Before choosing a chart, write the message it should carry
+Before choosing a chart, establish the message it should carry. **Load the
+`chart-big-idea` skill and run it now** — look in
+`.github/skills/local/chart-big-idea/SKILL.md` first (heir-installed), then
+`.github/skills/chart-big-idea/SKILL.md` (baseline).
+
+It does four things this step cannot do inline:
+
+- **Reads the surrounding context first** — the prose next to the insertion
+  point, the ticket, the section heading, prior captions — so you do not ask the
+  user to re-articulate a claim they already wrote.
+- **Questions the intent** — whether the chart should exist at all, and whether
+  the stated purpose is the real one. If the intended message and the data
+  disagree, that surfaces here rather than after rendering.
+- **Elicits the Big Idea** with a three-question ladder, one question at a time,
+  when it is not written down anywhere.
+- **Asks the TRADITIONAL vs INNOVATIVE style stance**, which changes the
+  chartType you pick in §0.2.
+
+The output is a compact Chart Brief. Treat it as the constraint on everything
+below: §0.2 selection, §0.4 coverage, and the spec you author in Steps 1-3.
+
+**If that skill is not available**, do the compact version inline
 (Knaflic — _Storytelling with Data_):
 
 - What is your unique point of view?

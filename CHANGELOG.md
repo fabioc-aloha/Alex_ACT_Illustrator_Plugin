@@ -62,6 +62,53 @@ half the installs. And the `flint-chart` skill needs an explicit Sparkline
 exclusion on `independentYAxis`, which 0.3.0 removed for Sparkline while keeping
 it for other faceted charts.
 
+## [0.5.1] — 2026-07-25
+
+Closes an upstream wiring gap and sharpens what the Big Idea step actually asks.
+
+### Fixed
+
+- **`flint-chart` §0.1 now hands off to `chart-big-idea` explicitly.** The skill
+  had a downstream handoff (to `render-verify`, added in 0.4.0) but never an
+  upstream one. Via `/render-chart` the Brief was produced by the prompt's Step
+  1; but when a user asked for a chart **ambiently** — "chart this data", with
+  no slash command — the host loaded `flint-chart` alone and §0.1 fell back to
+  three inline questions. No context read, no intent check, no elicitation
+  ladder, no TRADITIONAL/INNOVATIVE ask. The inline version is kept as the
+  fallback for installs that do not carry `chart-big-idea`.
+
+### Added
+
+- **An intent check at the head of `chart-big-idea` Step 1.** The Big Idea asks
+  *what the data shows*; this asks **what the artifact is actually for**, before
+  any claim is drafted:
+  - *Should this exist at all?* If no argument surfaced and the data holds no
+    surprise, offer the cheaper alternative — a sentence, a table, or nothing.
+    A competent chart nobody needed is a failure that looks like success.
+  - *Is the stated purpose the real one?* "Show that X worked" is a decision
+    already made looking for a picture to ratify it. Legitimate to build, but it
+    belongs in the Brief as Persuasive, not dressed as neutral reporting.
+  - **If the intended message and the data disagree, surface it before drafting
+    the Big Idea.** This is the one point in the workflow where the right answer
+    may be *"not this chart"* — every later step assumes the chart should exist.
+- **Scope note** on `chart-big-idea`: Steps 0, 1, and 3 apply to any
+  communication artifact — a slide, a memo, a diagram, a report section. Steps
+  2, 4, and 5 are chart machinery, which is why the skill stays chart-named.
+- Two anti-patterns (accepting the stated purpose without testing it; framing a
+  chart that should not exist) and two falsifiers, including: if users routinely
+  invoke this skill for non-chart artifacts and skip Steps 2/4/5, the general
+  half has outgrown the chart half and should be split into its own skill.
+
+### Notes
+
+The skill was **not** renamed, unlike `chart-verify` → `render-verify` in 0.5.0.
+The cases differ: there, the method was general and only the catalog was
+chart-specific, so widening cost one extra table. Here Steps 2, 4, and 5 are the
+spine — story arcs map to chart families, the style-stance crosstab names
+concrete `chartType` values, and the Brief hands off to `flint-chart` §0.2.
+A general name over that machinery would overpromise. The falsifier above turns
+that judgment into something testable rather than a preference.
+
 ## [0.5.0] — 2026-07-25
 
 Renames the verification skill and widens it to match. Shipped same-day as

@@ -1,6 +1,6 @@
 {
   "plugin": "flint-chart-plugin",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "shape": "three-skill + one-prompt + two-mcp-sidecars + vscode-settings",
   "description": "Pick the right chart for the user's data + question, render it locally via the flint-chart MCP server, then verify the rendered artifact actually says what it was meant to say. Alex — ACT Edition plugin.",
   "homepage": "https://github.com/fabioc-aloha/flint-chart-plugin",
@@ -23,7 +23,7 @@
         "install_to": ".github/skills/local/chart-big-idea/SKILL.md",
         "role": "framing (invoked before chart selection)",
         "frontmatter": {
-          "description": "Distill the one-sentence Big Idea, story arc, audience, and style stance for a chart BEFORE picking a chart type. Reads the surrounding docs / prose / ticket for an existing Big Idea first, then helps the user articulate one via a 3-question elicitation ladder if none is found. Asks whether the user wants a TRADITIONAL (safe) or INNOVATIVE (higher-impact, higher-risk) treatment. Use before invoking the flint-chart skill or the /render-chart prompt whenever the user's ask is 'chart this', 'visualize', 'make a chart', 'show the data', or when framing is unclear."
+          "description": "Distill the one-sentence Big Idea, story arc, audience, and style stance for a chart BEFORE picking a chart type. Starts by questioning intent — whether the artifact should exist at all, and whether the stated purpose is the real one. Reads the surrounding docs / prose / ticket for an existing Big Idea first, then helps the user articulate one via a 3-question elicitation ladder if none is found. Asks whether the user wants a TRADITIONAL (safe) or INNOVATIVE (higher-impact, higher-risk) treatment. Use before invoking the flint-chart skill or the /render-chart prompt whenever the user's ask is 'chart this', 'visualize', 'make a chart', 'show the data', or when framing is unclear."
         }
       },
       {
@@ -109,9 +109,9 @@
     }
   },
   "handoff_flow": [
-    "/render-chart prompt fires",
-    "load chart-big-idea skill → Step 0 (read surrounding context) → Steps 1-5 (Big Idea → arc → audience → style → Brief)",
-    "load flint-chart skill → §0.2 selection constrained by the Brief → §0.4 Flint-coverage check",
+    "/render-chart prompt fires — OR the user asks for a chart ambiently and flint-chart loads directly",
+    "load chart-big-idea skill → Step 0 (read surrounding context) → Step 1 intent check (should this exist? is the stated purpose the real one?) → Steps 1-5 (Big Idea → arc → audience → style → Brief)",
+    "load flint-chart skill → §0.1 hands off to chart-big-idea if it was not already run → §0.2 selection constrained by the Brief → §0.4 Flint-coverage check",
     "author ChartAssemblyInput per Steps 1-N",
     "render via flint MCP server (create_chart_view | render_chart | validate_chart | compile_chart)",
     "load render-verify skill → open the artifact → read console errors → walk the failure catalogs → check the picture against the Big Idea"
