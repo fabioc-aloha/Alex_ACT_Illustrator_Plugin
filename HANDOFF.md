@@ -84,6 +84,40 @@ If you run it on corpnet by mistake you will see
 `ETARGET / No matching version found` in the stderr block. That is the mirror,
 not the package.
 
+## Decision required — which pin ships
+
+**Do not merge the branch's `^0.4.0` as-is without settling this.** Today's
+`^0.2.2` installs cleanly everywhere, corpnet included. A plain `^0.4.0` would
+break every sister repo on a Microsoft machine with `ETARGET`, because the
+mirror stops at 0.2.2. Most heirs of this plugin *are* corpnet repos, so the
+upgrade would break more adopters than it helps until the mirror syncs.
+
+| Option | Corpnet repos | Public-npm repos |
+| ------ | ------------- | ---------------- |
+| Hold `^0.2.2` | works (0.2.2) | works, stuck on old |
+| Bump `^0.4.0` (branch as-is) | **broken — `ETARGET`** | works (0.4.0) |
+| Range `^0.2.2\|\|^0.4.0` | works (0.2.2) | works (0.4.0) |
+
+The dual range was tested on corpnet 2026-07-25 and resolved to `0.2.2`; npm
+picks the highest version each registry actually offers, so one config
+self-adapts. Use the **space-free** form — `flint-chart-mcp@^0.2.2||^0.4.0` —
+which is safe inside any `args` array with no quoting hazard.
+
+**Recommended: the dual range**, with one consequence that must be handled in
+the same change. Two versions in the wild means the docs can no longer assert
+"34 Vega-Lite chart types" or "three backends" as fact — those would be wrong
+for half the installs. Rephrase them as *call `list_chart_types` to discover
+what your server exposes*, quoting current numbers as illustration only. That is
+the more robust design regardless: the skill already tells the agent to call
+`list_chart_types`, and runtime discovery does not go stale on every upstream
+release.
+
+**The alternative that removes the problem entirely:** get the corporate mirror
+to sync 0.4.0, after which a plain `^0.4.0` works everywhere. Worth requesting
+through the sanctioned package-feed process in parallel — it is a
+Microsoft-published, MIT-licensed, provenance-signed package, which is a strong
+case.
+
 ## Follow-up work once verification passes
 
 Ordered. Items 2–4 depend on the captured output, which is why they were
@@ -114,7 +148,10 @@ deliberately left out of the branch commit.
    fits if the backend surface widens; a patch bump fits if the pin moves and
    nothing else does. Then re-vendor to the Alex Mall per
    [`docs/publishing-to-mall.md`](docs/publishing-to-mall.md) — the Mall is
-   currently one version behind at 0.3.1.
+   currently one version behind at 0.3.1. Whichever pin is chosen above must be
+   mirrored into the Mall's `plugin.json` at
+   `install_paths.mcp.server_config.args`, which is authored separately from the
+   vendored `mcp.json` and has shipped a stale value before.
 
 ## Current state
 
