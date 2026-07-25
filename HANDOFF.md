@@ -40,11 +40,15 @@ registry would be.
 git clone https://github.com/fabioc-aloha/flint-chart-plugin.git
 cd flint-chart-plugin
 git checkout bump/mcp-0.4.0
-node scripts/verify-install.mjs --catalog
+node scripts/verify-install.mjs --catalog --compat
 ```
 
 No `npm install` — the checker has zero dependencies, and `npx` fetches the
 server itself. Node 22+ required.
+
+`--compat` is the decisive flag: it validates the chart-property patterns this
+plugin's skill documents, including all three 0.3.0 migration items, so the
+compatibility question is measured rather than argued.
 
 ## What to capture
 
@@ -68,12 +72,24 @@ OK    backends (3):
         vegalite   34 chart types
         echarts    37 chart types
         chartjs    20 chart types
+
+      spec-pattern compatibility (validate_chart, vegalite):
+        valid    Grouped Bar + dodge:auto (0.3.0 dropped "none")
+        valid    Donut = Pie + innerRadius (0.3.0 dropped it on Rose)
+        valid    Sparkline (0.3.0 dropped independentYAxis here)
+        valid    Rose Chart without innerRadius
+        valid    Bar Chart (baseline sanity)
+        valid    Scatter Plot with color
+        → all documented patterns validate on this version
 ```
 
 ## Interpreting the result
 
-- **Exit 0, version `0.4.x`, five tools** → the bump is good. Proceed to
-  follow-up work below.
+- **Exit 0, version `0.4.x`, five tools, all `--compat` patterns `valid`** → the
+  bump is good. Ship the dual range and proceed to follow-up work below.
+- **Any `--compat` pattern `INVALID`** → do not merge. Stay on `^0.2.2` and
+  record which pattern broke and what the server said; that is the decision, not
+  a puzzle to solve.
 - **Exit 1, `no initialize response`** → expected on corpnet, and it is what
   this branch produces there. Off-corpnet it means a real failure — include the
   `server stderr:` block, which carries npm's own error.
@@ -84,13 +100,23 @@ If you run it on corpnet by mistake you will see
 `ETARGET / No matching version found` in the stderr block. That is the mirror,
 not the package.
 
-## Decision required — which pin ships
+## Decision (made 2026-07-25) — compatibility gates the pin
 
-**Do not merge the branch's `^0.4.0` as-is without settling this.** Today's
-`^0.2.2` installs cleanly everywhere, corpnet included. A plain `^0.4.0` would
-break every sister repo on a Microsoft machine with `ETARGET`, because the
-mirror stops at 0.2.2. Most heirs of this plugin *are* corpnet repos, so the
-upgrade would break more adopters than it helps until the mirror syncs.
+**There is no urgency.** Corpnet machines cannot install 0.4.0 at all, so the
+upgrade buys them nothing today. The pin therefore moves only if 0.4.0 is a
+superset of what 0.2.2 already does for this plugin.
+
+**The rule:**
+
+- **If every `--compat` pattern validates on 0.4.0 and all five tools are
+  present** → ship the dual range `flint-chart-mcp@^0.2.2||^0.4.0`, so both
+  versions are supported from one config.
+- **If anything fails** → stay on `^0.2.2`. Abandon the branch and record what
+  broke. One skill cannot honestly serve two versions that disagree.
+
+A plain `^0.4.0` is not on the table: it would break every corpnet sister repo
+with `ETARGET`, since the mirror stops at 0.2.2 — and most heirs of this plugin
+*are* corpnet repos.
 
 | Option | Corpnet repos | Public-npm repos |
 | ------ | ------------- | ---------------- |
@@ -112,11 +138,26 @@ the more robust design regardless: the skill already tells the agent to call
 `list_chart_types`, and runtime discovery does not go stale on every upstream
 release.
 
+### What "compatible" has to mean here
+
+Stricter than "0.4.0 works". Under a dual range the *same* skill content must be
+valid on **both** versions at once, so:
+
+- Every documented chart-property pattern must validate on both. That is exactly
+  what `--compat` measures; all six pass on 0.2.2 today.
+- The claim is **not** that upstream broke nothing — 0.3.0 carries three
+  breaking changes. The claim is that none of them touch what this plugin
+  documents. `--compat` turns that from an assumption into a measurement, which
+  matters because the same assumption was asserted twice in this session before
+  anyone checked.
+- A pattern that is valid on one version and rejected on the other is
+  disqualifying for the dual range, even if the plugin could be reworded around
+  it. Prefer staying on `^0.2.2` over shipping content that is subtly wrong for
+  half the installs.
+
 **The alternative that removes the problem entirely:** get the corporate mirror
 to sync 0.4.0, after which a plain `^0.4.0` works everywhere. Worth requesting
-through the sanctioned package-feed process in parallel — it is a
-Microsoft-published, MIT-licensed, provenance-signed package, which is a strong
-case.
+through the sanctioned package-feed process in parallel — see below.
 
 ## Getting 0.4.0 onto the corporate machine
 

@@ -6,6 +6,7 @@
 //
 //   node scripts/verify-install.mjs
 //   node scripts/verify-install.mjs --catalog   (also list backends + chart-type counts)
+//   node scripts/verify-install.mjs --compat    (also validate this plugin's spec patterns)
 //
 // Exit 0 = server handshakes and advertises all expected tools.
 // Exit 1 = server failed to start, handshake, or advertise the expected tools.
@@ -13,6 +14,12 @@
 // `--catalog` additionally calls list_chart_types. Use it when bumping the pin:
 // the README and skill quote a backend list and a Vega-Lite chart-type count,
 // and both are version-dependent facts that need re-checking on every bump.
+//
+// `--compat` validates the chart-property patterns this plugin documents,
+// including every item from the 0.3.0 migration notes. Use it to decide whether
+// one set of skill content can serve two pinned versions at once: a dual range
+// like `^0.2.2||^0.4.0` is only safe if every pattern validates on both.
+// A failing spec here does not fail the run — it is reported for judgement.
 //
 // No dependencies. Speaks newline-delimited JSON-RPC over stdio, which is what
 // flint-chart-mcp expects.
@@ -44,6 +51,64 @@ function resolvePackage() {
 
 const { spec: PACKAGE, source: PACKAGE_SOURCE } = resolvePackage();
 const WANT_CATALOG = process.argv.includes('--catalog');
+const WANT_COMPAT = process.argv.includes('--compat');
+
+// Patterns this plugin's skill documents. The first three are the 0.3.0
+// migration items — the ones most likely to diverge between pinned versions.
+const ROWS = [
+  { cat: 'North', qty: 120, grp: 'A', t: 1 },
+  { cat: 'South', qty: 90, grp: 'B', t: 2 },
+  { cat: 'East', qty: 150, grp: 'A', t: 3 },
+];
+const COMPAT_SPECS = [
+  {
+    name: 'Grouped Bar + dodge:auto (0.3.0 dropped "none")',
+    chart_spec: {
+      chartType: 'Grouped Bar Chart',
+      encodings: { x: { field: 'cat' }, y: { field: 'qty' }, group: { field: 'grp' } },
+      chartProperties: { dodge: 'auto' },
+    },
+  },
+  {
+    name: 'Donut = Pie + innerRadius (0.3.0 dropped it on Rose)',
+    chart_spec: {
+      chartType: 'Pie Chart',
+      encodings: { size: { field: 'qty' }, color: { field: 'cat' } },
+      chartProperties: { innerRadius: 60 },
+    },
+  },
+  {
+    name: 'Sparkline (0.3.0 dropped independentYAxis here)',
+    chart_spec: {
+      chartType: 'Sparkline',
+      encodings: { x: { field: 't' }, y: { field: 'qty' }, color: { field: 'grp' } },
+      chartProperties: { baseline: 'mean' },
+    },
+  },
+  {
+    name: 'Rose Chart without innerRadius',
+    chart_spec: {
+      chartType: 'Rose Chart',
+      encodings: { x: { field: 'cat' }, y: { field: 'qty' } },
+    },
+  },
+  {
+    name: 'Bar Chart (baseline sanity)',
+    chart_spec: {
+      chartType: 'Bar Chart',
+      encodings: { x: { field: 'cat' }, y: { field: 'qty' } },
+    },
+  },
+  {
+    name: 'Scatter Plot with color',
+    chart_spec: {
+      chartType: 'Scatter Plot',
+      encodings: { x: { field: 't' }, y: { field: 'qty' }, color: { field: 'grp' } },
+    },
+  },
+];
+const COMPAT_BASE_ID = 10;
+
 const EXPECTED_TOOLS = [
   'render_chart',
   'compile_chart',
@@ -72,6 +137,20 @@ const REQUESTS = [
     method: 'tools/call',
     params: { name: 'list_chart_types', arguments: {} },
   },
+  ...COMPAT_SPECS.map((s, i) => ({
+    jsonrpc: '2.0',
+    id: COMPAT_BASE_ID + i,
+    method: 'tools/call',
+    params: {
+      name: 'validate_chart',
+      arguments: {
+        data: { values: ROWS },
+        semantic_types: { qty: 'Quantity' },
+        chart_spec: s.chart_spec,
+        backend: 'vegalite',
+      },
+    },
+  })),
 ];
 
 // Windows ships `npx` as a .cmd shim, and since the CVE-2024-27980 fix Node
@@ -178,11 +257,43 @@ function report() {
   console.log(`OK    tools (${found.length}): ${found.join(', ')}`);
 
   if (WANT_CATALOG) reportCatalog(messages);
+  if (WANT_COMPAT) reportCompat(messages);
 
   console.log('\nPASS  Server half is healthy.');
   console.log('      If your host still shows no flint tools, the fault is on the');
   console.log('      client side: config path, trust prompt, or a stale session.');
   console.log('      See README "If the tools still don\'t appear".');
+}
+
+function reportCompat(messages) {
+  console.log(`\n      spec-pattern compatibility (validate_chart, vegalite):`);
+  let bad = 0;
+
+  COMPAT_SPECS.forEach((s, i) => {
+    const reply = messages.find((m) => m.id === COMPAT_BASE_ID + i);
+    const text = reply?.result?.content?.find((c) => c.type === 'text')?.text;
+
+    let verdict = 'NO REPLY';
+    let detail = '';
+    if (text) {
+      try {
+        const r = JSON.parse(text);
+        verdict = r.valid ? 'valid' : 'INVALID';
+        const notes = [...(r.errors ?? []), ...(r.warnings ?? [])];
+        if (notes.length) detail = `  — ${notes.join('; ')}`;
+      } catch {
+        verdict = text.slice(0, 60);
+      }
+    }
+    if (verdict !== 'valid') bad += 1;
+    console.log(`        ${verdict.padEnd(8)} ${s.name}${detail}`);
+  });
+
+  console.log(
+    bad === 0
+      ? '        → all documented patterns validate on this version'
+      : `        → ${bad} pattern(s) need attention before a dual-range pin`,
+  );
 }
 
 function reportCatalog(messages) {
