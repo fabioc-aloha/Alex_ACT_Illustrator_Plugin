@@ -321,9 +321,9 @@ Then update the fragment:
 { "servers": { "flint": { "command": "flint-chart-mcp", "args": [] } } }
 ```
 
-**Pinned version** — replace `^0.2.2` with an exact version (`0.2.2`) to lock out even patch updates. Bump to `^0.3.0` when it publishes to npm (as of 2026-07-24, npm `latest` is 0.2.2).
+**Pinned version** — replace `^0.2.2` with an exact version (`0.2.2`) to lock out even patch updates. Public npm `latest` is already **0.4.0** (published 2026-07-24); this plugin holds at `^0.2.2` until the bump is verified end-to-end — see the Unreleased section of [`CHANGELOG.md`](CHANGELOG.md). If you check versions yourself, run `npm config get registry` first: a corporate mirror can report a stale `latest` that is not the public one.
 
-**Naming conflict** — if you already have a `flint` server registered, rename this one to `flint-chart` in your merged `.mcp.json`. The skill and prompt reference the server by tool inventory, not by name.
+**Naming conflict** — if you already have a `flint` server registered, rename this one to `flint-chart` in your merged config. The skill and prompt reference the server by tool inventory, not by name.
 
 ## What the plugin does NOT do
 

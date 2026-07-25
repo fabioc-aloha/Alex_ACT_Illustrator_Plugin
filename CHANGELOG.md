@@ -5,6 +5,53 @@ All notable changes to this plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Pending — adopt `flint-chart-mcp` 0.4.0
+
+`flint-chart-mcp` **0.4.0 is published on public npm** as `latest` (2026-07-24,
+signed build provenance), and it is a production release: the GitHub release is
+neither draft nor prerelease, `main` and the `0.4.0` tag both carry `0.4.0`, and
+the `dev` branch is *behind* `main`. Nothing is being held back upstream.
+
+The pin nevertheless stays at `^0.2.2`, because the bump cannot be verified from
+this workstation. `npm` here resolves through the corporate mirror
+`packagefeedproxy.microsoft.io/npm/`, which is still at 0.2.2 and returns
+`ETARGET` for 0.4.0 even on a direct install; direct `registry.npmjs.org` access
+is blocked by corporate web policy. That policy is deliberately **not** bypassed,
+so `scripts/verify-install.mjs` cannot exercise 0.4.0 here.
+
+> Cautionary note: an earlier draft of this entry claimed 0.4.0 was "not on npm",
+> based on `npm view` output. That was the mirror's stale view reported as global
+> truth. `npm view` reflects whatever registry is configured — check
+> `npm config get registry` before treating its answer as authoritative.
+
+**To adopt** — from any machine on public npm:
+
+1. Bump the pin in [`.vscode/mcp.json`](.vscode/mcp.json) and
+   [`manifest.json`](manifest.json). The checker reads the pin from the former,
+   so it needs no separate edit.
+2. Run `node scripts/verify-install.mjs`. It must report 0.4.x and all five tools.
+3. Widen the backend list from three to five. Plotly (38 chart types, adding
+   Funnel, Gauge, and Density Contour) and Excel (18 native Office.js templates)
+   are new in 0.4.0; the `flint-chart` skill, README, and manifest name only
+   Vega-Lite / ECharts / Chart.js in prose. Do **not** document them before the
+   bump — the 0.2.2 `backend` enum rejects them.
+4. Re-check the chart-type count the README quotes (34 for Vega-Lite on 0.2.2).
+5. Re-evaluate §0 Chart Selection against 0.3.0's backend-neutral chart-type
+   recommendations (see the new falsifier in the `flint-chart` skill).
+
+**Breaking-change pre-check (done 2026-07-25)** — all three 0.3.0 migration items
+were checked against this plugin's content, and none require a rewrite:
+
+- `dodge` no longer accepts `none`: the skill already documents only
+  `auto` / `local` / `global`.
+- Vega-Lite Rose Chart drops `innerRadius`: the skill only ever applies
+  `innerRadius` to Pie Chart, which is what the migration prescribes.
+- Sparkline drops `chartProperties.independentYAxis`: the skill lists it under
+  cross-cutting faceted properties, which 0.3.0 preserves for non-Sparkline
+  facets. On bump, add a Sparkline exclusion so an agent cannot set it there.
+
 ## [0.3.2] — 2026-07-25
 
 Acts on four review findings from an adopting workspace that installed 0.3.1 via

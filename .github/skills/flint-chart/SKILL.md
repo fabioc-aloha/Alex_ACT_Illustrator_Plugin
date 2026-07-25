@@ -88,8 +88,10 @@ authoring a spec no one can render.
      omitting it makes transport-related failures harder to diagnose.
    - `npx -y` fetches the package on first use and caches it (~5-10 MB in the
      npm cache; ~1-2 s cold start).
-   - Bump the pin to `^0.3.0` (or higher) when the target version is published
-     to npm; `npm view flint-chart-mcp version` reports the current `latest`.
+   - Bump the pin when a newer version is verified working. Public npm `latest`
+     is 0.4.0 (2026-07-24) while this plugin pins `^0.2.2`. Before trusting any
+     version check, run `npm config get registry` — a corporate mirror can report
+     a stale `latest` that is not the public one.
    - **Corporate / air-gapped:** if `npx` cannot reach the npm registry, ask
      the user to run `npm install -g flint-chart-mcp` once from a machine that
      can, then change `"command": "npx", "args": ["-y", "flint-chart-mcp"]` to
@@ -840,3 +842,5 @@ Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fire
 - Any recommendation in §0.2 (question → family → chartType) is refuted by a source we trust (a case study, a Knaflic/Kirk/Few/Wexler update, or field feedback from ≥2 heir workspaces) — retire or rework that row.
 - The plugin gets ≥3 heir installs and none of them exercise §0.5 (deep-reference escalation) — that signals the compact table alone is sufficient and §0.5 is decorative; prune it.
 - The upstream fork base ([`microsoft/flint-chart/agent-skills/flint-chart-author/SKILL.md`](https://github.com/microsoft/flint-chart/blob/main/agent-skills/flint-chart-author/SKILL.md)) publishes a materially revised body — decide whether to rebase §1-N onto the new upstream or hold on the current fork point.
+- **Upstream absorbs chart selection itself.** `flint-chart` 0.3.0 shipped backend-neutral chart-type recommendations and transformations — the capability §0 exists to provide. If those recommendations become reachable through the MCP tools and match or beat §0.2 on the same question, §0 is redundant: call the upstream recommender and keep only the framing this plugin adds on top. Re-test when the pin moves past 0.2.2.
+- **The backend list changes.** §0.4 and the worked examples assume Vega-Lite / ECharts / Chart.js. 0.4.0 adds Plotly (38 chart types, including Funnel, Gauge, and Density Contour) and Excel (18 native Office.js templates), which expands what "Flint can't express this" means. Re-check the coverage rules whenever `list_chart_types` reports a backend this skill does not name.

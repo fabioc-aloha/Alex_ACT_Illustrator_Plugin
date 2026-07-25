@@ -5,9 +5,14 @@
 // need a way to prove the server half works.
 //
 //   node scripts/verify-install.mjs
+//   node scripts/verify-install.mjs --catalog   (also list backends + chart-type counts)
 //
 // Exit 0 = server handshakes and advertises all expected tools.
 // Exit 1 = server failed to start, handshake, or advertise the expected tools.
+//
+// `--catalog` additionally calls list_chart_types. Use it when bumping the pin:
+// the README and skill quote a backend list and a Vega-Lite chart-type count,
+// and both are version-dependent facts that need re-checking on every bump.
 //
 // No dependencies. Speaks newline-delimited JSON-RPC over stdio, which is what
 // flint-chart-mcp expects.
@@ -38,6 +43,7 @@ function resolvePackage() {
 }
 
 const { spec: PACKAGE, source: PACKAGE_SOURCE } = resolvePackage();
+const WANT_CATALOG = process.argv.includes('--catalog');
 const EXPECTED_TOOLS = [
   'render_chart',
   'compile_chart',
@@ -60,6 +66,12 @@ const REQUESTS = [
   },
   { jsonrpc: '2.0', method: 'notifications/initialized' },
   { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} },
+  {
+    jsonrpc: '2.0',
+    id: 3,
+    method: 'tools/call',
+    params: { name: 'list_chart_types', arguments: {} },
+  },
 ];
 
 // Windows ships `npx` as a .cmd shim, and since the CVE-2024-27980 fix Node
@@ -164,8 +176,35 @@ function report() {
   }
 
   console.log(`OK    tools (${found.length}): ${found.join(', ')}`);
+
+  if (WANT_CATALOG) reportCatalog(messages);
+
   console.log('\nPASS  Server half is healthy.');
   console.log('      If your host still shows no flint tools, the fault is on the');
   console.log('      client side: config path, trust prompt, or a stale session.');
   console.log('      See README "If the tools still don\'t appear".');
+}
+
+function reportCatalog(messages) {
+  const call = messages.find((m) => m.id === 3 && m.result?.content);
+  const text = call?.result.content.find((c) => c.type === 'text')?.text;
+  if (!text) {
+    console.log('WARN  --catalog: list_chart_types returned no text content');
+    return;
+  }
+
+  let catalog;
+  try {
+    catalog = JSON.parse(text);
+  } catch {
+    console.log('WARN  --catalog: could not parse list_chart_types output');
+    return;
+  }
+
+  const entries = Array.isArray(catalog) ? catalog : [catalog];
+  console.log(`OK    backends (${entries.length}):`);
+  for (const entry of entries) {
+    const count = entry.count ?? entry.chartTypes?.length ?? '?';
+    console.log(`        ${String(entry.backend).padEnd(10)} ${count} chart types`);
+  }
 }
