@@ -62,6 +62,44 @@ half the installs. And the `flint-chart` skill needs an explicit Sparkline
 exclusion on `independentYAxis`, which 0.3.0 removed for Sparkline while keeping
 it for other faceted charts.
 
+## [0.5.0] — 2026-07-25
+
+Renames the verification skill and widens it to match. Shipped same-day as
+0.4.0, before the Alex Mall vendored it, so no adopter ever saw the old name.
+
+### Changed
+
+- **`chart-verify` → `render-verify`.** The old name implied the skill only
+  worked on charts. It never did: the method — open the artifact, read its
+  console errors *first*, walk a failure catalog, then check the picture against
+  the claim it was meant to carry — applies to any rendered output. Folder,
+  frontmatter `name`, and all references moved together; `name` must match the
+  parent directory or the skill silently fails to load.
+- **Skill framing widened** from "a chart" to "a rendered visual artifact",
+  covering generated HTML reports, SVG figures, dashboards, diagrams, and
+  printable output. Charts remain the deepest-worked case.
+- **Step 3 and Step 4 generalized.** Step 4 previously assumed the Big Idea from
+  `chart-big-idea`; it now covers whatever claim the artifact carries, since a
+  report or diagram has one too. "A correct render of a wrong claim is still a
+  defect" holds either way.
+- `manifest.json` 0.4.0 → 0.5.0. Renaming a shipped asset is a breaking change
+  to the install contract even when nothing has consumed it yet.
+
+### Added
+
+- **A second failure catalog — any rendered artifact.** Eight rows for defects
+  that are invisible in a screenshot but named in the console or found by
+  looking properly: missing resource (404'd image, stylesheet, font, script),
+  unstyled content, clipped or overflowing text, font substitution, layout
+  collapse at the captured viewport, below-the-fold content never captured,
+  stale render, and surviving placeholders (`TODO`, `{{value}}`, `undefined`,
+  `NaN`).
+- **Anti-pattern: screenshotting without reading the console.** The console
+  names the cause; the picture only shows the symptom.
+- **Falsifier for the rename itself** — if the general catalog goes unused
+  across several sessions, the skill is chart-only in practice and the broader
+  name overpromises. Narrow it back or delete the general table.
+
 ## [0.4.0] — 2026-07-25
 
 Closes the verification loop. Until now the plugin could render a chart and had

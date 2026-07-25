@@ -8,7 +8,7 @@ This repo is _not_ an [Alex — ACT Edition](https://github.com/fabioc-aloha/Ale
 
 An Alex ACT Edition plugin for chart selection and rendering:
 
-- **Three skills** — `chart-big-idea` (framing preflight — Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), `flint-chart` (selection + spec authoring against the [microsoft/flint-chart](https://github.com/microsoft/flint-chart) MCP server), and `chart-verify` (verification — open the render, read its console errors, walk the failure catalog)
+- **Three skills** — `chart-big-idea` (framing preflight — Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), `flint-chart` (selection + spec authoring against the [microsoft/flint-chart](https://github.com/microsoft/flint-chart) MCP server), and `render-verify` (verification — open the rendered artifact, read its console errors, walk the failure catalogs)
 - **One slash-command prompt** — `/render-chart` (loads all three skills, drives the end-to-end workflow)
 - **MCP sidecars** — `.vscode/mcp.json` spawning `flint-chart-mcp@^0.2.2` (required) and `@playwright/mcp@0.0.78` (optional — omit on hosts with built-in browser tools, e.g. VS Code) from npm via `npx`
 
@@ -20,7 +20,7 @@ This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.
 | -------------------------------------- | --------------------------------------------------------------------------- |
 | `.github/skills/chart-big-idea/`       | Installable skill (framing)                                                 |
 | `.github/skills/flint-chart/`          | Installable skill (selection + rendering)                                   |
-| `.github/skills/chart-verify/`         | Installable skill (verification)                                            |
+| `.github/skills/render-verify/`        | Installable skill (verification)                                            |
 | `.github/prompts/`                     | Installable prompt (`/render-chart`)                                        |
 | `.vscode/mcp.json`                     | MCP server sidecar — the path VS Code actually reads                        |
 | `.vscode/settings.json`                | Registers the `local/` skill + prompt discovery roots                       |

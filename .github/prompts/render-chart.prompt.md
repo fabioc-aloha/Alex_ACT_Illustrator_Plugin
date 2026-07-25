@@ -1,5 +1,5 @@
 ---
-description: "Pick the right chart for the user's data + question, then author, render, and verify it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, the flint-chart skill for selection and rendering, and the chart-verify skill to confirm the render actually says what it was meant to say."
+description: "Pick the right chart for the user's data + question, then author, render, and verify it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, the flint-chart skill for selection and rendering, and the render-verify skill to confirm the render actually says what it was meant to say."
 lastReviewed: 2026-07-25
 ---
 
@@ -17,13 +17,13 @@ Follow these steps in order. Skip any step that the user's request has already a
 
 4. **Confirm the analytical question** using the skill's §0.1 (one-sentence message). The Brief's Big Idea usually IS the one-sentence message — if not, tighten it now. Do not re-elicit if Step 1 already produced it.
 
-5. **Pick the chart** via the skill's §0.2 table (question → family → chartType), constrained by the Brief's *Suggested chartType(s)* and *Style stance*. If the Brief said TRADITIONAL, prefer the safe pick from `chart-big-idea` Step 4; if INNOVATIVE, prefer the higher-impact pick. If the compact table doesn't cover the case, escalate per §0.5 and fetch the deep reference at <https://www.thedefensibledecision.com/gallery/chart-gallery.html>. Cross-check against §0.4 to make sure Flint can actually render your choice.
+5. **Pick the chart** via the skill's §0.2 table (question → family → chartType), constrained by the Brief's _Suggested chartType(s)_ and _Style stance_. If the Brief said TRADITIONAL, prefer the safe pick from `chart-big-idea` Step 4; if INNOVATIVE, prefer the higher-impact pick. If the compact table doesn't cover the case, escalate per §0.5 and fetch the deep reference at <https://www.thedefensibledecision.com/gallery/chart-gallery.html>. Cross-check against §0.4 to make sure Flint can actually render your choice.
 
 6. **Author the `ChartAssemblyInput`** per the skill's Step 1 (chartType), Step 2 (encodings), Step 3 (semantic types). Reference data columns by name.
 
 7. **Render.** Default to `create_chart_view` (interactive panel with customization sidebar) when the host supports MCP App UI. Fall back to `render_chart` (PNG or SVG) when it doesn't. Use `validate_chart` first if you're unsure the spec is well-formed. Use `compile_chart` when the user wants the backend-native JSON to embed in their own app instead of a rendered image.
 
-8. **Verify — look at what you rendered.** Load the `chart-verify` skill (`.github/skills/local/chart-verify/SKILL.md` first, then `.github/skills/chart-verify/SKILL.md`). Use the host's built-in browser tools if it has them; otherwise the optional `playwright` MCP server. Read console errors *before* judging the picture, then walk the skill's failure catalog — empty binding, collapsed scale, merged color scale, undefined category, double-scaled units. Check the picture against the Brief's Big Idea, not just against the spec.
+8. **Verify — look at what you rendered.** Load the `render-verify` skill (`.github/skills/local/render-verify/SKILL.md` first, then `.github/skills/render-verify/SKILL.md`). Use the host's built-in browser tools if it has them; otherwise the optional `playwright` MCP server. Read console errors _before_ judging the picture, then walk the skill's chart failure catalog — empty binding, collapsed scale, merged color scale, undefined category, double-scaled units. Check the picture against the Brief's Big Idea, not just against the spec.
 
    **Mandatory** after any post-Flint Vega-Lite edit and before committing generated HTML/SVG/PNG. If you have no way to look at the result, say so in Step 9 rather than implying it was checked.
 

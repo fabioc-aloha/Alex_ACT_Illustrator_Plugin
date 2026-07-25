@@ -32,7 +32,7 @@ or `assembleChartjs` to get a backend spec.
   customization". Never feed edited Vega-Lite JSON back to `render_chart`.
 - **Look at what you rendered.** A chart with a collapsed scale, a merged color
   scale, or an empty data binding renders as a valid image that tells the wrong
-  story — `validate_chart` cannot catch that. Load the `chart-verify` skill
+  story — `validate_chart` cannot catch that. Load the `render-verify` skill
   after rendering, and always after a post-Flint Vega-Lite edit.
 
 ## Verify Flint is available before rendering
@@ -314,7 +314,7 @@ This edited Vega-Lite spec is no longer a portable Flint spec. Do not send it to
 
 **Verification is mandatory here.** Once you leave the Flint level, the MCP
 server's validation no longer protects you — an edited spec can render a
-plausible-looking chart that is silently wrong. Load the `chart-verify` skill:
+plausible-looking chart that is silently wrong. Load the `render-verify` skill:
 open the result, read its console errors, and check it against the failure
 catalog before declaring it done.
 

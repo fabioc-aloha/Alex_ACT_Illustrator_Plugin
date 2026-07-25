@@ -1,8 +1,8 @@
 {
   "plugin": "flint-chart-plugin",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "shape": "three-skill + one-prompt + two-mcp-sidecars + vscode-settings",
-  "description": "Pick the right chart for the user's data + question, render it locally via the flint-chart MCP server, then verify the render actually says what it was meant to say. Alex — ACT Edition plugin.",
+  "description": "Pick the right chart for the user's data + question, render it locally via the flint-chart MCP server, then verify the rendered artifact actually says what it was meant to say. Alex — ACT Edition plugin.",
   "homepage": "https://github.com/fabioc-aloha/flint-chart-plugin",
   "license": "MIT",
   "authors": [
@@ -36,12 +36,12 @@
         }
       },
       {
-        "name": "chart-verify",
-        "path": ".github/skills/chart-verify/SKILL.md",
-        "install_to": ".github/skills/local/chart-verify/SKILL.md",
-        "role": "verification (runs after rendering; closes the loop the flint-chart skill deliberately opens)",
+        "name": "render-verify",
+        "path": ".github/skills/render-verify/SKILL.md",
+        "install_to": ".github/skills/local/render-verify/SKILL.md",
+        "role": "verification (runs after rendering; closes the loop the flint-chart skill deliberately opens). Not chart-specific — applies to any rendered visual artifact",
         "frontmatter": {
-          "description": "Verify a rendered chart or visual artifact actually says what it was supposed to say — open it, read its console errors, and check it against the Big Idea before declaring it done. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
+          "description": "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
         }
       }
     ],
@@ -52,7 +52,7 @@
         "install_to": ".github/prompts/local/render-chart.prompt.md",
         "role": "verb-prompt workflow entry point (/render-chart)",
         "frontmatter": {
-          "description": "Pick the right chart for the user's data + question, then author, render, and verify it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, the flint-chart skill for selection and rendering, and the chart-verify skill to confirm the render actually says what it was meant to say."
+          "description": "Pick the right chart for the user's data + question, then author, render, and verify it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, the flint-chart skill for selection and rendering, and the render-verify skill to confirm the render actually says what it was meant to say."
         }
       }
     ],
@@ -86,8 +86,8 @@
             "--allow-unrestricted-file-access"
           ],
           "transport": "stdio",
-          "role": "satisfies the chart-verify skill's browser capability on hosts without built-in browser tools — primarily GitHub Copilot CLI, which is a terminal agent and has none",
-          "optional_because": "VS Code Copilot heirs already have built-in browser/screenshot tools that open file:// with no flags and no browser download — measured 2026-07-25 against demos/heart-with-axes/report.html. Omit this entry on VS Code; the chart-verify skill names the capability, not the product.",
+          "role": "satisfies the render-verify skill's browser capability on hosts without built-in browser tools — primarily GitHub Copilot CLI, which is a terminal agent and has none",
+          "optional_because": "VS Code Copilot heirs already have built-in browser/screenshot tools that open file:// with no flags and no browser download — measured 2026-07-25 against demos/heart-with-axes/report.html. Omit this entry on VS Code; the render-verify skill names the capability, not the product.",
           "version_pin": "exact — caret on 0.0.x expands to >=0.0.78 <0.0.79 and protects nothing while reading as if it does. Note the MCP handshake reports the underlying Playwright library version (e.g. 1.62.0-alpha-…), NOT the package version; do not pin against it.",
           "flags": {
             "--headless": "verification pass, not a demo — no visible window",
@@ -114,7 +114,7 @@
     "load flint-chart skill → §0.2 selection constrained by the Brief → §0.4 Flint-coverage check",
     "author ChartAssemblyInput per Steps 1-N",
     "render via flint MCP server (create_chart_view | render_chart | validate_chart | compile_chart)",
-    "load chart-verify skill → open the artifact → read console errors → walk the failure catalog → check the picture against the Big Idea"
+    "load render-verify skill → open the artifact → read console errors → walk the failure catalogs → check the picture against the Big Idea"
   ],
   "prerequisites": {
     "node": ">=22",

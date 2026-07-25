@@ -2,6 +2,14 @@
 
 **Status:** SHIPPED in v0.4.0 · all decisions locked · **Raised:** 2026-07-25 · **Closed:** 2026-07-25
 
+> **Amendment 2026-07-25 (v0.5.0):** the skill shipped as `chart-verify` and was
+> renamed **`render-verify`** immediately afterwards — the original name implied
+> it only worked on charts, when the method (open → read console → walk a
+> catalog → check the claim) applies to any rendered artifact. A second,
+> general failure catalog was added alongside the chart one. Decision rows below
+> keep the original name because that is what was locked at the time; current
+> paths are `.github/skills/render-verify/`.
+
 **Goal:** Add a second, optional MCP server to this plugin so the agent can
 *look at* what it rendered instead of assuming the render succeeded — covering
 Flint PNG/SVG output, post-Flint edited Vega-Lite specs, and the `demos/` HTML.
@@ -141,12 +149,12 @@ handshake plus `tools/list` against an `npx`-fetched server with zero dependenci
 Locked in the decisions table above, using Task 1's measurements. Open question
 carried forward as a falsifier: does any non-VS-Code host lack an adequate
 built-in screenshot tool? If none do, the `playwright` entry can be dropped from
-the payload without touching `chart-verify`, because D3 kept the skill
+the payload without touching `render-verify`, because D3 kept the skill
 host-agnostic.
 
 ### Task 3 — Implementation — DONE 2026-07-25 (v0.4.0)
 
-- **New** [`.github/skills/chart-verify/SKILL.md`](../../.github/skills/chart-verify/SKILL.md)
+- **New** [`.github/skills/render-verify/SKILL.md`](../../.github/skills/render-verify/SKILL.md)
   — failure catalog, host-capability table, Playwright setup + security note,
   troubleshooting, anti-patterns
 - [`.vscode/mcp.json`](../../.vscode/mcp.json) — second `playwright` entry

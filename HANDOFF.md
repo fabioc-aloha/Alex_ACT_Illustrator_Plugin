@@ -241,7 +241,7 @@ deliberately left out of the branch commit.
    plugin adds on top.
 5. **Version and ship.** Promote the `Unreleased` section of
    [`CHANGELOG.md`](CHANGELOG.md) to a release. **Note that 0.4.0 has since been
-   used** for the verification feature (`chart-verify` skill + optional
+   used** for the verification feature (`render-verify` skill + optional
    `playwright` server), so the next bump here is 0.5.0 if the backend surface
    widens, or a patch bump if the pin moves and nothing else does. Then
    re-vendor to the Alex Mall per

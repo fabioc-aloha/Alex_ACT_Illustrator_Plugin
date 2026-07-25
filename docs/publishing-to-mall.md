@@ -53,7 +53,7 @@ Alex_ACT_Plugin_Mall/plugins/data-analytics/flint-chart-plugin/
 ├── skills/
 │   ├── chart-big-idea/SKILL.md
 │   ├── flint-chart/SKILL.md
-│   └── chart-verify/SKILL.md
+│   └── render-verify/SKILL.md
 └── prompts/
     └── render-chart.prompt.md
 ```
@@ -94,13 +94,13 @@ $ma = 'C:\Development\Alex_ACT_Plugin_Mall\plugins\data-analytics\flint-chart-pl
 # Ensure target folder structure exists
 New-Item -ItemType Directory -Force -Path "$ma\skills\chart-big-idea" | Out-Null
 New-Item -ItemType Directory -Force -Path "$ma\skills\flint-chart"    | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\chart-verify"   | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\render-verify"  | Out-Null
 New-Item -ItemType Directory -Force -Path "$ma\prompts"               | Out-Null
 
 # Copy the five installable payload files byte-for-byte
 Copy-Item "$up\.github\skills\chart-big-idea\SKILL.md" -Destination "$ma\skills\chart-big-idea\SKILL.md" -Force
 Copy-Item "$up\.github\skills\flint-chart\SKILL.md"     -Destination "$ma\skills\flint-chart\SKILL.md"    -Force
-Copy-Item "$up\.github\skills\chart-verify\SKILL.md"    -Destination "$ma\skills\chart-verify\SKILL.md"   -Force
+Copy-Item "$up\.github\skills\render-verify\SKILL.md"   -Destination "$ma\skills\render-verify\SKILL.md"  -Force
 Copy-Item "$up\.github\prompts\render-chart.prompt.md"  -Destination "$ma\prompts\render-chart.prompt.md" -Force
 Copy-Item "$up\.vscode\mcp.json"                        -Destination "$ma\mcp.json"                       -Force
 
@@ -177,7 +177,7 @@ git -C C:\Development\Alex_ACT_Plugin_Mall status --short
 foreach ($p in @(
   @('.github\skills\chart-big-idea\SKILL.md', 'skills\chart-big-idea\SKILL.md'),
   @('.github\skills\flint-chart\SKILL.md',     'skills\flint-chart\SKILL.md'),
-  @('.github\skills\chart-verify\SKILL.md',    'skills\chart-verify\SKILL.md'),
+  @('.github\skills\render-verify\SKILL.md',   'skills\render-verify\SKILL.md'),
   @('.github\prompts\render-chart.prompt.md',  'prompts\render-chart.prompt.md'),
   @('.vscode\mcp.json',                         'mcp.json')
 )) {

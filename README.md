@@ -11,7 +11,7 @@ Four capabilities in one plugin:
 1. **Chart framing.** Before picking a chart type, the `chart-big-idea` skill distills the one-sentence Big Idea, story arc, audience, and TRADITIONAL vs INNOVATIVE style stance into a compact Chart Brief. It reads the surrounding docs / prose / ticket for an existing Big Idea first (so it doesn't ask you to re-articulate what you already wrote); if none is found, a 3-question elicitation ladder helps you get to one.
 2. **Chart selection.** When you ask _"which chart should I use?"_, the `flint-chart` skill walks a compact question → family → chartType framework (Comparison / Trend / Distribution / Relationship / Proportion / Flow / KPI) distilled from Knaflic, Kirk, Few, and Wexler — constrained by the Brief. For deep per-chart design tips, it escalates to [_The Defensible Decision_ gallery](https://www.thedefensibledecision.com/gallery/chart-gallery.html) on demand.
 3. **Chart rendering.** When you're ready to draw, the skill authors a compact `ChartAssemblyInput` and the bundled MCP server renders it locally (PNG / SVG) or opens an interactive chart panel via `create_chart_view`. No data leaves the machine.
-4. **Chart verification.** After rendering, the `chart-verify` skill opens the result, reads its console errors, and walks a failure catalog — empty binding, collapsed scale, merged color scale, undefined category, double-scaled units. A chart with any of those renders as a **valid image that tells the wrong story**, and `validate_chart` cannot catch it. Only looking does.
+4. **Render verification.** After rendering, the `render-verify` skill opens the result, reads its console errors, and walks a failure catalog — empty binding, collapsed scale, merged color scale, undefined category, double-scaled units. A chart with any of those renders as a **valid image that tells the wrong story**, and `validate_chart` cannot catch it. Only looking does. The skill is not chart-only: a second catalog covers any rendered artifact — 404'd images, clipped text, missing fonts, layout collapse, surviving placeholders.
 
 ### Demo — the heart chart, with meaning
 
@@ -51,10 +51,10 @@ The rendered demo ships in [`demos/heart-with-axes/`](demos/heart-with-axes/) �
       │     Steps 1-N: author ChartAssemblyInput
       │     MCP call: create_chart_view / render_chart
       │
-      └─▶ chart-verify skill  ───────────────▶  verified chart
+      └─▶ render-verify skill  ──────────────▶  verified artifact
             open the artifact (host browser or playwright MCP)
             read console errors BEFORE judging the picture
-            walk the failure catalog
+            walk the failure catalogs
             check the picture against the Big Idea
 ```
 
@@ -66,7 +66,7 @@ The Brief locks the framing; the selection skill handles the mechanical chartTyp
 | ---------------------------------------- | --------------------------------------------------------------------------------------- |
 | `.github/skills/chart-big-idea/SKILL.md` | Framing skill — Big Idea, story arc, audience, style stance, Chart Brief output         |
 | `.github/skills/flint-chart/SKILL.md`    | Selection + spec-authoring skill (§0 chart selection + Steps 1-N `ChartAssemblyInput`)  |
-| `.github/skills/chart-verify/SKILL.md`   | Verification skill — failure catalog, host-capability table, Playwright MCP setup       |
+| `.github/skills/render-verify/SKILL.md`  | Verification skill — failure catalogs, host-capability table, Playwright setup          |
 | `.github/prompts/render-chart.prompt.md` | `/render-chart <request>` slash-command entry point (loads all three skills in order)   |
 | `.vscode/mcp.json`                       | MCP server registration — `flint` (required) + `playwright` (optional; see Install)     |
 | `.vscode/settings.json`                  | Registers the `local/` skill + prompt discovery roots                                   |
@@ -102,7 +102,7 @@ git clone https://github.com/fabioc-aloha/flint-chart-plugin.git /tmp/flint-char
 mkdir -p .github/skills/local
 cp -r /tmp/flint-chart-plugin/.github/skills/chart-big-idea .github/skills/local/
 cp -r /tmp/flint-chart-plugin/.github/skills/flint-chart .github/skills/local/
-cp -r /tmp/flint-chart-plugin/.github/skills/chart-verify .github/skills/local/
+cp -r /tmp/flint-chart-plugin/.github/skills/render-verify .github/skills/local/
 
 # Copy the prompt into your heir-local prompt folder
 mkdir -p .github/prompts/local
@@ -122,7 +122,7 @@ $src = "$env:TEMP\flint-chart-plugin"
 New-Item -ItemType Directory -Force -Path .github\skills\local | Out-Null
 Copy-Item "$src\.github\skills\chart-big-idea" -Destination .github\skills\local\ -Recurse -Force
 Copy-Item "$src\.github\skills\flint-chart"    -Destination .github\skills\local\ -Recurse -Force
-Copy-Item "$src\.github\skills\chart-verify"   -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\render-verify"  -Destination .github\skills\local\ -Recurse -Force
 
 # Copy the prompt into your heir-local prompt folder
 New-Item -ItemType Directory -Force -Path .github\prompts\local | Out-Null
@@ -154,7 +154,7 @@ cold start; cached thereafter).
 
 #### The optional `playwright` server — omit it on VS Code
 
-The `chart-verify` skill names a **capability** (open a page, read its console,
+The `render-verify` skill names a **capability** (open a page, read its console,
 screenshot it), not a product. VS Code Copilot already has built-in browser
 tools that satisfy it — they open `file://` with no flags and no browser
 download. **On VS Code, drop the `playwright` entry.**
@@ -268,7 +268,7 @@ first one that fails tells you where the fault is.
    `validate_chart`, `list_chart_types`, and `create_chart_view`. All five, or
    your host isn't reading the config you edited.
 3. **Skills and prompt.** Type `/` in chat. `chart-big-idea`, `flint-chart`,
-   `chart-verify`, and `render-chart` should all appear. If the MCP tools work
+   `render-verify`, and `render-chart` should all appear. If the MCP tools work
    but these don't, the discovery roots above are missing.
 4. **Render.** Ask for any chart. `list_chart_types` should return 34 Vega-Lite
    chart types, and a render should produce an image.
