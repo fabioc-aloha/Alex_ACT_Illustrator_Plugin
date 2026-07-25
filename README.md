@@ -200,6 +200,11 @@ first one that fails tells you where the fault is.
    session. This is the one check that must not depend on your agent, since your
    agent may be the thing that's broken.
 
+   Two optional flags, useful when changing the pin: `--catalog` lists the
+   backends and per-backend chart-type counts, and `--compat` validates the
+   chart-property patterns this plugin documents. Both report version-dependent
+   facts that the docs would otherwise assert blindly.
+
    Installed from the Alex Mall instead? That vendors only the skills, the
    prompt, and `mcp.json` — no `scripts/`. Either clone this repo to run the
    checker, or ask your agent to probe `npx -y flint-chart-mcp` over stdio with
@@ -321,7 +326,7 @@ Then update the fragment:
 { "servers": { "flint": { "command": "flint-chart-mcp", "args": [] } } }
 ```
 
-**Pinned version** — replace `^0.2.2` with an exact version (`0.2.2`) to lock out even patch updates. Public npm `latest` is already **0.4.0** (published 2026-07-24); this plugin holds at `^0.2.2` until the bump is verified end-to-end — see the Unreleased section of [`CHANGELOG.md`](CHANGELOG.md). If you check versions yourself, run `npm config get registry` first: a corporate mirror can report a stale `latest` that is not the public one.
+**Pinned version** — the pin is `^0.2.2` **by decision, not by lag**. Caret on a `0.x` version means `>=0.2.2 <0.3.0`, so 0.3.x and 0.4.x are never picked up automatically. Public npm `latest` is already 0.4.0, but it is unreachable from Microsoft corporate machines (their npm mirror stops at 0.2.2), and most heirs of this plugin are corpnet repos — so bumping would break more adopters than it helps. See the Unreleased section of [`CHANGELOG.md`](CHANGELOG.md) for the full rationale and the conditions that would change it. If you check versions yourself, run `npm config get registry` first: a corporate mirror can report a stale `latest` that is not the public one.
 
 **Naming conflict** — if you already have a `flint` server registered, rename this one to `flint-chart` in your merged config. The skill and prompt reference the server by tool inventory, not by name.
 

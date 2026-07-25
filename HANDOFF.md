@@ -1,10 +1,16 @@
 # HANDOFF — verify `flint-chart-mcp` 0.4.0 off-corpnet
 
-**Status:** open · **Raised:** 2026-07-25 · **Branch under test:** `bump/mcp-0.4.0`
+**Status:** parked — no urgency · **Raised:** 2026-07-25 · **Branch under test:** `bump/mcp-0.4.0`
 
-One task: prove that `flint-chart-mcp@^0.4.0` works, and capture four
-version-dependent facts that this plugin's documentation asserts. It cannot be
-done on the corporate network.
+**Decision already taken:** the pin stays at `^0.2.2` (see the Unreleased
+section of [`CHANGELOG.md`](CHANGELOG.md)). Corpnet machines cannot install
+0.4.0 at all, so the upgrade buys them nothing and there is no deadline. This
+file stays available for whenever the repo is next opened on a machine with
+public npm access, or if the corporate mirror syncs 0.4.0.
+
+One task when that happens: prove 0.4.0 is a strict superset of 0.2.2 for this
+plugin, and capture the version-dependent facts the documentation would
+otherwise assert blindly.
 
 Delete this file once the branch is merged or abandoned.
 

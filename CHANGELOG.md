@@ -7,50 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Pending — adopt `flint-chart-mcp` 0.4.0
+### Decided — hold the pin at `^0.2.2`
 
-`flint-chart-mcp` **0.4.0 is published on public npm** as `latest` (2026-07-24,
-signed build provenance), and it is a production release: the GitHub release is
-neither draft nor prerelease, `main` and the `0.4.0` tag both carry `0.4.0`, and
-the `dev` branch is *behind* `main`. Nothing is being held back upstream.
+**The pin stays at `^0.2.2`, deliberately.** Caret on a `0.x` version means
+`>=0.2.2 <0.3.0`, so this is a real restriction, not a floor: 0.3.x and 0.4.x
+are never picked up automatically.
 
-The pin nevertheless stays at `^0.2.2`, because the bump cannot be verified from
-this workstation. `npm` here resolves through the corporate mirror
-`packagefeedproxy.microsoft.io/npm/`, which is still at 0.2.2 and returns
-`ETARGET` for 0.4.0 even on a direct install; direct `registry.npmjs.org` access
-is blocked by corporate web policy. That policy is deliberately **not** bypassed,
-so `scripts/verify-install.mjs` cannot exercise 0.4.0 here.
+Rationale: `flint-chart-mcp` 0.4.0 is a genuine production release on public npm
+(2026-07-24, signed build provenance; the GitHub release is neither draft nor
+prerelease, `main` and the `0.4.0` tag agree, and `dev` is *behind* `main`) —
+but it is unreachable from Microsoft corporate machines. `npm` there resolves
+through `packagefeedproxy.microsoft.io/npm/`, which stops at 0.2.2 and returns
+`ETARGET` for 0.4.0 even on a direct install and even with `--prefer-online`;
+direct `registry.npmjs.org` access is blocked by corporate web policy, which is
+deliberately **not** bypassed.
+
+Since most heirs of this plugin are corpnet repos, bumping to a plain `^0.4.0`
+would break more adopters than it would help. `^0.2.2` installs cleanly on both
+public npm and the corporate mirror, and is the only version this plugin's
+content has been verified against.
 
 > Cautionary note: an earlier draft of this entry claimed 0.4.0 was "not on npm",
-> based on `npm view` output. That was the mirror's stale view reported as global
-> truth. `npm view` reflects whatever registry is configured — check
+> based on `npm view` output. That was the corporate mirror's stale view reported
+> as global truth. `npm view` reflects whatever registry is configured — run
 > `npm config get registry` before treating its answer as authoritative.
 
-**To adopt** — from any machine on public npm:
+**What would change the decision**, in order of preference:
 
-1. Bump the pin in [`.vscode/mcp.json`](.vscode/mcp.json) and
-   [`manifest.json`](manifest.json). The checker reads the pin from the former,
-   so it needs no separate edit.
-2. Run `node scripts/verify-install.mjs`. It must report 0.4.x and all five tools.
-3. Widen the backend list from three to five. Plotly (38 chart types, adding
-   Funnel, Gauge, and Density Contour) and Excel (18 native Office.js templates)
-   are new in 0.4.0; the `flint-chart` skill, README, and manifest name only
-   Vega-Lite / ECharts / Chart.js in prose. Do **not** document them before the
-   bump — the 0.2.2 `backend` enum rejects them.
-4. Re-check the chart-type count the README quotes (34 for Vega-Lite on 0.2.2).
-5. Re-evaluate §0 Chart Selection against 0.3.0's backend-neutral chart-type
-   recommendations (see the new falsifier in the `flint-chart` skill).
+1. **The mirror syncs 0.4.0.** Then a plain `^0.4.0` works everywhere and none
+   of the complication below applies. The sanctioned request is drafted in
+   [`HANDOFF.md`](HANDOFF.md).
+2. **0.4.0 is verified a strict superset**, from a machine on public npm:
+   `node scripts/verify-install.mjs --catalog --compat` must report 0.4.x, all
+   five tools, and every documented spec pattern `valid`. If so, ship the dual
+   range `flint-chart-mcp@^0.2.2||^0.4.0` — tested to resolve 0.2.2 on the
+   mirror and 0.4.0 on public npm, so one config serves both. If any pattern
+   fails, stay here.
 
-**Breaking-change pre-check (done 2026-07-25)** — all three 0.3.0 migration items
-were checked against this plugin's content, and none require a rewrite:
+The branch `bump/mcp-0.4.0` carries the `^0.4.0` pin and is parked, not
+abandoned; [`HANDOFF.md`](HANDOFF.md) has the full procedure.
 
-- `dodge` no longer accepts `none`: the skill already documents only
-  `auto` / `local` / `global`.
-- Vega-Lite Rose Chart drops `innerRadius`: the skill only ever applies
-  `innerRadius` to Pie Chart, which is what the migration prescribes.
-- Sparkline drops `chartProperties.independentYAxis`: the skill lists it under
-  cross-cutting faceted properties, which 0.3.0 preserves for non-Sparkline
-  facets. On bump, add a Sparkline exclusion so an agent cannot set it there.
+**Compatibility measured on 0.2.2 (2026-07-25)** via
+`scripts/verify-install.mjs --compat` — all six documented spec patterns valid,
+including all three 0.3.0 migration items (`dodge` without `none`, donut via Pie
+`innerRadius`, Sparkline without `independentYAxis`). 0.3.0 *does* carry
+breaking changes; the finding is that none touch what this plugin documents.
+That was asserted twice before it was measured, which is why the check now
+exists.
+
+**If the dual range is ever adopted**, two consequences apply. The docs must
+stop asserting "34 Vega-Lite chart types" and "three backends" as fact — those
+become runtime discovery via `list_chart_types`, since they would be wrong for
+half the installs. And the `flint-chart` skill needs an explicit Sparkline
+exclusion on `independentYAxis`, which 0.3.0 removed for Sparkline while keeping
+it for other faceted charts.
 
 ## [0.3.2] — 2026-07-25
 

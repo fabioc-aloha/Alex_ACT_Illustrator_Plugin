@@ -88,10 +88,12 @@ authoring a spec no one can render.
      omitting it makes transport-related failures harder to diagnose.
    - `npx -y` fetches the package on first use and caches it (~5-10 MB in the
      npm cache; ~1-2 s cold start).
-   - Bump the pin when a newer version is verified working. Public npm `latest`
-     is 0.4.0 (2026-07-24) while this plugin pins `^0.2.2`. Before trusting any
-     version check, run `npm config get registry` — a corporate mirror can report
-     a stale `latest` that is not the public one.
+   - The `^0.2.2` pin is held deliberately, not through neglect. Public npm
+     `latest` is 0.4.0, but it is unreachable from Microsoft corporate machines,
+     whose npm mirror stops at 0.2.2. Do not advise a user to bump the pin
+     without checking `npm config get registry` first — a corporate mirror can
+     report a stale `latest` that is not the public one, and on such a machine a
+     `^0.4.0` pin fails with `ETARGET`.
    - **Corporate / air-gapped:** if `npx` cannot reach the npm registry, ask
      the user to run `npm install -g flint-chart-mcp` once from a machine that
      can, then change `"command": "npx", "args": ["-y", "flint-chart-mcp"]` to
