@@ -118,6 +118,55 @@ through the sanctioned package-feed process in parallel — it is a
 Microsoft-published, MIT-licensed, provenance-signed package, which is a strong
 case.
 
+## Getting 0.4.0 onto the corporate machine
+
+The corporate workstation cannot install 0.4.0 today, and the registry is not
+user-configurable: there is no user-level `.npmrc`, the registry comes from
+machine-level npmrc (`C:\Program Files\nodejs\...` and `AppData\Roaming\npm\etc\`),
+and `proxy` / `https-proxy` are unset. All npm traffic goes to the managed feed
+by policy.
+
+The only sanctioned fix is to have the feed sync the package. Paste-ready
+request:
+
+> **Request:** sync `flint-chart-mcp` and `flint-chart` (versions 0.3.0 and
+> 0.4.0) into the npm package feed.
+>
+> - **Publisher:** Microsoft Corporation — <https://github.com/microsoft/flint-chart>
+> - **License:** MIT
+> - **Supply chain:** published with signed sigstore build provenance, attested
+>   to the GitHub Actions run that produced the artifact.
+> - **Current feed state:** `packagefeedproxy.microsoft.io/npm/` reports
+>   `latest` = 0.2.2 (published 2026-07-22). `npm view flint-chart-mcp@0.4.0`
+>   returns `ETARGET` even with `--prefer-online`, so the feed's package document
+>   is missing 0.3.0 and 0.4.0 entirely. Public npm has had 0.4.0 since
+>   2026-07-24.
+> - **Need:** `flint-chart-mcp` is an MCP server that renders charts locally and
+>   in-process — no data leaves the machine. It backs an internal Copilot
+>   plugin. `flint-chart` is its sibling dependency and is stuck at the same
+>   version.
+
+The strongest argument is that this is a Microsoft-published, MIT-licensed,
+provenance-signed package currently unavailable to Microsoft engineers.
+
+### Rejected workarounds
+
+Recorded so they are not re-attempted:
+
+- **Editing the managed npmrc, or passing `--registry`** — bypasses the
+  governance control rather than routing around a bug. Moot anyway: direct
+  `registry.npmjs.org` access is blocked at the network layer.
+- **`npm pack` off-corpnet and copying the tarball across** — sideloads a
+  package around the same scanning and licensing gate. Also impractical: it
+  needs the whole dependency closure, including the platform-specific native
+  binaries `@napi-rs/canvas` and `@resvg/resvg-js`.
+- **Fetching from the GitHub repo or release** — dead end on the merits; see the
+  note at the top of this file.
+
+Until the sync lands, the corporate machine loses only the ability to *test*
+0.4.0 behaviour locally. Skills, prompt, docs, and Mall publishing are all
+version-independent, and the dual-range pin keeps this machine working on 0.2.2.
+
 ## Follow-up work once verification passes
 
 Ordered. Items 2–4 depend on the captured output, which is why they were
