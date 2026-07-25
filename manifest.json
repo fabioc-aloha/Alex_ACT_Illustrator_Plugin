@@ -52,7 +52,7 @@
       "install_to": ".vscode/mcp.json",
       "server_name": "flint",
       "command": "npx",
-      "args": ["-y", "flint-chart-mcp@^0.2.2"],
+      "args": ["-y", "flint-chart-mcp@^0.4.0"],
       "transport": "stdio",
       "merge_target": ".vscode/mcp.json (VS Code) | workspace-root .mcp.json (Claude Code) | .cursor/mcp.json (Cursor) | ~/.copilot/mcp-config.json (GitHub Copilot CLI)",
       "merge": "additive — merge the 'flint' entry into any existing server map; overwriting the file destroys the user's other servers",
