@@ -1,6 +1,6 @@
 {
   "plugin": "flint-chart-plugin",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "shape": "two-skill + one-prompt + mcp-sidecar",
   "description": "Pick the right chart for the user's data + question, then render it locally via the flint-chart MCP server. Alex — ACT Edition plugin.",
   "homepage": "https://github.com/fabioc-aloha/flint-chart-plugin",
@@ -48,13 +48,22 @@
       }
     ],
     "mcp": {
-      "path": "mcp.json",
+      "path": ".vscode/mcp.json",
+      "install_to": ".vscode/mcp.json",
       "server_name": "flint",
       "command": "npx",
       "args": ["-y", "flint-chart-mcp@^0.2.2"],
       "transport": "stdio",
-      "merge_target": "workspace-root .mcp.json",
-      "notes": "Bump args to '^0.3.0' when flint-chart-mcp@0.3.0 publishes to npm (git tag exists but not on npm as of 2026-07-24)."
+      "merge_target": ".vscode/mcp.json (VS Code) | workspace-root .mcp.json (Claude Code) | .cursor/mcp.json (Cursor)",
+      "notes": "VS Code does NOT read a workspace-root .mcp.json — that is the Claude Code convention. Same 'servers' schema, different path, and VS Code reports no error because it reads no file at all. Bump args to '^0.3.0' when flint-chart-mcp@0.3.0 publishes to npm (git tag exists; npm 'latest' still 0.2.2 as verified 2026-07-25)."
+    },
+    "settings": {
+      "path": ".vscode/settings.json",
+      "install_to": ".vscode/settings.json",
+      "role": "registers the local/ skill + prompt discovery roots",
+      "keys": ["chat.agentSkillsLocations", "chat.promptFilesLocations"],
+      "merge": "additive — merge these two keys into any existing settings.json; never disable VS Code's default roots, since an adopter's own skills and prompts live there",
+      "notes": "VS Code discovers skills in .github/skills/ and prompts in .github/prompts/ but does not search their subfolders, so this plugin's local/ install paths load nothing without these keys — silently, with no error, the same failure mode as the .mcp.json path trap. Alex ACT Edition heirs >=3.x already register these roots and can skip this asset."
     }
   },
   "handoff_flow": [
@@ -67,7 +76,8 @@
   "prerequisites": {
     "node": ">=22",
     "mcp_host": "VS Code Copilot 1.118+ | Claude Desktop | Cursor | any MCP stdio client",
-    "alex_edition": ">=3.x with local/ skill+prompt roots registered"
+    "alex_edition": ">=3.x with local/ skill+prompt roots registered",
+    "vscode_settings": "On a plain VS Code workspace (no Alex ACT Edition), the assets.settings keys must be present or the local/ install paths are never discovered."
   },
   "upstream": {
     "flint_chart": "https://github.com/microsoft/flint-chart",

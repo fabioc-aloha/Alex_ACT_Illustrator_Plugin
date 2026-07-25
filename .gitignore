@@ -9,9 +9,10 @@ Thumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-# VS Code
-.vscode/
-!.vscode/settings.json.example
+# VS Code — TRACKED, not ignored. `.vscode/mcp.json` and `.vscode/settings.json`
+# are this repo's source of truth for how an adopting workspace is wired up:
+# the flint MCP server registration plus the skill/prompt discovery roots.
+# Dogfooding them here means a path regression breaks for us before it ships.
 
 # JetBrains
 .idea/

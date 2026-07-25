@@ -10,23 +10,24 @@ An Alex ACT Edition plugin for chart selection and rendering:
 
 - **Two skills** — `chart-big-idea` (framing preflight — Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance) and `flint-chart` (selection + spec authoring against the [microsoft/flint-chart](https://github.com/microsoft/flint-chart) MCP server)
 - **One slash-command prompt** — `/render-chart` (loads both skills, drives the end-to-end workflow)
-- **MCP sidecar** — `mcp.json` that spawns `flint-chart-mcp@^0.2.2` from npm via `npx`
+- **MCP sidecar** — `.vscode/mcp.json` that spawns `flint-chart-mcp@^0.2.2` from npm via `npx`
 
 This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors a specific version at `plugins/data-analytics/flint-chart-plugin/`.
 
 ## Repo layout
 
-| Path                                   | Purpose                                                         |
-| -------------------------------------- | --------------------------------------------------------------- |
-| `.github/skills/chart-big-idea/`       | Installable skill (framing)                                     |
-| `.github/skills/flint-chart/`          | Installable skill (selection + rendering)                       |
-| `.github/prompts/`                     | Installable prompt (`/render-chart`)                            |
-| `mcp.json`                             | MCP server sidecar (merges into a heir's workspace `.mcp.json`) |
-| `manifest.json`                        | Plugin manifest — enumerates all shipping assets                |
-| `assets/`                              | README-only images (**NOT** part of the installable payload)    |
-| `demos/`                               | Self-contained demo report (heart-with-axes)                    |
-| `docs/`                                | Long-form design docs, plans, publishing runbook                |
-| `LICENSE`, `README.md`, `CHANGELOG.md` | Standard repo files                                             |
+| Path                                   | Purpose                                                      |
+| -------------------------------------- | ------------------------------------------------------------ |
+| `.github/skills/chart-big-idea/`       | Installable skill (framing)                                  |
+| `.github/skills/flint-chart/`          | Installable skill (selection + rendering)                    |
+| `.github/prompts/`                     | Installable prompt (`/render-chart`)                         |
+| `.vscode/mcp.json`                     | MCP server sidecar — the path VS Code actually reads         |
+| `.vscode/settings.json`                | Registers the `local/` skill + prompt discovery roots        |
+| `manifest.json`                        | Plugin manifest — enumerates all shipping assets             |
+| `assets/`                              | README-only images (**NOT** part of the installable payload) |
+| `demos/`                               | Self-contained demo report (heart-with-axes)                 |
+| `docs/`                                | Long-form design docs, plans, publishing runbook             |
+| `LICENSE`, `README.md`, `CHANGELOG.md` | Standard repo files                                          |
 
 ## Conventions
 

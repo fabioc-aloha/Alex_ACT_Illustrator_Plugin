@@ -49,13 +49,16 @@ The Mall vendors plugin files under `plugins/data-analytics/flint-chart-plugin/`
 Alex_ACT_Plugin_Mall/plugins/data-analytics/flint-chart-plugin/
 ├── plugin.json              Mall-specific manifest (NOT this repo's manifest.json)
 ├── README.md                Vendored copy of this repo's top-level README.md
-├── mcp.json                 Byte-identical copy of this repo's mcp.json
+├── mcp.json                 Byte-identical copy of this repo's .vscode/mcp.json
 ├── skills/
 │   ├── chart-big-idea/SKILL.md
 │   └── flint-chart/SKILL.md
 └── prompts/
     └── render-chart.prompt.md
 ```
+
+The Mall stores the MCP fragment flat as `mcp.json`; the heir installs it to
+`.vscode/mcp.json`. That install path is declared in `plugin.json` — see Step 4.
 
 Do **not** vendor `assets/`, `demos/`, `docs/`, `LICENSE`, `CHANGELOG.md`, `.gitignore`, or `.markdownlintignore` — those live only in this repo.
 
@@ -85,7 +88,7 @@ New-Item -ItemType Directory -Force -Path "$ma\prompts"               | Out-Null
 Copy-Item "$up\.github\skills\chart-big-idea\SKILL.md" -Destination "$ma\skills\chart-big-idea\SKILL.md" -Force
 Copy-Item "$up\.github\skills\flint-chart\SKILL.md"     -Destination "$ma\skills\flint-chart\SKILL.md"    -Force
 Copy-Item "$up\.github\prompts\render-chart.prompt.md"  -Destination "$ma\prompts\render-chart.prompt.md" -Force
-Copy-Item "$up\mcp.json"                                -Destination "$ma\mcp.json"                       -Force
+Copy-Item "$up\.vscode\mcp.json"                        -Destination "$ma\mcp.json"                       -Force
 
 # Copy the README (Mall renders this on the plugin's page)
 Copy-Item "$up\README.md" -Destination "$ma\README.md" -Force
@@ -114,7 +117,7 @@ The Mall's `plugin.json` is _not_ a copy of this repo's `manifest.json` — it u
 - `upstream.repo` — `https://github.com/fabioc-aloha/flint-chart-plugin`
 - `upstream.ref` — usually `main`; can be a specific commit SHA if pinning
 - `artifacts.skills`, `artifacts.prompts`, `artifacts.mcp` — paths _inside the Mall folder_ (e.g. `skills/chart-big-idea/SKILL.md`, not `.github/skills/…`)
-- `install_paths.*` — where a heir installs each artifact (`.github/skills/local/…`, etc.)
+- `install_paths.*` — where a heir installs each artifact (`.github/skills/local/…`, `.vscode/mcp.json`, etc.)
 - `frontmatter.description` under each asset — copy the current description from the source file's frontmatter
 
 Open the current file at `Alex_ACT_Plugin_Mall\plugins\data-analytics\flint-chart-plugin\plugin.json` for the template. Update `version` and any frontmatter descriptions that changed since last publish.
@@ -144,7 +147,7 @@ foreach ($p in @(
   @('.github\skills\chart-big-idea\SKILL.md', 'skills\chart-big-idea\SKILL.md'),
   @('.github\skills\flint-chart\SKILL.md',     'skills\flint-chart\SKILL.md'),
   @('.github\prompts\render-chart.prompt.md',  'prompts\render-chart.prompt.md'),
-  @('mcp.json',                                 'mcp.json')
+  @('.vscode\mcp.json',                         'mcp.json')
 )) {
   $uh = (Get-FileHash "$up\$($p[0])").Hash.Substring(0, 12)
   $mh = (Get-FileHash "$ma\$($p[1])").Hash.Substring(0, 12)

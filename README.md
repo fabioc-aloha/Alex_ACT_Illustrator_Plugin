@@ -60,7 +60,8 @@ The Brief locks the framing; the selection skill handles the mechanical chartTyp
 | `.github/skills/chart-big-idea/SKILL.md` | Framing skill — Big Idea, story arc, audience, style stance, Chart Brief output         |
 | `.github/skills/flint-chart/SKILL.md`    | Selection + spec-authoring skill (§0 chart selection + Steps 1-N `ChartAssemblyInput`)  |
 | `.github/prompts/render-chart.prompt.md` | `/render-chart <request>` slash-command entry point (loads both skills in order)        |
-| `mcp.json`                               | MCP server registration fragment — merges into your workspace-root `.mcp.json`          |
+| `.vscode/mcp.json`                       | MCP server registration — the file VS Code actually reads (see Install)                 |
+| `.vscode/settings.json`                  | Registers the `local/` skill + prompt discovery roots                                   |
 | `manifest.json`                          | Plugin manifest — declares all shipping assets, install paths, prerequisites            |
 | `README.md`                              | This file                                                                               |
 | `LICENSE`                                | MIT (dual-copyright: Fabio Correa for plugin work + Microsoft for the flint-chart body) |
@@ -94,13 +95,57 @@ cp -r /tmp/flint-chart-plugin/.github/skills/flint-chart .github/skills/local/
 mkdir -p .github/prompts/local
 cp /tmp/flint-chart-plugin/.github/prompts/render-chart.prompt.md .github/prompts/local/
 
-# Merge the MCP sidecar into your workspace-root .mcp.json (create if absent)
-cat /tmp/flint-chart-plugin/mcp.json  # inspect first
-# then merge the "flint" entry under "servers" in your workspace .mcp.json
+# Register the local/ roots with VS Code (see the note below — skip on an
+# Alex ACT Edition heir, which registers them for you)
+
+# Merge the MCP sidecar into your host's MCP config (create the file if absent)
+cat /tmp/flint-chart-plugin/.vscode/mcp.json  # inspect first
+# then merge the "flint" entry under "servers" into the right file for your host:
+#   VS Code                       -> .vscode/mcp.json  (copy as-is)
+#   Claude Code / Claude Desktop  -> .mcp.json  (workspace root)
+#   Cursor                        -> .cursor/mcp.json
 
 # Reload VS Code. The MCP server (`flint`) will spawn via `npx` on the first
 # tool call (~1-2s cold start; cached thereafter).
 ```
+
+> [!IMPORTANT]
+> **VS Code reads `.vscode/mcp.json`, not a workspace-root `.mcp.json`.** Root
+> `.mcp.json` is the Claude Code convention. The `servers` schema is identical
+> in both, which is exactly why the wrong path looks like it should work — and
+> VS Code shows no error, because it isn't parsing a broken file, it's reading
+> no file at all.
+
+### Registering the `local/` roots
+
+VS Code discovers skills in `.github/skills/` and prompts in `.github/prompts/`.
+It does **not** search their subfolders, so a plugin installed under `local/`
+loads nothing — again with no error. On an Alex ACT Edition heir these roots are
+already registered; on a plain VS Code workspace, add them to
+`.vscode/settings.json`:
+
+```jsonc
+{
+  "chat.agentSkillsLocations": { ".github/skills/local": true },
+  "chat.promptFilesLocations": { ".github/prompts/local": true }
+}
+```
+
+Keep these **additive** — don't disable the defaults. Your own skills and prompts
+stay in the default roots; installed plugins live under `local/`, and the two
+sets coexist. (Each skill's `name` must match its parent directory name, which
+both of this plugin's skills satisfy.)
+
+This repo dogfoods the same wiring — see [`.vscode/settings.json`](.vscode/settings.json)
+and [`.vscode/mcp.json`](.vscode/mcp.json).
+
+### If the tools still don't appear
+
+If the `flint` tools are missing after a reload:
+
+1. **Approve the server.** `Ctrl+Shift+P` → **MCP: List Servers** → `flint` → **Start**. VS Code will not launch a local stdio server until you approve it.
+2. **Read the server output.** Same menu → **Show Output**. Startup crashes surface there and nowhere else.
+3. **Restart the chat session.** A window reload is not always enough — the agent's tool inventory can stay stale until the session restarts.
 
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).
 
