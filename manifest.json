@@ -1,8 +1,8 @@
 {
   "plugin": "flint-chart-plugin",
-  "version": "0.3.2",
-  "shape": "two-skill + one-prompt + mcp-sidecar + vscode-settings",
-  "description": "Pick the right chart for the user's data + question, then render it locally via the flint-chart MCP server. Alex — ACT Edition plugin.",
+  "version": "0.4.0",
+  "shape": "three-skill + one-prompt + two-mcp-sidecars + vscode-settings",
+  "description": "Pick the right chart for the user's data + question, render it locally via the flint-chart MCP server, then verify the render actually says what it was meant to say. Alex — ACT Edition plugin.",
   "homepage": "https://github.com/fabioc-aloha/flint-chart-plugin",
   "license": "MIT",
   "authors": [
@@ -34,6 +34,15 @@
         "frontmatter": {
           "description": "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
         }
+      },
+      {
+        "name": "chart-verify",
+        "path": ".github/skills/chart-verify/SKILL.md",
+        "install_to": ".github/skills/local/chart-verify/SKILL.md",
+        "role": "verification (runs after rendering; closes the loop the flint-chart skill deliberately opens)",
+        "frontmatter": {
+          "description": "Verify a rendered chart or visual artifact actually says what it was supposed to say — open it, read its console errors, and check it against the Big Idea before declaring it done. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
+        }
       }
     ],
     "prompts": [
@@ -43,20 +52,52 @@
         "install_to": ".github/prompts/local/render-chart.prompt.md",
         "role": "verb-prompt workflow entry point (/render-chart)",
         "frontmatter": {
-          "description": "Pick the right chart for the user's data + question, then author and render it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, then the flint-chart skill for selection and rendering."
+          "description": "Pick the right chart for the user's data + question, then author, render, and verify it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, the flint-chart skill for selection and rendering, and the chart-verify skill to confirm the render actually says what it was meant to say."
         }
       }
     ],
     "mcp": {
       "path": ".vscode/mcp.json",
       "install_to": ".vscode/mcp.json",
-      "server_name": "flint",
-      "command": "npx",
-      "args": ["-y", "flint-chart-mcp@^0.2.2"],
-      "transport": "stdio",
       "merge_target": ".vscode/mcp.json (VS Code) | workspace-root .mcp.json (Claude Code) | .cursor/mcp.json (Cursor) | ~/.copilot/mcp-config.json (GitHub Copilot CLI)",
-      "merge": "additive — merge the 'flint' entry into any existing server map; overwriting the file destroys the user's other servers",
-      "notes": "VS Code does NOT read a workspace-root .mcp.json — that is the Claude Code convention. Same 'servers' schema, different path, and VS Code reports no error because it reads no file at all. GitHub Copilot CLI differs twice over: different path AND a different top-level key ('mcpServers', not 'servers'), so a pasted 'servers' block fails just as silently; prefer its '/mcp add' command. Version pin: ^0.2.2 is held by decision, not by lag — caret on 0.x means >=0.2.2 <0.3.0, so 0.3.x/0.4.x are never picked up. Public npm 'latest' is 0.4.0 but is unreachable from Microsoft corporate machines, whose npm mirror stops at 0.2.2; most heirs are corpnet repos. See the Unreleased section of CHANGELOG.md. When checking versions, confirm 'npm config get registry' first: a corporate mirror can report a stale 'latest'."
+      "merge": "additive — merge each server entry into any existing server map; overwriting the file destroys the user's other servers",
+      "path_notes": "VS Code does NOT read a workspace-root .mcp.json — that is the Claude Code convention. Same 'servers' schema, different path, and VS Code reports no error because it reads no file at all. GitHub Copilot CLI differs twice over: different path AND a different top-level key ('mcpServers', not 'servers'), so a pasted 'servers' block fails just as silently; prefer its '/mcp add' command.",
+      "servers": [
+        {
+          "server_name": "flint",
+          "required": true,
+          "command": "npx",
+          "args": ["-y", "flint-chart-mcp@^0.2.2"],
+          "transport": "stdio",
+          "role": "renders the ChartAssemblyInput (Vega-Lite / ECharts / Chart.js)",
+          "notes": "Version pin: ^0.2.2 is held by decision, not by lag — caret on 0.x means >=0.2.2 <0.3.0, so 0.3.x/0.4.x are never picked up. Public npm 'latest' is 0.4.0 but is unreachable from Microsoft corporate machines, whose npm mirror stops at 0.2.2; most heirs are corpnet repos. See the Unreleased section of CHANGELOG.md. When checking versions, confirm 'npm config get registry' first: a corporate mirror can report a stale 'latest'."
+        },
+        {
+          "server_name": "playwright",
+          "required": false,
+          "command": "npx",
+          "args": [
+            "-y",
+            "@playwright/mcp@0.0.78",
+            "--headless",
+            "--isolated",
+            "--browser",
+            "msedge",
+            "--allow-unrestricted-file-access"
+          ],
+          "transport": "stdio",
+          "role": "satisfies the chart-verify skill's browser capability on hosts without built-in browser tools — primarily GitHub Copilot CLI, which is a terminal agent and has none",
+          "optional_because": "VS Code Copilot heirs already have built-in browser/screenshot tools that open file:// with no flags and no browser download — measured 2026-07-25 against demos/heart-with-axes/report.html. Omit this entry on VS Code; the chart-verify skill names the capability, not the product.",
+          "version_pin": "exact — caret on 0.0.x expands to >=0.0.78 <0.0.79 and protects nothing while reading as if it does. Note the MCP handshake reports the underlying Playwright library version (e.g. 1.62.0-alpha-…), NOT the package version; do not pin against it.",
+          "flags": {
+            "--headless": "verification pass, not a demo — no visible window",
+            "--isolated": "no persistent browser profile; keeps the user's real session out of it",
+            "--browser msedge": "chosen for the heir population, which is predominantly corpnet Windows where Edge ships with the OS and Chrome is frequently absent. The upstream default is an installed Google Chrome, which fails on exactly those machines. Override with --browser chrome|firefox|webkit where Edge is not present (most Linux).",
+            "--allow-unrestricted-file-access": "REQUIRED for file:// navigation, which is blocked outright by default. Security trade-off: the browser can then read any file the user can. Acceptable for verifying local artifacts; do NOT combine this server with untrusted web browsing."
+          },
+          "notes": "No bundled browser — Playwright drives an INSTALLED browser by channel. Machines without the selected channel fail loudly ('Browser distribution ... is not found'); switch channel or run 'npx playwright install <channel>'. The server writes .playwright-mcp/ artifacts into the launch cwd — gitignore it, and never pass a bare filename to browser_take_screenshot or it lands in the repo root instead."
+        }
+      ]
     },
     "settings": {
       "path": ".vscode/settings.json",
@@ -72,11 +113,13 @@
     "load chart-big-idea skill → Step 0 (read surrounding context) → Steps 1-5 (Big Idea → arc → audience → style → Brief)",
     "load flint-chart skill → §0.2 selection constrained by the Brief → §0.4 Flint-coverage check",
     "author ChartAssemblyInput per Steps 1-N",
-    "render via flint MCP server (create_chart_view | render_chart | validate_chart | compile_chart)"
+    "render via flint MCP server (create_chart_view | render_chart | validate_chart | compile_chart)",
+    "load chart-verify skill → open the artifact → read console errors → walk the failure catalog → check the picture against the Big Idea"
   ],
   "prerequisites": {
     "node": ">=22",
     "mcp_host": "VS Code Copilot 1.118+ | Claude Desktop | Cursor | GitHub Copilot CLI | any MCP stdio client",
+    "browser": "Only if using the optional 'playwright' server: an installed Chrome, Edge, Firefox, or WebKit. No browser ships with the package. Not needed on hosts with built-in browser tools (e.g. VS Code Copilot).",
     "alex_edition": ">=3.x with local/ skill+prompt roots registered",
     "vscode_settings": "On a plain VS Code workspace (no Alex ACT Edition), the assets.settings keys must be present or the local/ install paths are never discovered."
   },

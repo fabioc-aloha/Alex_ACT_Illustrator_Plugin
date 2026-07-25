@@ -4,6 +4,8 @@
 >
 > This document is genesis history. Current-state facts live in [`manifest.json`](../../manifest.json), [`../../README.md`](../../README.md), and [`../../CHANGELOG.md`](../../CHANGELOG.md).
 >
+> Several relative links below point into the **upstream `microsoft/flint-chart` workspace** where this plan was authored (`../agent-skills/`, `../.github/instructions/`, `../packages/`). They do not resolve in this repo and are **not** defects to fix — they record what the author was looking at.
+>
 > - **Node prerequisite bumped from ≥ 18 to ≥ 22** (see 0.3.0 changelog entry). The `Node.js ≥ 18` references in this document (Assumptions #2, section 4 of the README plan) reflect the original 0.2.0 shape, not current.
 > - **Demo footprint reduced from 3 to 1.** The plan didn't originally scope demos; a `demos/` folder shipping three rhetorical-spectrum examples (`heart-chart/`, `love-axes/`, `heart-with-axes/`) was added post-hoc, then reduced to just `heart-with-axes/` as the load-bearing demo.
 > - **Would Revise If added to `flint-chart` skill.** The plan's Falsifiability section already listed proposed criteria; those are now inline in the skill body as a real *Would Revise If* section.

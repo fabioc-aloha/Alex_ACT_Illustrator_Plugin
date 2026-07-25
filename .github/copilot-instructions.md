@@ -8,27 +8,28 @@ This repo is _not_ an [Alex — ACT Edition](https://github.com/fabioc-aloha/Ale
 
 An Alex ACT Edition plugin for chart selection and rendering:
 
-- **Two skills** — `chart-big-idea` (framing preflight — Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance) and `flint-chart` (selection + spec authoring against the [microsoft/flint-chart](https://github.com/microsoft/flint-chart) MCP server)
-- **One slash-command prompt** — `/render-chart` (loads both skills, drives the end-to-end workflow)
-- **MCP sidecar** — `.vscode/mcp.json` that spawns `flint-chart-mcp@^0.2.2` from npm via `npx`
+- **Three skills** — `chart-big-idea` (framing preflight — Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), `flint-chart` (selection + spec authoring against the [microsoft/flint-chart](https://github.com/microsoft/flint-chart) MCP server), and `chart-verify` (verification — open the render, read its console errors, walk the failure catalog)
+- **One slash-command prompt** — `/render-chart` (loads all three skills, drives the end-to-end workflow)
+- **MCP sidecars** — `.vscode/mcp.json` spawning `flint-chart-mcp@^0.2.2` (required) and `@playwright/mcp@0.0.78` (optional — omit on hosts with built-in browser tools, e.g. VS Code) from npm via `npx`
 
 This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors a specific version at `plugins/data-analytics/flint-chart-plugin/`.
 
 ## Repo layout
 
-| Path                                   | Purpose                                                      |
-| -------------------------------------- | ------------------------------------------------------------ |
-| `.github/skills/chart-big-idea/`       | Installable skill (framing)                                  |
-| `.github/skills/flint-chart/`          | Installable skill (selection + rendering)                    |
-| `.github/prompts/`                     | Installable prompt (`/render-chart`)                         |
-| `.vscode/mcp.json`                     | MCP server sidecar — the path VS Code actually reads         |
-| `.vscode/settings.json`                | Registers the `local/` skill + prompt discovery roots        |
-| `manifest.json`                        | Plugin manifest — enumerates all shipping assets             |
-| `scripts/`                             | Repo tooling (`verify-install.mjs`) — **not** shipping payload |
-| `assets/`                              | README-only images (**NOT** part of the installable payload) |
-| `demos/`                               | Self-contained demo report (heart-with-axes)                 |
-| `docs/`                                | Long-form design docs, plans, publishing runbook             |
-| `LICENSE`, `README.md`, `CHANGELOG.md` | Standard repo files                                          |
+| Path                                   | Purpose                                                                     |
+| -------------------------------------- | --------------------------------------------------------------------------- |
+| `.github/skills/chart-big-idea/`       | Installable skill (framing)                                                 |
+| `.github/skills/flint-chart/`          | Installable skill (selection + rendering)                                   |
+| `.github/skills/chart-verify/`         | Installable skill (verification)                                            |
+| `.github/prompts/`                     | Installable prompt (`/render-chart`)                                        |
+| `.vscode/mcp.json`                     | MCP server sidecar — the path VS Code actually reads                        |
+| `.vscode/settings.json`                | Registers the `local/` skill + prompt discovery roots                       |
+| `manifest.json`                        | Plugin manifest — enumerates all shipping assets                            |
+| `scripts/`                             | Repo tooling (`verify-install.mjs`, `check-language.mjs`) — **not** payload |
+| `assets/`                              | README-only images (**NOT** part of the installable payload)                |
+| `demos/`                               | Self-contained demo report (heart-with-axes)                                |
+| `docs/`                                | Long-form design docs, plans, publishing runbook                            |
+| `LICENSE`, `README.md`, `CHANGELOG.md` | Standard repo files                                                         |
 
 ## Conventions
 
@@ -39,11 +40,51 @@ Use severity-tagged prefixes for material changes (adapted from Alex ACT Edition
 | Tag                | When to use                                                        |
 | ------------------ | ------------------------------------------------------------------ |
 | `[typo]`           | Spelling, broken link, dead reference, single-character render fix |
-| `[clarification]`  | Prose rewording, no behaviour change; user-visible text tweak      |
+| `[clarification]`  | Prose rewording, no behavior change; user-visible text tweak       |
 | `[behaviour]`      | Functional change — skill content, manifest, MCP config, new asset |
 | `[constitutional]` | LICENSE, plugin architecture, contract with the Mall or with heirs |
 
 Conventional prefixes (`docs:`, `refactor:`, `feat:`, `fix:`) are also acceptable for narrow-scope changes that don't warrant a severity tag.
+
+### Language — US English
+
+**All prose in this repo is US English**: skill bodies, prompts, README, CHANGELOG, docs, manifest strings, code comments, and commit-message prose. Do not drift into British spellings.
+
+Common offenders, with the form this repo uses:
+
+| Write this    | Not this            |
+| ------------- | ------------------- |
+| color         | colour              |
+| catalog       | catalogue           |
+| behavior      | behaviour           |
+| gray          | grey                |
+| labeled       | labelled            |
+| artifact      | artefact            |
+| recognize     | recognise           |
+| analyze       | analyse             |
+| center        | centre              |
+| license       | licence (as a noun) |
+| -ize/-ization | -ise/-isation       |
+
+**One deliberate exception: the `[behaviour]` commit tag keeps its British spelling.** It is an identifier, not prose. Every commit in this repo's history uses it, and the Alex ACT Plugin Mall emits `[behaviour] catalog refresh` commits from its own cron — so changing it would split this repo's history _and_ break alignment with the ecosystem it publishes into. Note the Mall's own string mixes the two (`[behaviour]` + `catalog`), which is the tell that the tag is treated as an opaque token. Changing it would be a `[constitutional]` decision, not a typo fix.
+
+Sweep before committing prose-heavy changes:
+
+```pwsh
+node scripts/check-language.mjs        # payload only
+node scripts/check-language.mjs --all  # include gitignored local/ copies
+```
+
+Exit 0 = clean; exit 1 lists `file:line  found → want`. The checker encodes three
+deliberate exceptions: the `[behaviour]` tag, this section (which must spell out
+the forms we avoid), and the checker's own dictionary.
+
+> Do not replace it with a `**` glob in `Select-String -Path`. PowerShell's
+> `-Path` does not expand `**` recursively — `.github/**/*.md` matches exactly
+> one directory level, so it silently skips every `.github/skills/*/SKILL.md`
+> and returns a clean-looking zero. Verified 2026-07-25: the glob form found
+> 1 of 7 known occurrences. When any sweep reports zero, confirm with a positive
+> control before believing it.
 
 ### Frontmatter
 

@@ -211,7 +211,7 @@ Recorded so they are not re-attempted:
   note at the top of this file.
 
 Until the sync lands, the corporate machine loses only the ability to *test*
-0.4.0 behaviour locally. Skills, prompt, docs, and Mall publishing are all
+0.4.0 behavior locally. Skills, prompt, docs, and Mall publishing are all
 version-independent, and the dual-range pin keeps this machine working on 0.2.2.
 
 ## Follow-up work once verification passes
@@ -240,9 +240,11 @@ deliberately left out of the branch commit.
    matches §0.2, then §0 is redundant and should shrink to the framing this
    plugin adds on top.
 5. **Version and ship.** Promote the `Unreleased` section of
-   [`CHANGELOG.md`](CHANGELOG.md) to a release. A minor bump (0.3.2 → 0.4.0)
-   fits if the backend surface widens; a patch bump fits if the pin moves and
-   nothing else does. Then re-vendor to the Alex Mall per
+   [`CHANGELOG.md`](CHANGELOG.md) to a release. **Note that 0.4.0 has since been
+   used** for the verification feature (`chart-verify` skill + optional
+   `playwright` server), so the next bump here is 0.5.0 if the backend surface
+   widens, or a patch bump if the pin moves and nothing else does. Then
+   re-vendor to the Alex Mall per
    [`docs/publishing-to-mall.md`](docs/publishing-to-mall.md) — the Mall is
    currently one version behind at 0.3.1. Whichever pin is chosen above must be
    mirrored into the Mall's `plugin.json` at

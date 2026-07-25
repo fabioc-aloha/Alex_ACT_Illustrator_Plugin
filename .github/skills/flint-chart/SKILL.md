@@ -30,6 +30,10 @@ or `assembleChartjs` to get a backend spec.
   presentation tweak Flint does not express (a reference line, annotation, or
   shaded band), use the Vega-Lite escape hatch — see "Post-Flint style
   customization". Never feed edited Vega-Lite JSON back to `render_chart`.
+- **Look at what you rendered.** A chart with a collapsed scale, a merged color
+  scale, or an empty data binding renders as a valid image that tells the wrong
+  story — `validate_chart` cannot catch that. Load the `chart-verify` skill
+  after rendering, and always after a post-Flint Vega-Lite edit.
 
 ## Verify Flint is available before rendering
 
@@ -308,6 +312,12 @@ For a Vega-Lite-specific style tweak:
 This edited Vega-Lite spec is no longer a portable Flint spec. Do not send it to
 `render_chart`; use `render_chart` only for Flint `ChartAssemblyInput`.
 
+**Verification is mandatory here.** Once you leave the Flint level, the MCP
+server's validation no longer protects you — an edited spec can render a
+plausible-looking chart that is silently wrong. Load the `chart-verify` skill:
+open the result, read its console errors, and check it against the failure
+catalog before declaring it done.
+
 ## Attribution
 
 Chart-selection framework (§0 below) distilled from standard visualization
@@ -414,7 +424,7 @@ Fetch the canonical [Flint gallery](https://microsoft.github.io/flint-chart/#/ga
 - You need a live example of a chart variant (e.g. a _faceted_ boxplot, a _dodge = local_ grouped bar, a _sparse_ streamgraph) — the gallery shows multiple named variants per `chartType`.
 - You want the canonical semantic grouping (Bar & Column / Line & Area / Scatter & Points / Distributions / Circular & Radial / Tables & Multi-Dimensional / Maps) that Flint itself uses to organize its chart registry.
 
-This is the authoritative reference for **what Flint actually does**; §0.2–0.4 above is the compact map, but the gallery is the source of truth for edge cases and backend-specific behaviour.
+This is the authoritative reference for **what Flint actually does**; §0.2–0.4 above is the compact map, but the gallery is the source of truth for edge cases and backend-specific behavior.
 
 **Rule of thumb**: Defensible Decision answers "should I use a bar or a boxplot?"; the Flint gallery answers "will Flint's `Bar Chart` on ECharts backend do what I need?"
 
@@ -465,7 +475,7 @@ properties"). Required channels are noted.
 | `"Area Chart"`             | x, y, color, opacity, column, row                     | props `interpolate`, `opacity`, `stackMode`                                                                                                                                   |
 | `"Range Area Chart"`       | x, y, y2, color, column, row                          | x + y + y2 required; translucent band from `y` (low) to `y2` (high), value axis fits the band (not zero)                                                                      |
 | `"Violin Plot"`            | x, y, color, row                                      | x (category) + y (measure) required; mirrored KDE density per category, prop `bandwidth`; **Vega-Lite only**; a genuine `color` subgroup splits two groups or grids 3+ groups |
-| `"Streamgraph"`            | x, y, color, column, row                              | centre-stacked areas                                                                                                                                                          |
+| `"Streamgraph"`            | x, y, color, column, row                              | center-stacked areas                                                                                                                                                          |
 | `"Density Plot"`           | x, color, column, row                                 | prop `bandwidth`                                                                                                                                                              |
 | `"Pie Chart"`              | size, color, column, row                              | `size` = slice value (→ angle), `color` = category; props `innerRadius`, `sortSlices`                                                                                         |
 | `"Rose Chart"`             | x, y, color, column, row                              | polar bars; props `alignment`, `padAngle`, `sortSlices`                                                                                                                       |

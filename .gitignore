@@ -1,6 +1,6 @@
 # OS / editor / tooling scratch — the plugin's installable payload is markdown
 # and JSON only. `scripts/` holds repo tooling (not shipped); no node_modules,
-# dist output, or build artefacts.
+# dist output, or build artifacts.
 
 # macOS
 .DS_Store
@@ -41,6 +41,11 @@ yarn-error.log*
 .tmp/
 tmp/
 scratch/
+
+# Playwright MCP working-directory artifacts. The server writes accessibility
+# snapshots and screenshots into the cwd it was launched from, which is the
+# workspace root. Verification output is scratch, never payload.
+.playwright-mcp/
 
 # Alex ACT Edition heir-local paths (not part of this repo's shipping shape;
 # guard against accidental commits if a heir clones the repo into a workspace)

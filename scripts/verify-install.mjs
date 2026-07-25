@@ -19,7 +19,7 @@
 // including every item from the 0.3.0 migration notes. Use it to decide whether
 // one set of skill content can serve two pinned versions at once: a dual range
 // like `^0.2.2||^0.4.0` is only safe if every pattern validates on both.
-// A failing spec here does not fail the run — it is reported for judgement.
+// A failing spec here does not fail the run — it is reported for judgment.
 //
 // No dependencies. Speaks newline-delimited JSON-RPC over stdio, which is what
 // flint-chart-mcp expects.

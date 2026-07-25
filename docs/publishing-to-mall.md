@@ -52,13 +52,20 @@ Alex_ACT_Plugin_Mall/plugins/data-analytics/flint-chart-plugin/
 ├── mcp.json                 Byte-identical copy of this repo's .vscode/mcp.json
 ├── skills/
 │   ├── chart-big-idea/SKILL.md
-│   └── flint-chart/SKILL.md
+│   ├── flint-chart/SKILL.md
+│   └── chart-verify/SKILL.md
 └── prompts/
     └── render-chart.prompt.md
 ```
 
 The Mall stores the MCP fragment flat as `mcp.json`; the heir installs it to
 `.vscode/mcp.json`. That install path is declared in `plugin.json` — see Step 4.
+
+Since v0.4.0 that fragment declares **two** servers: `flint` (required) and
+`playwright` (optional — heirs on hosts with built-in browser tools, notably VS
+Code, should omit it). The file is vendored byte-identical, so the optional-ness
+must be expressed in `plugin.json` metadata and the vendored README — `mcp.json`
+has to stay strict JSON and cannot carry a comment saying so.
 
 `.vscode/settings.json` is a declared asset in this repo's `manifest.json` but is
 deliberately **not** vendored. It registers the `local/` discovery roots, which
@@ -87,11 +94,13 @@ $ma = 'C:\Development\Alex_ACT_Plugin_Mall\plugins\data-analytics\flint-chart-pl
 # Ensure target folder structure exists
 New-Item -ItemType Directory -Force -Path "$ma\skills\chart-big-idea" | Out-Null
 New-Item -ItemType Directory -Force -Path "$ma\skills\flint-chart"    | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\chart-verify"   | Out-Null
 New-Item -ItemType Directory -Force -Path "$ma\prompts"               | Out-Null
 
-# Copy the four installable payload files byte-for-byte
+# Copy the five installable payload files byte-for-byte
 Copy-Item "$up\.github\skills\chart-big-idea\SKILL.md" -Destination "$ma\skills\chart-big-idea\SKILL.md" -Force
 Copy-Item "$up\.github\skills\flint-chart\SKILL.md"     -Destination "$ma\skills\flint-chart\SKILL.md"    -Force
+Copy-Item "$up\.github\skills\chart-verify\SKILL.md"    -Destination "$ma\skills\chart-verify\SKILL.md"   -Force
 Copy-Item "$up\.github\prompts\render-chart.prompt.md"  -Destination "$ma\prompts\render-chart.prompt.md" -Force
 Copy-Item "$up\.vscode\mcp.json"                        -Destination "$ma\mcp.json"                       -Force
 
@@ -101,7 +110,7 @@ Copy-Item "$up\README.md" -Destination "$ma\README.md" -Force
 
 ### 3. Rewrite relative references in the vendored README
 
-The Mall vendors only five files — no `assets/`, no `docs/`, no `.vscode/`. Every relative reference in the vendored README therefore resolves inside the Mall plugin folder and 404s. Rewrite both images **and** links to absolute upstream URLs. This keeps the vendored copy self-contained AND auto-tracking upstream changes without re-vendoring.
+The Mall vendors only six files — no `assets/`, no `docs/`, no `.vscode/`. Every relative reference in the vendored README therefore resolves inside the Mall plugin folder and 404s. Rewrite both images **and** links to absolute upstream URLs. This keeps the vendored copy self-contained AND auto-tracking upstream changes without re-vendoring.
 
 ```pwsh
 $readmePath = "$ma\README.md"
@@ -138,7 +147,7 @@ The Mall's `plugin.json` is _not_ a copy of this repo's `manifest.json` — it u
 - `upstream.ref` — usually `main`; can be a specific commit SHA if pinning
 - `artifacts.skills`, `artifacts.prompts`, `artifacts.mcp` — paths _inside the Mall folder_ (e.g. `skills/chart-big-idea/SKILL.md`, not `.github/skills/…`)
 - `install_paths.*` — where a heir installs each artifact (`.github/skills/local/…`, `.vscode/mcp.json`, etc.)
-- `install_paths.mcp.merge_target` — **check this every time.** It is authored independently of the vendored files, so a wrong value here ships the bug even when all four payload files are byte-perfect. It must read `.vscode/mcp.json`.
+- `install_paths.mcp.merge_target` — **check this every time.** It is authored independently of the vendored files, so a wrong value here ships the bug even when all five payload files are byte-perfect. It must read `.vscode/mcp.json`.
 - `token_cost` — no script derives it; scale the previous value by the measured payload-size change rather than switching estimator
 - `frontmatter.description` under each asset — copy the current description from the source file's frontmatter
 
@@ -168,6 +177,7 @@ git -C C:\Development\Alex_ACT_Plugin_Mall status --short
 foreach ($p in @(
   @('.github\skills\chart-big-idea\SKILL.md', 'skills\chart-big-idea\SKILL.md'),
   @('.github\skills\flint-chart\SKILL.md',     'skills\flint-chart\SKILL.md'),
+  @('.github\skills\chart-verify\SKILL.md',    'skills\chart-verify\SKILL.md'),
   @('.github\prompts\render-chart.prompt.md',  'prompts\render-chart.prompt.md'),
   @('.vscode\mcp.json',                         'mcp.json')
 )) {
@@ -185,7 +195,7 @@ $maVersion = (Get-Content "$ma\plugin.json" -Raw | ConvertFrom-Json).version
 "upstream=$upVersion  mall=$maVersion  $(if($upVersion -eq $maVersion){'MATCH'}else{'MISMATCH — fix plugin.json before commit'})"
 ```
 
-All four vendored payload files should report `IDENT`. `plugin.json` should parse and return the correct `name` + `version`, and the version-consistency line should report `MATCH`.
+All five vendored payload files should report `IDENT`. `plugin.json` should parse and return the correct `name` + `version`, and the version-consistency line should report `MATCH`.
 
 ### 7. Commit and push
 
@@ -194,7 +204,7 @@ cd C:\Development\Alex_ACT_Plugin_Mall
 
 git add -A
 git commit -m "[behaviour] flint-chart-plugin - vendor v<X.Y.Z>" `
-           -m "Sync from upstream fabioc-aloha/flint-chart-plugin@<short-sha>. Byte-identical vendoring of the four installable payload files (2 skills + 1 prompt + mcp.json). README updated to use absolute raw.githubusercontent.com URLs for image references (Mall does not vendor the assets/ folder). Curation-log entry [PLUGIN-UPDATE] appended."
+           -m "Sync from upstream fabioc-aloha/flint-chart-plugin@<short-sha>. Byte-identical vendoring of the five installable payload files (3 skills + 1 prompt + mcp.json). README updated to use absolute raw.githubusercontent.com URLs for image references (Mall does not vendor the assets/ folder). Curation-log entry [PLUGIN-UPDATE] appended."
 
 # Rebase against origin one more time in case the weekly cron landed while you were working
 git pull --rebase origin main
@@ -217,9 +227,10 @@ The commit message should be the one you just pushed. The file listing should sh
 
 Before declaring the publish complete:
 
-- [ ] Byte-identical vendored files (2 skills, 1 prompt, mcp.json) — `Get-FileHash` matches
+- [ ] Byte-identical vendored files (3 skills, 1 prompt, mcp.json) — `Get-FileHash` matches
 - [ ] `plugin.json` version matches upstream `manifest.json` version
 - [ ] `plugin.json` `install_paths.mcp.merge_target` reads `.vscode/mcp.json`
+- [ ] `plugin.json` marks the `playwright` server optional and the `flint` server required
 - [ ] Mall README has zero relative image refs **and** zero relative links
 - [ ] `node scripts/validate-catalog.cjs` passes in the Mall clone
 - [ ] Mall README image `src` attributes use `raw.githubusercontent.com/...` (no `src="assets/…"` remains)

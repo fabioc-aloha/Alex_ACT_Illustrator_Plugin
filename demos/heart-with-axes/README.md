@@ -24,7 +24,7 @@ The heart curve then reads as **the trajectory of a relationship** as it moves b
 The chart is a 12-layer Vega-Lite spec:
 
 1. Shaded top-right rectangle (Consummate quadrant, warm cream)
-2. Shaded bottom-left rectangle (Indifference quadrant, cool grey)
+2. Shaded bottom-left rectangle (Indifference quadrant, cool gray)
 3. Faint region labels (INFATUATION / CONSUMMATE LOVE / INDIFFERENCE / FRIENDSHIP)
 4. Vertical dashed midpoint rule at Intimacy = 0.5
 5. Horizontal dashed midpoint rule at Passion = 0.5

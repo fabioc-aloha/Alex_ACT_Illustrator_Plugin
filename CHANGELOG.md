@@ -62,6 +62,78 @@ half the installs. And the `flint-chart` skill needs an explicit Sparkline
 exclusion on `independentYAxis`, which 0.3.0 removed for Sparkline while keeping
 it for other faceted charts.
 
+## [0.4.0] — 2026-07-25
+
+Closes the verification loop. Until now the plugin could render a chart and had
+no way to check that the chart said what it was supposed to say — a spec with a
+collapsed scale, a merged color scale, or an empty data binding renders as a
+perfectly valid image telling the wrong story, and `validate_chart` cannot catch
+that. The `flint-chart` skill also *opened* this hole deliberately: it forbids
+sending a post-Flint Vega-Lite edit back to `render_chart`, then instructed the
+agent to "render the edited spec in the host environment with a Vega-Lite
+renderer" that the plugin never shipped.
+
+### Added
+
+- **`chart-verify` skill** (third skill). Carries the load-bearing content: a
+  nine-row **failure catalog** of defects that render without error (empty
+  binding, collapsed scale, merged color scale, undefined category, duplicate
+  marks, embedded totals, double-scaled units, overplotting, right-on-sample),
+  a host-capability table, a console-errors-before-picture ordering, and a step
+  that checks the render against the Big Idea rather than only against the spec.
+- **Optional `playwright` MCP server** in [`.vscode/mcp.json`](.vscode/mcp.json),
+  pinned exactly at `@playwright/mcp@0.0.78` with `--headless --isolated
+  --browser msedge --allow-unrestricted-file-access`. **GitHub Copilot CLI is
+  the main audience** — it is a terminal agent with no browser, so this is its
+  only route to verifying a render. VS Code heirs should omit the entry.
+- **`/render-chart` Step 8 — Verify**, mandatory after any post-Flint Vega-Lite
+  edit and before committing generated HTML/SVG/PNG. Step 9 now reports whether
+  verification happened, or that it could not.
+- **`.playwright-mcp/` in `.gitignore`.** The server writes accessibility
+  snapshots and screenshots into its launch cwd — found by having it happen.
+
+### Changed
+
+- `manifest.json` — `assets.mcp` restructured from a single server object to a
+  `servers` array with per-server `required` flags. Version 0.3.2 → 0.4.0,
+  shape now `three-skill + one-prompt + two-mcp-sidecars + vscode-settings`.
+- `flint-chart` skill — a "Look at what you rendered" bullet in *What you
+  produce*, and a mandatory-verification note closing the *Post-Flint style
+  customization* section.
+
+### Notes — measured, not assumed
+
+Every claim below was measured against `@playwright/mcp@0.0.78` on 2026-07-25 by
+stdio handshake plus live tool calls against
+[`demos/heart-with-axes/report.html`](demos/heart-with-axes/report.html). Two
+prior assumptions were falsified in the process:
+
+- **There is no bundled browser, and no download.** Playwright drives an
+  *installed* browser by channel; `--browser msedge` launched in 0.7 s. The
+  earlier "~150 MB prerequisite" framing was wrong. The shipped config selects
+  `msedge` deliberately: the upstream default is Google Chrome, which is
+  frequently absent on the corpnet Windows machines most heirs run, while Edge
+  ships with the OS. Linux heirs override the channel.
+- **`file://` navigation is blocked by default** — `Access to "file:" protocol
+  is blocked` — hence the `--allow-unrestricted-file-access` flag. This is the
+  plugin's characteristic silent-config failure shape in a new place.
+- **The MCP handshake reports the underlying Playwright *library* version**
+  (e.g. `1.62.0-alpha-…`), not the package version. Do not pin against it.
+- **VS Code's built-in browser tools satisfy the whole capability** with no
+  flags, no download, and no config — verified on the same demo. This is why the
+  server is optional and why `chart-verify` names a capability rather than a
+  product. **Heirs on VS Code should omit the `playwright` entry.**
+
+### Security
+
+`--allow-unrestricted-file-access` grants the browser read access to any file the
+user can read. That is a reasonable trade for verifying local artifacts the agent
+just produced, and it is no broader than what VS Code's own internal browser
+already does. It is **not** safe in combination with browsing untrusted web
+pages. The README and the skill both carry this warning, and the skill explicitly
+rules out `browser_run_code_unsafe` for verification work — screenshots and
+console access are sufficient to look at a chart.
+
 ## [0.3.2] — 2026-07-25
 
 Acts on four review findings from an adopting workspace that installed 0.3.1 via
@@ -107,7 +179,7 @@ VS Code, which silently produced "the tools never appear" with no error.
 ### Fixed
 
 - **Corrected the MCP config path for VS Code.** The plugin told heirs to merge
-  [`mcp.json`](mcp.json) into a **workspace-root `.mcp.json`** — the Claude Code
+  [`mcp.json`](.vscode/mcp.json) into a **workspace-root `.mcp.json`** — the Claude Code
   convention. VS Code reads **`.vscode/mcp.json`**. The `servers` schema is
   identical in both, so the wrong path looks correct, and VS Code surfaces no
   error because it is not parsing a broken file — it is reading no file at all.
@@ -117,7 +189,7 @@ VS Code, which silently produced "the tools never appear" with no error.
 
 ### Added
 
-- **`"type": "stdio"` declared explicitly** in [`mcp.json`](mcp.json) and in the
+- **`"type": "stdio"` declared explicitly** in [`mcp.json`](.vscode/mcp.json) and in the
   skill's sample config. Optional in some hosts, but omitting it makes
   transport-related failures harder to diagnose.
 - **Post-install triage ladder** in both the README and the `flint-chart` skill:

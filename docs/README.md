@@ -7,6 +7,7 @@ Long-form documentation about the plugin's design, decisions, and open questions
 - **[`publishing-to-mall.md`](publishing-to-mall.md)** — step-by-step runbook for vendoring this plugin (or a new version of it) into the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). Read this before running a publish.
 - [`plans/`](plans/) — decision documents that captured the plugin's genesis, including locked-decisions tables and post-hoc amendments
   - [`2026-07-24-mall-plugin.md`](plans/2026-07-24-mall-plugin.md) — original plan (9 tasks, 7 locked decisions D1–D7, 5 sub-decisions S1–S5) + amendment covering the two-skill + prompt + MCP-sidecar reshape
+  - [`2026-07-25-playwright-mcp.md`](plans/2026-07-25-playwright-mcp.md) — **shipped in 0.4.0** — adding a second, optional MCP server for visual verification of rendered charts, plus the `chart-verify` skill. Records the measured findings that falsified two of its own assumptions, and why data-transformation and diagramming servers were rejected
 
 ## Companion sources not in this repo
 
@@ -21,7 +22,7 @@ Some materials that informed the plugin live outside this repo and are not vendo
 This plugin has one characteristic bug shape: **misconfiguration that does
 nothing and says nothing.** The first four rows below produce no error, no
 warning, and no log line — the host isn't parsing a broken file, it's reading no
-file at all, or reading a key it doesn't recognise. Check the path and the schema
+file at all, or reading a key it doesn't recognize. Check the path and the schema
 before debugging anything else. The last row is the inverse failure: silent
 damage rather than silent inaction.
 
@@ -32,6 +33,10 @@ damage rather than silent inaction.
 | Skills and `/render-chart` never appear | Installed under `local/`, which VS Code does not search                  | Register `chat.agentSkillsLocations` / `chat.promptFilesLocations` (keep them additive)      |
 | A skill silently fails to load          | Frontmatter `name` doesn't match its parent directory name               | Rename one to match the other                                                                |
 | Other MCP servers vanish after install  | The config was overwritten rather than merged                            | Merge the `flint` entry into the existing server map; never copy the file over one in place  |
+| A rendered chart is silently wrong      | Collapsed scale, merged color scale, or empty data binding               | Load the `chart-verify` skill — `validate_chart` cannot catch a true-looking lie             |
+| `playwright`: local renders never load  | `file://` navigation is blocked by default                               | Add `--allow-unrestricted-file-access` to the server args                                    |
+| `playwright`: nothing renders at all    | No bundled browser — selected channel not installed here                 | Switch `--browser` to a present channel, or `npx playwright install <ch>`                    |
+| Untracked `.playwright-mcp/` appears    | The server writes snapshots into its launch cwd                          | Gitignored since 0.4.0                                                                       |
 
 The two VS Code path bugs shipped in v0.3.0 and were corrected in v0.3.1; the
 Copilot CLI schema trap and the overwrite hazard were documented in v0.3.2. The
