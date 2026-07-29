@@ -125,6 +125,29 @@ Edit `manifest.theme.light` and `manifest.theme.dark`. Most adopters override ju
 
 The shell prepends the source's base directory to relative links via `rewriteRelativeLinks()`. If a link doesn't resolve, confirm the source path in `sources[]` includes the full folder prefix (e.g. `plan/mall/README.md`, not just `README.md`), and check that the link isn't accidentally root-relative (`/foo`) when it should be relative (`foo`).
 
+### Add an HTML-source doc (Flint report, exported dashboard)
+
+For a doc whose `sources[]` are all `.html` files, the shell links the topnav button DIRECTLY at the file instead of injecting into the shell wrapper. Useful for reports that own their own cover, hero, typography, and print styles.
+
+1. Drop the HTML file(s) at a path relative to the manifest (typically alongside your `.md` sources).
+2. Append a doc entry to the target area's `docs[]` with `id`, `label`, optional `icon`, `title`, and `sources` set to the HTML file path(s):
+
+   ```json
+   {
+     "id": "report",
+     "label": "Sales report",
+     "icon": "📊",
+     "title": "Sales by region, Q4",
+     "sources": ["reports/sales-q4.html"]
+   }
+   ```
+
+3. Reload. Clicking the topnav button loads the HTML directly; the browser back button returns to whatever came before (the shell uses `location.replace` when redirecting, so the shell URL doesn't stack in history).
+
+**Rule**: `sources[]` must be non-empty AND every entry must end in `.html` (case-insensitive) for direct-link behavior to fire. Mixed sources (`.md` + `.html`) fall through to the Markdown render pass, which would try to concat the HTML as text; keep the two shapes in separate doc entries.
+
+Full rationale + design notes: `docs/shell/README.md` § HTML-source docs.
+
 ## Anti-patterns
 
 | Anti-pattern                                   | Correction                                                                                                                                                                   |

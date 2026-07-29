@@ -1365,11 +1365,15 @@
         `<li><a href="?area=${encodeURIComponent(a.id)}" data-nav data-area="${escapeHtml(a.id)}"${a.id === ctx.area.id ? ' class="active"' : ''}>${escapeHtml(a.label)}</a></li>`
       ).join('');
 
-      // Line 2: documents of the currently active area
+      // Line 2: documents of the currently active area.
+      // Docs sourced from standalone .html files link DIRECTLY to the file; those reports
+      // carry their own cover / hero / typography and don't need the shell wrapper.
       const docsEl = document.getElementById('topnav-docs');
-      docsEl.innerHTML = ctx.area.docs.map(d =>
-        `<li><a href="?area=${encodeURIComponent(ctx.area.id)}&doc=${encodeURIComponent(d.id)}" data-nav data-doc="${escapeHtml(d.id)}"${d.id === ctx.doc.id ? ' class="active"' : ''}>${escapeHtml(d.label)}</a></li>`
-      ).join('');
+      docsEl.innerHTML = ctx.area.docs.map(d => {
+        const htmlOnly = Array.isArray(d.sources) && d.sources.length > 0 && d.sources.every(s => s.toLowerCase().endsWith('.html'));
+        const href = htmlOnly ? d.sources[0] : `?area=${encodeURIComponent(ctx.area.id)}&doc=${encodeURIComponent(d.id)}`;
+        return `<li><a href="${escapeHtml(href)}" data-nav data-doc="${escapeHtml(d.id)}"${d.id === ctx.doc.id ? ' class="active"' : ''}>${escapeHtml(d.label)}</a></li>`;
+      }).join('');
 
       // No quick-jumps row: root shell keeps line 1 = areas only, line 2 = docs only.
       // Per-area quickJumps still live in the manifest (used by ?area=X quick links from README)
@@ -1495,6 +1499,14 @@
       try { applyManifestTheme(MANIFEST); } catch (e) { console.error('applyManifestTheme', e); }
       const ctx = getCurrentContext(MANIFEST);
       const doc = ctx.doc;
+      // Standalone HTML reports own their entire page (cover, hero, styles) and don't
+      // benefit from the shell wrapper. If a bookmark or external link lands on the shell
+      // URL for such a doc, redirect straight to the file. location.replace so back-button
+      // skips the shell hop.
+      if (doc && Array.isArray(doc.sources) && doc.sources.length > 0 && doc.sources.every(s => s.toLowerCase().endsWith('.html'))) {
+        window.location.replace(doc.sources[0]);
+        return;
+      }
       renderTopnav(MANIFEST, ctx);
       renderPageHeader(doc);
       renderHero(doc);

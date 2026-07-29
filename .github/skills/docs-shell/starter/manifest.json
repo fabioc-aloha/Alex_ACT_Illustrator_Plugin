@@ -77,6 +77,18 @@
           "sources": [
             "about.md"
           ]
+        },
+        {
+          "$comment": "OPTIONAL SECOND DOC: HTML-source doc. When every entry in sources[] ends in .html, the shell links directly to the file instead of injecting into the shell wrapper. The topnav button still appears on line 2; clicking it loads the standalone HTML page. Useful for Flint chart reports, exported dashboards, or any pre-built HTML that owns its own cover / hero / typography. See docs/shell/README.md § HTML-source docs. Delete this exemplar if you don't need it.",
+
+          "id": "report",
+          "label": "Example report",
+          "icon": "📊",
+          "title": "Example Report",
+
+          "sources": [
+            "example-report.html"
+          ]
         }
       ],
 

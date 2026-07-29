@@ -45,6 +45,7 @@ Either way: reload the browser. No build, no restart.
 - **Theme** — edit `manifest.theme.light` and `manifest.theme.dark` to re-theme without touching the HTML. The value guard accepts only `--`-prefixed keys with hex / rgb / hsl / named-color values.
 - **Brand icon** — uncomment the `<img class="topnav-brand-icon">` line in `index.html` and drop your own SVG at `assets/<name>.svg`.
 - **Nav-strips** — add `<!-- nav-strip --> ... <!-- /nav-strip -->` markers around per-file navigation lines so they show on GitHub but strip cleanly in shell view.
+- **HTML-source docs** — when a doc's `sources[]` are all `.html` files, the shell links the topnav button directly at the file instead of injecting into the shell wrapper. Useful for Flint chart reports, exported dashboards, or any pre-built HTML that owns its own cover / hero / styling. See the [Example report](?area=docs&doc=report) doc that ships with this starter; open it via the topnav on line 2.
 
 ## Alert callout gallery
 

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### docs-shell: HTML-source docs bypass shell wrapper (2026-07-29)
+
+A doc entry whose `sources[]` are all `.html` files now links directly to the file. The topnav still shows the button on line 2 with active-state styling, but clicking it loads the standalone HTML page rather than injecting into the shell's `#content` region. Any bookmark or external link that lands on `?area=X&doc=Y` where Y is HTML-only redirects immediately to the file via `window.location.replace` (back-button skips the shell hop). Reports that already own their own cover, hero, typography, and print styles (Flint chart reports, exported Power BI dashboards, static HTML tables) can now live in the shell nav without the shell trying to wrap them.
+
+Absorbed from [CX-Vitals](https://github.com/fabioc-aloha/CX-Vitals) (adopter of docs-shell) after their 2026-07-28 refinement pass. Their initial version (commit `1098dd1`) rendered HTML sources in an iframe; four minutes later commit `0a341d8` refined to direct link because reports carry their own hero and cover, and iframe wrapping added a redundant frame that broke print flow. Direct link + `location.replace` gives the report the whole viewport while keeping the shell as the navigation surface.
+
+Ships in:
+
+- `.github/skills/docs-shell/starter/index.html` — the two code hunks that implement the branch (topnav render + bootstrap redirect).
+- `.github/skills/docs-shell/starter/example-report.html` — new demo file that ships with the starter kit and showcases the pattern.
+- `.github/skills/docs-shell/starter/manifest.json` — new "Example report" doc entry pointing at the demo HTML.
+- `.github/skills/docs-shell/starter/about.md` — new HTML-source docs feature bullet with a link to the demo.
+- `.github/skills/docs-shell/SKILL.md` — new task in Common tasks: "Add an HTML-source doc (Flint report, exported dashboard)".
+- `docs/shell/README.md` — full technical reference in Manifest schema § HTML-source docs, plus a note on the `sources[]` field itself.
+
+Backward-compatible: existing `.md`-source docs are unaffected. The branch fires only when every entry in `sources[]` ends in `.html`.
+
 ### Steward-maintained; retired dogfood `local/` mirror pattern (2026-07-29)
 
 Alex_ACT_Steward is now the maintainer of this repo. Two consequences shipped in the same change:

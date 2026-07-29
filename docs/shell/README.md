@@ -112,7 +112,31 @@ Each doc becomes a button on line 2 of the topnav (when its area is active) and 
 | `sourceLink.label` | string | no | Text for the source-link chip in the sticky header. |
 | `sourceLink.href` | string | no | Link target for the source-link chip. Typically the primary source `.md` on GitHub or as a local relative path. |
 | `hero` | object | no | Hero block. Absent = no hero rendered. See [Hero](#hero) below. |
-| `sources` | array | yes | Ordered list of `.md` paths. Fetched in parallel, stripped, concatenated with `\n\n`. Paths are relative to the manifest (repo root for the root shell). |
+| `sources` | array | yes | Ordered list of source paths, relative to the manifest (repo root for the root shell). `.md` sources are fetched in parallel, stripped, concatenated with `\n\n`, and rendered through marked. `.html` sources trigger a direct-link path; see [HTML-source docs](#html-source-docs-bypass-shell-wrapper) below. |
+
+### HTML-source docs (bypass shell wrapper)
+
+When every entry in a doc's `sources[]` array ends in `.html` (case-insensitive), the shell treats that doc as a **standalone HTML report** and bypasses the shell wrapper entirely. Two code paths change:
+
+**Topnav render**: the button on line 2 for an HTML-only doc points its `href` directly at `sources[0]` instead of `?area=X&doc=Y`. Clicking it loads the HTML file straight from disk / origin, no shell fetch, no marked pass.
+
+**Bootstrap**: if the URL lands on `?area=X&doc=Y` where Y is HTML-only (bookmark, external link, stale search-index entry), the shell calls `window.location.replace(sources[0])` before rendering anything. `replace` rather than `assign` so the back button skips the shell hop and returns to whatever the user was doing before.
+
+**When to use**: pre-built reports that already own their own cover, hero, typography, print styles, and layout. Flint chart reports, exported Power BI dashboards, static HTML tables, offline copies of external pages, or anything else where the presentation is already the final artifact and shell wrapping would fight it.
+
+**When NOT to use**: content that IS the source of truth for a shell-styled doc. If you own the Markdown and want the shell's headings, sidebar TOC, alert callouts, Mermaid, and code highlighting, ship `.md` sources and let the shell handle presentation. The HTML path exists for content the shell would render worse than the report already renders itself.
+
+**Design rationale**: an earlier iteration in [CX-Vitals](https://github.com/fabioc-aloha/CX-Vitals) (commit `1098dd1`, 2026-07-28) rendered HTML sources in an iframe wrapper. Four minutes later, commit `0a341d8` switched to direct link, because reports carry their own hero + cover + print styles and iframe wrapping added a redundant frame that broke print flow and forced height math into the shell. Direct link + `location.replace` gives the report the whole viewport it was designed for while keeping the shell as the navigation surface.
+
+**Rules**:
+
+- `sources[]` must be non-empty.
+- Every entry must end in `.html` (case-insensitive) for direct-link behavior to fire.
+- Mixed sources (`.md` + `.html`) fall through to the Markdown render pass, which would try to concat the HTML as text. Keep the two shapes in separate doc entries.
+- The topnav still shows the doc's `label` and applies active-state styling on the currently loaded doc; only `href` and the bootstrap flow change.
+- Optional doc fields (`icon`, `title`, `verified`, `sourceLink`, `hero`) survive in the manifest but are not rendered by the shell (the standalone HTML owns its own hero). Keep them for consistency and for future indexing / search use.
+
+A working demo ships in the starter kit at `.github/skills/docs-shell/starter/example-report.html`. Absorbed into the canonical starter on 2026-07-29.
 
 ### Hero
 
