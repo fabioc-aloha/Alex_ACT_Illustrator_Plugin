@@ -315,6 +315,13 @@ path inside that folder. Verified 2026-07-25: a bare filename leaked into
 - **Fixing a data or chart-type problem with a style tweak.** Recoloring a mark
   that is wrong because two scales merged hides the bug instead of fixing it.
 
+## Related skills
+
+- [`chart-big-idea`](../chart-big-idea/SKILL.md) — Step 0.5 earn-a-figure gate + Step 4.5 focus discipline. Framing side of the same discipline.
+- [`flint-chart`](../flint-chart/SKILL.md) — spec authoring + Publication config preset. Verification runs against what this skill produces.
+- [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) — the visual grammar the shipped SVG obeys. The failure-catalog entries in this skill fire when that grammar is violated.
+- [`figure-generator`](../figure-generator/SKILL.md) — where the "fix in the generator, never in the SVG" rule for the SVG XML invalid catalog entry lives.
+
 ## Would Revise If
 
 Revise this skill by 2026-10-25 (90 days) or sooner if:

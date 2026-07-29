@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Two new baseline skills for illustration authoring, Phase 2 (2026-07-29)
+
+Completes the DDA absorption arc opened in Phase 1. Two new baseline skills ship for the net-new patterns the big-idea family doesn't cover.
+
+**`print-svg-style-guide`** (new, ~340 lines) — print-quality SVG style guide for books, reports, and exec-facing documents. Ships:
+
+- Canvas + font stack: default `640×480` (4:3), widescreen `640×380`, dashboard `640×415`; `Inter, system-ui, sans-serif` for all figures.
+- Print-legibility floor with math: `printPoints = fontSizePx × 4.39 × 72 ÷ viewBoxWidth`; 12px @ 640 viewBox = 5.93pt = instructional floor; minimum instructional px = `viewBoxWidth ÷ 54.5`.
+- Type hierarchy: 18/13/12/9 pt roles.
+- `data-print-role` markers: `micro` (attribution / hash stamps) and `note` (annotations, auto-promoted from `micro` at ≥40 chars). Both share the 2.9pt floor.
+- Text-fits ladder: cut → reflow → abbreviate → grow (never shrink).
+- Anti-pattern figures still obey the floor (demonstrate collapse through RELATIVE properties, not absolute smallness).
+- Tailwind-grounded semantic palette: Blue = correct / principled, Red-700 = critique / target, Green-700 = approval, Amber triple-duty (Composition family / warning / footer takeaway), Burgundy = second critique tone, Grays scaffolding.
+- Four composition idioms with skeleton XML: BEFORE/AFTER paired panels with REJECTED/APPROVED badges, numbered critique callouts (red-700 circles), family-band abstracts (5-panel vertical with family accent), 5-Visual Rule dashboards (blurred-thumbnail test, mobile-preserved hierarchy).
+
+**`figure-generator`** (new, ~280 lines) — deterministic figure production discipline. Ships:
+
+- The `.mjs` generator pattern: read from `data/<slug>.json`, SHA-256 hash the raw text, embed as `<!-- data-sha256: ... -->` in the SVG, emit to `assets/figures/`. Skeleton included.
+- Why hand-authored over library-rendered: statistical-chart libraries own final geometry (`baseSize` → `computedSize` stretch); print gates need the generator to own layout.
+- Dataset-first rule: every figure backed by `data/<slug>.json` + `.csv` + `.md` + `.schema.json`, published before the figure ships.
+- Contract tests via Node's built-in test runner: pin aggregates, per-segment values, ordinal claims cited in prose. Register the test with the project's explicit test list; the tell is whether the test count rose.
+- Fix-in-generator-never-in-SVG rule with the one legitimate exception (throwaway one-offs).
+- Dataset inversion procedure: extract axis tick coordinates → solve `pxPerUnit` from two ticks → invert every data-point coordinate → byte-identity check against the sample. Prose fabricates; inversion doesn't.
+- Figure-count hoist to one JSON (`figure-contract.json` with `expectedFigures` + `expectedPages`) so multiple gates read the same source. Page count: measure, don't predict.
+
+**Auxiliary edits**:
+
+- `manifest.json`: `shape` bumped from four-skill to six-skill; two new `assets.skills[]` entries with full `install_to` paths, roles, and frontmatter descriptions.
+- `README.md`: What-ships table extended to 6 skills with role descriptions reflecting Phase 1 additions (Step 0.5 gate, publication config preset, Prose-coupling check) and Phase 2 additions.
+- `flint-chart` § Publication config preset: forward-link updated from "shipping in a follow-up release" to live cross-refs at both `print-svg-style-guide` and `figure-generator`.
+
+Both new skills attribute *The Defensible Decision* (Fabio Correa) as the source discipline, book-tested across 53 shipped figures and 368 pages.
+
+**Deferred, not shipping** (book-project-specific, not baseline):
+
+- Character bible pattern (14 named anchor characters as consistent scenarios across a series)
+- Six completeness criteria per character (Scene / Decision / Dataset / Artifact / Figure / Companion)
+- Illustration Studio review page pattern (manifest-driven visual proofing HTML with drift detection)
+
+These are useful in the DDA context but not generic enough for the plugin's baseline scope. An adopter can lift them from Alex_DDA if the project's shape calls for them.
+
 ### Sharpen the big-idea family with DDA illustration patterns, Phase 1 (2026-07-29)
 
 Absorbed the "partial coverage" items from a coverage-map audit against [Alex_DDA](https://github.com/fabioc-aloha/Alex_ACT_DDA) (Fabio Correa's book illustration studio for *The Defensible Decision*). Phase 1 covers items where the big-idea family already touched the concept but didn't formalize it. Backward-compatible: existing skill invocations produce the same output; the new content adds gates and catalog entries that fire when applicable.

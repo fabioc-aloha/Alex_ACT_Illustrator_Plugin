@@ -64,17 +64,20 @@ The Brief locks the framing; the selection skill handles the mechanical chartTyp
 
 ## What ships
 
-| File                                     | Role                                                                                    |
-| ---------------------------------------- | --------------------------------------------------------------------------------------- |
-| `.github/skills/chart-big-idea/SKILL.md` | Framing skill — Big Idea, story arc, audience, style stance, Chart Brief output         |
-| `.github/skills/flint-chart/SKILL.md`    | Selection + spec-authoring skill (§0 chart selection + Steps 1-N `ChartAssemblyInput`)  |
-| `.github/skills/render-verify/SKILL.md`  | Verification skill — failure catalogs, host-capability table, Playwright setup          |
-| `.github/prompts/render-chart.prompt.md` | `/render-chart <request>` slash-command entry point (loads the three chart skills)      |
-| `.vscode/mcp.json`                       | MCP server registration — `flint` (required) + `playwright` (optional; see Install)     |
-| `.vscode/settings.json`                  | Registers the `local/` skill + prompt discovery roots                                   |
-| `manifest.json`                          | Plugin manifest — declares all shipping assets, install paths, prerequisites            |
-| `README.md`                              | This file                                                                               |
-| `LICENSE`                                | MIT (dual-copyright: Fabio Correa for plugin work + Microsoft for the flint-chart body) |
+| File                                            | Role                                                                                                                                                                             |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/skills/chart-big-idea/SKILL.md`        | Framing skill — Big Idea, story arc, audience, style stance, Chart Brief output. Step 0.5 earn-a-figure gate + Step 4.5 focus discipline.                                        |
+| `.github/skills/flint-chart/SKILL.md`           | Selection + spec-authoring skill (§0 chart selection + Steps 1-N `ChartAssemblyInput`). Publication config preset for book / report / exec-facing charts.                        |
+| `.github/skills/render-verify/SKILL.md`         | Verification skill — failure catalogs (charts + any artifact), host-capability table, Playwright setup, Prose-coupling check for published figures.                              |
+| `.github/skills/print-svg-style-guide/SKILL.md` | Print-quality SVG style guide — canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four structural composition idioms.                    |
+| `.github/skills/figure-generator/SKILL.md`      | Deterministic figure-generator discipline — hand-authored `.mjs` pattern, `data-sha256` audit hash, dataset-first + contract tests, dataset inversion, fix-in-generator rule.    |
+| `.github/skills/docs-shell/SKILL.md`            | Single-page HTML shell for browsable documentation, chart galleries, and illustration catalogs. HTML-source docs supported for pre-built reports.                                |
+| `.github/prompts/render-chart.prompt.md`        | `/render-chart <request>` slash-command entry point (loads the three chart skills)                                                                                               |
+| `.vscode/mcp.json`                              | MCP server registration — `flint` (required) + `playwright` (optional; see Install)                                                                                              |
+| `.vscode/settings.json`                         | Registers the `local/` skill + prompt discovery roots                                                                                                                            |
+| `manifest.json`                                 | Plugin manifest — declares all shipping assets, install paths, prerequisites                                                                                                     |
+| `README.md`                                     | This file                                                                                                                                                                        |
+| `LICENSE`                                       | MIT (dual-copyright: Fabio Correa for plugin work + Microsoft for the flint-chart body)                                                                                          |
 
 ## Prerequisites
 

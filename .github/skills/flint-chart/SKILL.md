@@ -379,8 +379,14 @@ itself):
 
 Print-legibility floor for figures embedded in the artifact: 12px at a 640
 viewBox is 5.93pt — the instructional minimum. For the full print-legibility
-grammar (formula, `data-print-role` markers, text-fits ladder), see the
-`print-svg-style-guide` skill (shipping in a follow-up release).
+grammar (formula, `data-print-role` markers, text-fits ladder), the Tailwind
+semantic palette, and the composition idioms (BEFORE/AFTER paired panels,
+numbered critique callouts, family-band abstracts, 5-Visual Rule dashboards),
+see the [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) skill.
+For the engineering discipline that emits SVGs conforming to that guide
+(hand-authored `.mjs` generators, `data-sha256` audit hash, dataset-first with
+contract tests, dataset inversion), see the
+[`figure-generator`](../figure-generator/SKILL.md) skill.
 
 Adapted from _The Defensible Decision_ (Fabio Correa) via the
 `dd-book-illustrator` skill in Alex_DDA.

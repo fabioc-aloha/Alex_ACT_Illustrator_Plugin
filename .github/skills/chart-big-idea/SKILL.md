@@ -249,6 +249,14 @@ Then invoke `flint-chart` §0.2 with the brief as context. The brief locks the f
 - **Alternates considered**: (a) traditional bar with error bars — chosen against because it hides the floor/ceiling clamping that makes the Skeptics story vivid; (b) boxplot + strip — chosen against because box quartile lines are redundant with the strip density and add visual noise.
 - **Anti-patterns to avoid**: over-layering (kept to strip + lollipop + centroid, no boxplot); starting y at 0 on a Likert scale (started at 1); putting metadata inside the plot area (n= labels moved to the axis).
 
+## Related skills
+
+- [`big-idea`](../big-idea/SKILL.md) — the generalized Big Idea distillation for any summary-shaped output. `chart-big-idea` is the chart-specific specialization.
+- [`flint-chart`](../flint-chart/SKILL.md) — §0.2 chart-family-before-type + `ChartAssemblyInput` authoring. Consumes the Chart Brief.
+- [`render-verify`](../render-verify/SKILL.md) — post-render check + Prose-coupling check for the shipped figure.
+- [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) — how figures LOOK once framing (this skill) is locked. Canvas + typography + palette + composition idioms.
+- [`figure-generator`](../figure-generator/SKILL.md) — deterministic engineering discipline for shipping figures backed by real datasets.
+
 ## Would Revise If
 
 Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fires:
