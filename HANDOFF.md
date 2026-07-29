@@ -62,8 +62,8 @@ registry would be.
 ## What to run
 
 ```bash
-git clone https://github.com/fabioc-aloha/flint-chart-plugin.git
-cd flint-chart-plugin
+git clone https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin.git
+cd Alex_ACT_Illustrator_Plugin
 git checkout bump/mcp-0.4.0
 node scripts/verify-install.mjs --catalog --compat
 ```

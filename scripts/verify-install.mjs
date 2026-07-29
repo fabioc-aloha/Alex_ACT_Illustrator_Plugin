@@ -126,7 +126,7 @@ const REQUESTS = [
     params: {
       protocolVersion: '2024-11-05',
       capabilities: {},
-      clientInfo: { name: 'flint-chart-plugin-verify', version: '1.0.0' },
+      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '1.0.0' },
     },
   },
   { jsonrpc: '2.0', method: 'notifications/initialized' },

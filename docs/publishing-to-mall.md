@@ -1,5 +1,7 @@
 # Publishing to the Alex ACT Plugin Mall
 
+> **Renamed 2026-07-29.** This repo was renamed from `flint-chart-plugin` to `Alex_ACT_Illustrator_Plugin`. The **upstream references** in this runbook (local paths, GitHub URLs) use the new name. The **Mall-side references** (vendored directory `plugins/data-analytics/flint-chart-plugin/`, Copilot plugin ID `flint-chart-plugin`, Mall commit message subject) stay under the old name during the transition. Both will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/plan/illustrator-plugin.md).
+
 Step-by-step runbook for vendoring this plugin (or a new version of it) into the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). Complete this when:
 
 - (a) Publishing this plugin to the Mall for the first time
@@ -28,15 +30,15 @@ The Mall vendors a **snapshot** of this repo at a specific commit. It does **not
 3. **This repo's `main` branch clean and pushed**:
 
    ```pwsh
-   git -C C:\Development\flint-chart-plugin status --short   # should be empty
-   git -C C:\Development\flint-chart-plugin rev-list --left-right --count 'origin/main...HEAD'   # should be "0  0"
+   git -C C:\Development\Alex_ACT_Illustrator_Plugin status --short   # should be empty
+   git -C C:\Development\Alex_ACT_Illustrator_Plugin rev-list --left-right --count 'origin/main...HEAD'   # should be "0  0"
    ```
 
 4. **Version numbers aligned** between `manifest.json` and `CHANGELOG.md`:
 
    ```pwsh
-   (Get-Content C:\Development\flint-chart-plugin\manifest.json -Raw | ConvertFrom-Json).version
-   (Select-String -Path C:\Development\flint-chart-plugin\CHANGELOG.md -Pattern '^## \[' | Select-Object -First 1).Line
+   (Get-Content C:\Development\Alex_ACT_Illustrator_Plugin\manifest.json -Raw | ConvertFrom-Json).version
+   (Select-String -Path C:\Development\Alex_ACT_Illustrator_Plugin\CHANGELOG.md -Pattern '^## \[' | Select-Object -First 1).Line
    ```
 
    Both should show the same version.
@@ -88,7 +90,7 @@ Weekly `[behaviour] catalog refresh` commits often land automatically — always
 ### 2. Copy the current asset files into the Mall
 
 ```pwsh
-$up = 'C:\Development\flint-chart-plugin'
+$up = 'C:\Development\Alex_ACT_Illustrator_Plugin'
 $ma = 'C:\Development\Alex_ACT_Plugin_Mall\plugins\data-analytics\flint-chart-plugin'
 
 # Ensure target folder structure exists
@@ -114,11 +116,11 @@ The Mall vendors only six files — no `assets/`, no `docs/`, no `.vscode/`. Eve
 
 ```pwsh
 $readmePath = "$ma\README.md"
-$base = 'https://github.com/fabioc-aloha/flint-chart-plugin'
+$base = 'https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin'
 
 # Images: assets/… -> raw.githubusercontent.com
 $c = Get-Content $readmePath -Raw
-$c = $c -replace 'src="assets/', "src=$([char]34)https://raw.githubusercontent.com/fabioc-aloha/flint-chart-plugin/main/assets/"
+$c = $c -replace 'src="assets/', "src=$([char]34)https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/"
 
 # Links: any relative ](path) -> absolute blob/main (files) or tree/main (dirs)
 $c = [regex]::Replace($c, '\]\((?!https?://|#)([^)]+)\)', {
@@ -143,7 +145,7 @@ Both counts must report `0`.
 The Mall's `plugin.json` is _not_ a copy of this repo's `manifest.json` — it uses the Mall's own schema. Key fields to verify:
 
 - `version` — must match this repo's `manifest.json` version
-- `upstream.repo` — `https://github.com/fabioc-aloha/flint-chart-plugin`
+- `upstream.repo` — `https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin`
 - `upstream.ref` — usually `main`; can be a specific commit SHA if pinning
 - `artifacts.skills`, `artifacts.prompts`, `artifacts.mcp` — paths _inside the Mall folder_ (e.g. `skills/chart-big-idea/SKILL.md`, not `.github/skills/…`)
 - `install_paths.*` — where a heir installs each artifact (`.github/skills/local/…`, `.vscode/mcp.json`, etc.)
@@ -204,7 +206,7 @@ cd C:\Development\Alex_ACT_Plugin_Mall
 
 git add -A
 git commit -m "[behaviour] flint-chart-plugin - vendor v<X.Y.Z>" `
-           -m "Sync from upstream fabioc-aloha/flint-chart-plugin@<short-sha>. Byte-identical vendoring of the five installable payload files (3 skills + 1 prompt + mcp.json). README updated to use absolute raw.githubusercontent.com URLs for image references (Mall does not vendor the assets/ folder). Curation-log entry [PLUGIN-UPDATE] appended."
+           -m "Sync from upstream fabioc-aloha/Alex_ACT_Illustrator_Plugin@<short-sha> (repo renamed 2026-07-29 from flint-chart-plugin; Mall directory + Copilot plugin ID retained under old name during transition). Byte-identical vendoring of the five installable payload files (3 skills + 1 prompt + mcp.json). README updated to use absolute raw.githubusercontent.com URLs for image references (Mall does not vendor the assets/ folder). Curation-log entry [PLUGIN-UPDATE] appended."
 
 # Rebase against origin one more time in case the weekly cron landed while you were working
 git pull --rebase origin main
@@ -237,7 +239,7 @@ The Mall's `catalog/index.json` is what heirs search, and its `source_url`
 https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/<SHA>/plugins/data-analytics/flint-chart-plugin
 ```
 
-Until the catalog is regenerated, that SHA points at the *previous* vendor
+Until the catalog is regenerated, that SHA points at the _previous_ vendor
 commit. The new files sit in `plugins/` unreachable through the catalog path,
 and an install resolves the **old** version's content. Nothing errors. The
 plugin folder shows the new version; the catalog serves the old one.
@@ -273,7 +275,7 @@ contains your vendor commit SHA — not the previous one.
 > base64 — the file is large enough that the response is truncated and the JSON
 > fails to parse. Pull the repo and read it from disk. Equally, a clean
 > `git status` on a local clone that is level with `origin/main` means the local
-> copy *is* the remote copy; that is a cheaper check than any API round-trip.
+> copy _is_ the remote copy; that is a cheaper check than any API round-trip.
 
 ## Verification checklist
 
@@ -296,7 +298,7 @@ Before declaring the publish complete:
 
 ## Common gotchas
 
-- **PowerShell's parser hangs on the Step 3 rewrite block.** The README-rewrite snippet nests a single-quoted regex containing `//` and `#` inside a `$(...)` subexpression inside a double-quoted string. Pasted as one multi-line block it can leave the shell sitting at a `>>` continuation prompt, having executed nothing — and the *next* command you type gets swallowed as continuation input. Measured 2026-07-25: it stalled twice, and the recovery was killing the terminal. If it happens, do not try to complete the quote; kill the shell and put the rewrite in a small `.mjs` file instead, where the regex needs no shell escaping.
+- **PowerShell's parser hangs on the Step 3 rewrite block.** The README-rewrite snippet nests a single-quoted regex containing `//` and `#` inside a `$(...)` subexpression inside a double-quoted string. Pasted as one multi-line block it can leave the shell sitting at a `>>` continuation prompt, having executed nothing — and the _next_ command you type gets swallowed as continuation input. Measured 2026-07-25: it stalled twice, and the recovery was killing the terminal. If it happens, do not try to complete the quote; kill the shell and put the rewrite in a small `.mjs` file instead, where the regex needs no shell escaping.
 - **`gh repo create --push` uses SSH by default.** When creating a new sibling repo, `gh` configures `origin` as `git@github.com:…` — which needs SSH keys. If keys aren't set up, the initial push fails silently. Fix: `git remote set-url origin https://github.com/<owner>/<repo>.git` and re-push. `gh`'s HTTPS credential helper handles auth automatically once the URL is HTTPS.
 - **Mall README drift is expected between publishes.** The vendored README is a snapshot at publish time; subsequent doc-only edits in this repo won't reach the Mall until the next explicit publish (or the weekly automated catalog-refresh cron, whichever comes first).
 - **Weekly catalog-refresh cron.** The Mall runs an automated `[behaviour] catalog refresh` commit weekly. Always rebase before push (Step 1 does this before you start, and Step 7 does it again — both are cheap).

@@ -5,6 +5,7 @@ Long-form documentation about the plugin's design, decisions, and open questions
 ## Contents
 
 - **[`publishing-to-mall.md`](publishing-to-mall.md)** — step-by-step runbook for vendoring this plugin (or a new version of it) into the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). Read this before running a publish.
+- **[`shell/README.md`](shell/README.md)** — canonical technical reference for the `docs-shell` pattern: manifest schema, URL scheme, theme system, path rewriting, optional features, adoption walkthrough, and troubleshooting. Ported from Alex_ACT_Steward on 2026-07-29 as the source-of-truth going forward.
 - [`plans/`](plans/) — decision documents that captured the plugin's genesis, including locked-decisions tables and post-hoc amendments
   - [`2026-07-24-mall-plugin.md`](plans/2026-07-24-mall-plugin.md) — original plan (9 tasks, 7 locked decisions D1–D7, 5 sub-decisions S1–S5) + amendment covering the two-skill + prompt + MCP-sidecar reshape
   - [`2026-07-25-playwright-mcp.md`](plans/2026-07-25-playwright-mcp.md) — **shipped in 0.4.0** — adding a second, optional MCP server for visual verification of rendered output, plus the verification skill (named `chart-verify` at the time; renamed `render-verify` in 0.5.0). Records the measured findings that falsified two of its own assumptions, and why data-transformation and diagramming servers were rejected

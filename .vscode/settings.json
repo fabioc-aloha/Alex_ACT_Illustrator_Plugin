@@ -1,6 +1,7 @@
 {
   // Tracked on purpose — this repo dogfoods its own plugin, so this file is the
-  // reference wiring for any workspace that adopts flint-chart-plugin.
+  // reference wiring for any workspace that adopts Alex_ACT_Illustrator_Plugin
+  // (previously flint-chart-plugin; renamed 2026-07-29).
   //
   // The plugin installs into `.github/skills/local/` and `.github/prompts/local/`,
   // which are NOT VS Code's default discovery roots (`.github/skills/` and
@@ -17,5 +18,8 @@
   },
   "chat.promptFilesLocations": {
     ".github/prompts/local": true
-  }
+  },
+  "markdown.styles": [
+    ".vscode/markdown-light.css"
+  ]
 }

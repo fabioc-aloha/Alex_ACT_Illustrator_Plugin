@@ -1,9 +1,9 @@
 {
-  "plugin": "flint-chart-plugin",
+  "plugin": "alex-act-illustrator-plugin",
   "version": "0.5.1",
-  "shape": "three-skill + one-prompt + two-mcp-sidecars + vscode-settings",
-  "description": "Pick the right chart for the user's data + question, render it locally via the flint-chart MCP server, then verify the rendered artifact actually says what it was meant to say. Alex — ACT Edition plugin.",
-  "homepage": "https://github.com/fabioc-aloha/flint-chart-plugin",
+  "shape": "four-skill + one-prompt + two-mcp-sidecars + vscode-settings",
+  "description": "Visual-authoring bundle for AI agents. First-cut scope: chart framing (Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), chart selection + spec authoring (Vega-Lite / ECharts / Chart.js via the flint-chart MCP server), and post-render verification. Scope broadening over time to additional illustration capabilities; see plan/illustrator-plugin.md in the Steward repo for roadmap. Alex — ACT Edition plugin. Renamed from flint-chart-plugin on 2026-07-29.",
+  "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
   "authors": [
     {
@@ -43,6 +43,32 @@
         "frontmatter": {
           "description": "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
         }
+      },
+      {
+        "name": "docs-shell",
+        "path": ".github/skills/docs-shell/SKILL.md",
+        "install_to": ".github/skills/local/docs-shell/SKILL.md",
+        "role": "documentation viewer / gallery renderer — the single-page HTML shell (index.html + manifest.json at repo root) that renders concatenated markdown as browsable docs with two-line topnav, per-doc emoji icons, sticky page header, and sidebar TOC. Not chart-specific; serves as a natural preview surface for any authored visual (chart galleries, illustration catalogs, generated report indices). Ported from Alex_ACT_Steward on 2026-07-29; this plugin is now the canonical source-of-truth.",
+        "frontmatter": {
+          "description": "The single-page HTML shell (index.html + manifest.json at repo root) that renders concatenated markdown as browsable, GitHub-styled documentation with a two-line topnav, per-doc emoji icons, sticky page header, and sidebar TOC. Use when the user says 'shell', 'add a doc', 'add a chapter', 'landing page', 'sidebar', 'manifest', 'hero', 'nav-strip', 'shell theme', 'color scheme', 'polish the pages', 'render preview', 'add an area', or when authoring/editing content that appears in the root manifest."
+        },
+        "bundled_resources": [
+          {
+            "path": ".github/skills/docs-shell/starter/index.html",
+            "install_to": ".github/skills/local/docs-shell/starter/index.html",
+            "role": "reference implementation shell (adopters copy this to their repo root)"
+          },
+          {
+            "path": ".github/skills/docs-shell/starter/manifest.json",
+            "install_to": ".github/skills/local/docs-shell/starter/manifest.json",
+            "role": "minimal manifest example with inline $comment schema documentation"
+          },
+          {
+            "path": ".github/skills/docs-shell/starter/about.md",
+            "install_to": ".github/skills/local/docs-shell/starter/about.md",
+            "role": "working demo content (alerts, mermaid, code samples)"
+          }
+        ]
       }
     ],
     "prompts": [

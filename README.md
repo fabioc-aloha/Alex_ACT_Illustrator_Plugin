@@ -1,8 +1,10 @@
-# flint-chart-plugin
+# Alex ACT Illustrator Plugin
 
-**Pick the right chart for your data, then render it locally — Vega-Lite / ECharts / Chart.js.**
+**Visual authoring for AI-driven workflows — pick the right chart, render it locally, and verify it says what it was meant to say.**
 
-An [Alex — ACT Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) plugin that pairs a **chart-framing skill**, a **chart-selection + spec-authoring skill**, and a **local MCP server** (upstream [`flint-chart-mcp`](https://www.npmjs.com/package/flint-chart-mcp) from [microsoft/flint-chart](https://github.com/microsoft/flint-chart)) so the agent can go from _"chart this"_ to a rendered image without your data ever leaving the machine.
+An [Alex — ACT Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) plugin bundling visual-authoring skills for AI agents. First-cut scope is **charting + documentation viewer**: three skills wrap the upstream [`flint-chart-mcp`](https://www.npmjs.com/package/flint-chart-mcp) MCP server (from [microsoft/flint-chart](https://github.com/microsoft/flint-chart)) so the agent can go from _"chart this"_ to a rendered image without your data ever leaving the machine, and a fourth `docs-shell` skill ships the single-page HTML pattern for browsable documentation, chart galleries, and illustration catalogs (ported from Alex_ACT_Steward on 2026-07-29 as the canonical source-of-truth). Scope is broadening to additional illustration capabilities (SVG banners, Mermaid diagrams); see the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/plan/illustrator-plugin.md) for roadmap and provenance.
+
+> **Renamed 2026-07-29.** This plugin was previously named `flint-chart-plugin`. Existing installations via `copilot plugin install flint-chart-plugin@alex-mall` continue to work; the Copilot plugin ID will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/plan/illustrator-plugin.md) for the rename rationale.
 
 ## What it does
 
@@ -32,7 +34,7 @@ That one sentence — the load-bearing output of the [`chart-big-idea`](.github/
 
 The rendered demo ships in [`demos/heart-with-axes/`](demos/heart-with-axes/) — an interactive `report.html` you can open in any browser, plus a folder README with the Chart Brief and layer breakdown. Design decisions and the plugin's own genesis live in [`docs/`](docs/).
 
-## Architecture — three skills, one prompt
+## Architecture — four skills, one prompt
 
 ```text
 /render-chart <request>
@@ -67,7 +69,7 @@ The Brief locks the framing; the selection skill handles the mechanical chartTyp
 | `.github/skills/chart-big-idea/SKILL.md` | Framing skill — Big Idea, story arc, audience, style stance, Chart Brief output         |
 | `.github/skills/flint-chart/SKILL.md`    | Selection + spec-authoring skill (§0 chart selection + Steps 1-N `ChartAssemblyInput`)  |
 | `.github/skills/render-verify/SKILL.md`  | Verification skill — failure catalogs, host-capability table, Playwright setup          |
-| `.github/prompts/render-chart.prompt.md` | `/render-chart <request>` slash-command entry point (loads all three skills in order)   |
+| `.github/prompts/render-chart.prompt.md` | `/render-chart <request>` slash-command entry point (loads the three chart skills)      |
 | `.vscode/mcp.json`                       | MCP server registration — `flint` (required) + `playwright` (optional; see Install)     |
 | `.vscode/settings.json`                  | Registers the `local/` skill + prompt discovery roots                                   |
 | `manifest.json`                          | Plugin manifest — declares all shipping assets, install paths, prerequisites            |
@@ -96,17 +98,17 @@ The Brief locks the framing; the selection skill handles the mechanical chartTyp
 
 ```bash
 # From your Alex ACT Edition workspace root:
-git clone https://github.com/fabioc-aloha/flint-chart-plugin.git /tmp/flint-chart-plugin
+git clone https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin.git /tmp/alex-act-illustrator-plugin
 
 # Copy the three skills into your heir-local skill folder
 mkdir -p .github/skills/local
-cp -r /tmp/flint-chart-plugin/.github/skills/chart-big-idea .github/skills/local/
-cp -r /tmp/flint-chart-plugin/.github/skills/flint-chart .github/skills/local/
-cp -r /tmp/flint-chart-plugin/.github/skills/render-verify .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/chart-big-idea .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/flint-chart .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/render-verify .github/skills/local/
 
 # Copy the prompt into your heir-local prompt folder
 mkdir -p .github/prompts/local
-cp /tmp/flint-chart-plugin/.github/prompts/render-chart.prompt.md .github/prompts/local/
+cp /tmp/alex-act-illustrator-plugin/.github/prompts/render-chart.prompt.md .github/prompts/local/
 
 # Then: register the local/ roots, and merge the MCP server entry (both below).
 ```
@@ -115,8 +117,8 @@ cp /tmp/flint-chart-plugin/.github/prompts/render-chart.prompt.md .github/prompt
 
 ```powershell
 # From your Alex ACT Edition workspace root:
-git clone https://github.com/fabioc-aloha/flint-chart-plugin.git $env:TEMP\flint-chart-plugin
-$src = "$env:TEMP\flint-chart-plugin"
+git clone https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin.git $env:TEMP\Alex_ACT_Illustrator_Plugin
+$src = "$env:TEMP\Alex_ACT_Illustrator_Plugin"
 
 # Copy the three skills into your heir-local skill folder
 New-Item -ItemType Directory -Force -Path .github\skills\local | Out-Null
