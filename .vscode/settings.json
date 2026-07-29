@@ -1,24 +1,13 @@
 {
-  // Tracked on purpose — this repo dogfoods its own plugin, so this file is the
-  // reference wiring for any workspace that adopts Alex_ACT_Illustrator_Plugin
-  // (previously flint-chart-plugin; renamed 2026-07-29).
+  // Steward-maintained as of 2026-07-29. This repo authors its own skills at
+  // `.github/skills/` and `.github/prompts/`, which are VS Code Copilot's
+  // default discovery roots, so no `chat.agentSkillsLocations` or
+  // `chat.promptFilesLocations` overrides are needed here.
   //
-  // The plugin installs into `.github/skills/local/` and `.github/prompts/local/`,
-  // which are NOT VS Code's default discovery roots (`.github/skills/` and
-  // `.github/prompts/`). Without these two settings the skills and the
-  // /render-chart prompt never load — silently, with no error, exactly like the
-  // `.mcp.json` vs `.vscode/mcp.json` trap. See README "Install".
-  //
-  // Both entries are additive — VS Code's defaults stay enabled. Adopting repos
-  // keep their own skills and prompts in the default roots (`.github/skills/`,
-  // `.github/prompts/`) and receive installed plugins under `local/`; the two
-  // sets coexist. Never disable the defaults here.
-  "chat.agentSkillsLocations": {
-    ".github/skills/local": true
-  },
-  "chat.promptFilesLocations": {
-    ".github/prompts/local": true
-  },
+  // Heirs that install this plugin via Mall receive it under
+  // `.github/skills/local/` and `.github/prompts/local/`; those heirs need
+  // their own settings.json entries to register the `local/` roots. See
+  // README "Install".
   "markdown.styles": [
     ".vscode/markdown-light.css"
   ]

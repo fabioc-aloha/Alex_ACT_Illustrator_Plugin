@@ -1,6 +1,6 @@
 # Publishing to the Alex ACT Plugin Mall
 
-> **Renamed 2026-07-29.** This repo was renamed from `flint-chart-plugin` to `Alex_ACT_Illustrator_Plugin`. The **upstream references** in this runbook (local paths, GitHub URLs) use the new name. The **Mall-side references** (vendored directory `plugins/data-analytics/flint-chart-plugin/`, Copilot plugin ID `flint-chart-plugin`, Mall commit message subject) stay under the old name during the transition. Both will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/plan/illustrator-plugin.md).
+> **Renamed 2026-07-29.** This repo was renamed from `flint-chart-plugin` to `Alex_ACT_Illustrator_Plugin`. The **upstream references** in this runbook (local paths, GitHub URLs) use the new name. The **Mall-side references** (vendored directory `plugins/data-analytics/flint-chart-plugin/`, Copilot plugin ID `flint-chart-plugin`, Mall commit message subject) stay under the old name during the transition. Both will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md).
 
 Step-by-step runbook for vendoring this plugin (or a new version of it) into the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). Complete this when:
 

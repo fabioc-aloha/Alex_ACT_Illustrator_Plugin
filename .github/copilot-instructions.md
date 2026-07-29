@@ -2,13 +2,13 @@
 
 Context for AI agents (and humans) working in this repo. Loaded automatically by GitHub Copilot Chat when the repo is open.
 
-This repo is _not_ an [Alex — ACT Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) heir workspace — it ships one of the Edition's plugins. Alex ACT Edition's full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring, memory triggers) is _not_ loaded here. This file gives agents the essentials.
+This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) plugin, maintained by [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward). The full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring, memory triggers) is _not_ loaded here. This file gives agents the essentials for working on the plugin itself.
 
-> **Renamed 2026-07-29** from `flint-chart-plugin`. Charting is now the first workload in a broader visual-authoring bundle. Existing `copilot plugin install flint-chart-plugin@alex-mall` installations continue working; the Copilot plugin ID will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/plan/illustrator-plugin.md).
+> **Renamed 2026-07-29** from `flint-chart-plugin`. Charting is now the first workload in a broader visual-authoring bundle. Existing `copilot plugin install flint-chart-plugin@alex-mall` installations continue working; the Copilot plugin ID will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md).
 
 ## What this repo is
 
-An Alex ACT Edition plugin for visual authoring. First-cut scope is charting; additional illustration workloads (SVG banners, Mermaid diagrams, shell renderer for gallery previews) are planned. Currently:
+An Alex ACT constellation plugin for visual authoring. First-cut scope is charting; additional illustration workloads (SVG banners, Mermaid diagrams, shell renderer for gallery previews) are planned. Currently:
 
 - **Four skills** — `chart-big-idea` (framing preflight — Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), `flint-chart` (selection + spec authoring against the [microsoft/flint-chart](https://github.com/microsoft/flint-chart) MCP server), `render-verify` (verification — open the rendered artifact, read its console errors, walk the failure catalogs), and `docs-shell` (documentation viewer / gallery renderer — single-page HTML shell with two-line topnav, sticky page header, sidebar TOC; ported from Alex_ACT_Steward 2026-07-29 as the canonical source-of-truth)
 - **One slash-command prompt** — `/render-chart` (loads the three chart skills, drives the end-to-end charting workflow)

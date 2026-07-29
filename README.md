@@ -2,9 +2,9 @@
 
 **Visual authoring for AI-driven workflows — pick the right chart, render it locally, and verify it says what it was meant to say.**
 
-An [Alex — ACT Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) plugin bundling visual-authoring skills for AI agents. First-cut scope is **charting + documentation viewer**: three skills wrap the upstream [`flint-chart-mcp`](https://www.npmjs.com/package/flint-chart-mcp) MCP server (from [microsoft/flint-chart](https://github.com/microsoft/flint-chart)) so the agent can go from _"chart this"_ to a rendered image without your data ever leaving the machine, and a fourth `docs-shell` skill ships the single-page HTML pattern for browsable documentation, chart galleries, and illustration catalogs (ported from Alex_ACT_Steward on 2026-07-29 as the canonical source-of-truth). Scope is broadening to additional illustration capabilities (SVG banners, Mermaid diagrams); see the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/plan/illustrator-plugin.md) for roadmap and provenance.
+An [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) plugin bundling visual-authoring skills for AI agents. Maintained by [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward), distributed via the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). First-cut scope is **charting + documentation viewer**: three skills wrap the upstream [`flint-chart-mcp`](https://www.npmjs.com/package/flint-chart-mcp) MCP server (from [microsoft/flint-chart](https://github.com/microsoft/flint-chart)) so the agent can go from _"chart this"_ to a rendered image without your data ever leaving the machine, and a fourth `docs-shell` skill ships the single-page HTML pattern for browsable documentation, chart galleries, and illustration catalogs (ported from Alex_ACT_Steward on 2026-07-29 as the canonical source-of-truth). Scope is broadening to additional illustration capabilities (SVG banners, Mermaid diagrams); see the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md) for roadmap and provenance.
 
-> **Renamed 2026-07-29.** This plugin was previously named `flint-chart-plugin`. Existing installations via `copilot plugin install flint-chart-plugin@alex-mall` continue to work; the Copilot plugin ID will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/plan/illustrator-plugin.md) for the rename rationale.
+> **Renamed 2026-07-29.** This plugin was previously named `flint-chart-plugin`. Existing installations via `copilot plugin install flint-chart-plugin@alex-mall` continue to work; the Copilot plugin ID will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md) for the rename rationale.
 
 ## What it does
 
@@ -83,7 +83,7 @@ The Brief locks the framing; the selection skill handles the mechanical chartTyp
   (1.118+), **GitHub Copilot CLI**, and the **GitHub Copilot app**. Other MCP
   stdio clients (Claude Desktop, Cursor, …) should work and their config paths
   are listed below as a courtesy, but they are not verified against each release.
-- **Alex — ACT Edition ≥ 3.x** with `.github/skills/local/` and `.github/prompts/local/` registered (default; older heirs see [`mall-installation.instructions.md`](https://github.com/fabioc-aloha/Alex_ACT_Edition/blob/main/.github/instructions/mall-installation.instructions.md) for the manual settings fallback)
+- **A configured Alex ACT installation** — either an Alex_ACT_Edition compatibility heir or an Alex_ACT_Steward-maintained brain, with `.github/skills/local/` and `.github/prompts/local/` registered as discovery roots (default in current Edition heirs; older heirs see [`mall-installation.instructions.md`](https://github.com/fabioc-aloha/Alex_ACT_Edition/blob/main/.github/instructions/mall-installation.instructions.md) for the manual settings fallback)
 - **An installed browser** — _only_ if you enable the optional `playwright` server. Edge, Chrome, Firefox, or WebKit. Nothing is bundled; see [Registering the MCP servers](#registering-the-mcp-servers). Not needed on hosts with built-in browser tools (e.g. VS Code Copilot).
 
 ## Install
@@ -97,7 +97,7 @@ The Brief locks the framing; the selection skill handles the mechanical chartTyp
 ### Option B — manual (works today)
 
 ```bash
-# From your Alex ACT Edition workspace root:
+# From your Alex ACT workspace root:
 git clone https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin.git /tmp/alex-act-illustrator-plugin
 
 # Copy the three skills into your heir-local skill folder
@@ -116,7 +116,7 @@ cp /tmp/alex-act-illustrator-plugin/.github/prompts/render-chart.prompt.md .gith
 #### PowerShell (Windows)
 
 ```powershell
-# From your Alex ACT Edition workspace root:
+# From your Alex ACT workspace root:
 git clone https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin.git $env:TEMP\Alex_ACT_Illustrator_Plugin
 $src = "$env:TEMP\Alex_ACT_Illustrator_Plugin"
 

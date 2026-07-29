@@ -47,10 +47,4 @@ scratch/
 # workspace root. Verification output is scratch, never payload.
 .playwright-mcp/
 
-# Alex ACT Edition heir-local paths (not part of this repo's shipping shape;
-# guard against accidental commits if a heir clones the repo into a workspace)
-.github/skills/local/
-.github/prompts/local/
-.github/agents/local/
-.github/instructions/local/
 .github/scripts/local/

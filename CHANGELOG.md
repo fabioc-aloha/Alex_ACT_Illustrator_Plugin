@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Steward-maintained; retired dogfood `local/` mirror pattern (2026-07-29)
+
+Alex_ACT_Steward is now the maintainer of this repo. Two consequences shipped in the same change:
+
+- **Removed the dogfood `local/` skill and prompt mirror.** The pattern shipped skills at both `.github/skills/<name>/` (canonical) AND `.github/skills/local/<name>/` (dogfood copy loaded via `.vscode/settings.json` overrides), which required manual re-sync every time the canonical body was edited. In practice `flint-chart` drifted between the two; `chart-big-idea` and `render-verify` stayed identical only because they had not been edited since the mirror was created. Now the plugin authors its skills at the default discovery roots (`.github/skills/`, `.github/prompts/`) and VS Code Copilot finds them without any workspace override. Heir-side install target stays `.github/skills/local/` per Mall convention.
+- **`.vscode/settings.json` simplified.** The `chat.agentSkillsLocations` and `chat.promptFilesLocations` overrides are gone; the file now carries only `markdown.styles` plus a comment explaining the Steward-maintained shape. Heirs that install this plugin via Mall still need their own settings.json entries to register the `local/` roots (per README "Install").
+- **`.gitignore`** dropped the four `.github/{skills,prompts,agents,instructions}/local/` guard lines. They existed to prevent leakage from the upstream `microsoft/flint-chart` workspace where the plugin was born; that context is long past.
+
+### Identity refresh: constellation framing (2026-07-29)
+
+Post-rename Phase 2 cleanup. Not a behavior change; just aligns text with the current constellation shape.
+
+- Reframed the plugin from "An Alex — ACT Edition plugin" to "An Alex ACT constellation plugin, maintained by Alex_ACT_Steward, distributed via Alex ACT Plugin Mall" in `README.md` and `manifest.json`.
+- Fixed stale roadmap link `plan/illustrator-plugin.md` (Steward's pre-2026-07-29 path) to `illustrator/plan.md` (post-consolidation path) in `README.md`, `manifest.json`, and `docs/publishing-to-mall.md`.
+- Softened the "workspace root" install snippets in `README.md` from "Alex ACT Edition workspace root" to "Alex ACT workspace root" so the instructions read cleanly for both Edition compatibility heirs and Steward-maintained brains.
+- Prerequisite line updated: "Alex — ACT Edition ≥ 3.x" → "A configured Alex ACT installation (Edition compatibility heir OR Alex_ACT_Steward-maintained brain)".
+
 ### Bumped MCP pin to `^0.3.0` (2026-07-29)
 
 **Trigger:** the Microsoft corporate npm mirror
