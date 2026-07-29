@@ -10,7 +10,7 @@ An Alex ACT Edition plugin for chart selection and rendering:
 
 - **Three skills** — `chart-big-idea` (framing preflight — Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), `flint-chart` (selection + spec authoring against the [microsoft/flint-chart](https://github.com/microsoft/flint-chart) MCP server), and `render-verify` (verification — open the rendered artifact, read its console errors, walk the failure catalogs)
 - **One slash-command prompt** — `/render-chart` (loads all three skills, drives the end-to-end workflow)
-- **MCP sidecars** — `.vscode/mcp.json` spawning `flint-chart-mcp@^0.2.2` (required) and `@playwright/mcp@0.0.78` (optional — omit on hosts with built-in browser tools, e.g. VS Code) from npm via `npx`
+- **MCP sidecars** — `.vscode/mcp.json` spawning `flint-chart-mcp@^0.3.0` (required) and `@playwright/mcp@0.0.78` (optional — omit on hosts with built-in browser tools, e.g. VS Code) from npm via `npx`
 
 This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors a specific version at `plugins/data-analytics/flint-chart-plugin/`.
 

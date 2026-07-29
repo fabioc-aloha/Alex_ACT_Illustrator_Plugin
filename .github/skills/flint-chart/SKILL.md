@@ -82,7 +82,7 @@ authoring a spec no one can render.
        "flint": {
          "type": "stdio",
          "command": "npx",
-         "args": ["-y", "flint-chart-mcp@^0.2.2"],
+         "args": ["-y", "flint-chart-mcp@^0.3.0"],
        },
      },
    }
@@ -92,12 +92,16 @@ authoring a spec no one can render.
      omitting it makes transport-related failures harder to diagnose.
    - `npx -y` fetches the package on first use and caches it (~5-10 MB in the
      npm cache; ~1-2 s cold start).
-   - The `^0.2.2` pin is held deliberately, not through neglect. Public npm
-     `latest` is 0.4.0, but it is unreachable from Microsoft corporate machines,
-     whose npm mirror stops at 0.2.2. Do not advise a user to bump the pin
-     without checking `npm config get registry` first — a corporate mirror can
-     report a stale `latest` that is not the public one, and on such a machine a
-     `^0.4.0` pin fails with `ETARGET`.
+   - The `^0.3.0` pin was bumped from `^0.2.2` on 2026-07-29 after the
+     Microsoft corporate npm mirror (`packagefeedproxy.microsoft.io/npm/`)
+     caught up to 0.3.0. Caret on `0.x` means `>=0.3.0 <0.4.0`, so 0.4.x is
+     never picked up automatically. Public npm `latest` is 0.4.0, but it has
+     not been verified against this plugin's documented spec patterns from an
+     off-corpnet machine — see `HANDOFF.md` if that verification is worth
+     doing. Do not advise a user to bump the pin past 0.3.x without checking
+     `npm config get registry` first; a corporate mirror can report a
+     different `latest` than public npm, and on some machines a `^0.4.0` pin
+     still fails with `ETARGET`.
    - **Corporate / air-gapped:** if `npx` cannot reach the npm registry, ask
      the user to run `npm install -g flint-chart-mcp` once from a machine that
      can, then change `"command": "npx", "args": ["-y", "flint-chart-mcp"]` to
@@ -423,7 +427,7 @@ Recommend the substitute, not the missing chart:
 
 ### 0.5 When to fetch a deep reference
 
-Two authoritative external references, each with a distinct role. Fetch the one that matches the question:
+Four reference layers, ordered by cost. Fetch the cheapest one that answers the question.
 
 **Chart selection — "which chart for which analytical question?"**
 
@@ -436,7 +440,18 @@ Fetch [The Defensible Decision — Complete Chart Gallery](https://www.thedefens
 
 The gallery has 48 charts across 10 families with per-chart 💡 tips, distilled from Knaflic / Kirk / Few / Wexler.
 
-**Chart capability — "does Flint render this? which backend?"**
+**Chart capability — runtime (fastest, always matches the pinned server version)**
+
+Two runtime paths that need no fetch and always reflect the actual server the user has installed:
+
+- **`list_chart_types` MCP tool** — call with `{ backend: 'vegalite' | 'echarts' | 'chartjs' }` to get the current server's chart-type catalog and encoding channels. Zero-fetch; matches whatever `flint-chart-mcp` version is pinned.
+- **`flint://chart-types` MCP resource** — a browsable version of the same catalog, exposed as an MCP resource for hosts that surface resources in their UI (e.g., Claude Desktop). Same data, host-native display.
+
+Prefer these over external references when the question is "does the server I'm actually talking to render `<chartType>` on `<backend>`?" They cost nothing and cannot go stale.
+
+> **0.3.0 note.** The underlying `flint-chart` library ships **backend-neutral chart-type recommendation** and **chart-type transformation** APIs (public since 0.3.0), but these are NOT yet exposed as distinct MCP tools — they surface only through the interactive `create_chart_view` MCP App UI. On hosts that render the MCP App (Claude Desktop today; VS Code Copilot expected to follow), the user can switch between compatible chart types in the rendered view without rewriting the spec (e.g., dense Line Chart → compact Sparkline rows; the data roles are preserved). For headless workflows, keep using §0.2 and the `list_chart_types` catalog.
+
+**Chart capability — gallery (canonical live examples)**
 
 Fetch the canonical [Flint gallery](https://microsoft.github.io/flint-chart/#/gallery/vegalite) (maintained by the microsoft/flint-chart team; always tracks the current release) when:
 
@@ -447,7 +462,21 @@ Fetch the canonical [Flint gallery](https://microsoft.github.io/flint-chart/#/ga
 
 This is the authoritative reference for **what Flint actually does**; §0.2–0.4 above is the compact map, but the gallery is the source of truth for edge cases and backend-specific behavior.
 
-**Rule of thumb**: Defensible Decision answers "should I use a bar or a boxplot?"; the Flint gallery answers "will Flint's `Bar Chart` on ECharts backend do what I need?"
+**Chart capability — deep reference (per-backend catalogs + semantic types + API)**
+
+When the gallery is ambiguous or you need to compare all supported charts side-by-side in source form, fetch the upstream markdown at the `0.3.0` tag (matches the currently pinned server):
+
+- [`docs/reference-vegalite.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/reference-vegalite.md) — every Vega-Lite chart type with encoding channels and chart-property matrix (27 KB)
+- [`docs/reference-echarts.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/reference-echarts.md) — ECharts equivalent (14 KB)
+- [`docs/reference-chartjs.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/reference-chartjs.md) — Chart.js equivalent (8 KB)
+- [`docs/design-semantics.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/design-semantics.md) — the 70+ semantic types (`Rank`, `Temperature`, `Price`, `Country`, etc.) that drive Flint's automatic layout; reach for this when Step 3 (semantic type annotation) needs a value the inline list does not cover (45 KB)
+- [`docs/api-reference.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/api-reference.md) — canonical `ChartAssemblyInput` structure and every top-level field
+- [`docs/overview.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/overview.md) — high-level tour of the compilation pipeline; useful when explaining what Flint does to a new user
+- [`docs/README.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/README.md) — the docs index; walks all of the above and more
+
+These are pinned to `0.3.0` so what you read matches what the server renders. If the plugin pin moves past `0.3.0`, refresh the URLs to the new tag (or drop the tag suffix to track `main` — with the caveat that `main` runs ahead of the pinned server: 0.4.0 added the Excel backend with 18 chart templates and expanded the Plotly backend from 4 to 38 chart types, neither of which is reachable via the `^0.3.0` pin).
+
+**Rule of thumb**: Defensible Decision answers "should I use a bar or a boxplot?"; `list_chart_types` and the Flint gallery answer "will Flint's `Bar Chart` on ECharts backend do what I need?"; the deep reference (`docs/reference-*.md`) answers "what exact channels and properties does that combination support?".
 
 ### 0.6 Design principles (invoke, don't substitute for reading)
 
@@ -675,7 +704,8 @@ derived). Values are clamped to the ranges shown.
 relevant; set only to force non-default behavior):
 
 - `independentYAxis` (boolean) — faceted charts: give each panel its own
-  y-scale.
+  y-scale. **Not for Sparkline** — 0.3.0 removed this for Sparkline (rows
+  always self-scale now); it still applies to other faceted charts.
 - `logScale_x` / `logScale_y` (boolean) — force a logarithmic axis.
 - `includeZero_x` / `includeZero_y` (boolean) — force the axis to include 0.
 - `xAxisType` / `yAxisType` (`temporal` | `nominal`) — force a temporal
@@ -871,9 +901,10 @@ Before returning, verify:
 Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fires:
 
 - [_The Defensible Decision_ chart gallery](https://www.thedefensibledecision.com/gallery/chart-gallery.html) 404s or restructures such that the §0.5 deep-reference URLs no longer resolve — refresh the escalation targets or fold the needed tips into §0 directly.
+- Any of the §0.5 upstream deep-reference URLs (`docs/reference-vegalite.md`, `docs/reference-echarts.md`, `docs/reference-chartjs.md`, `docs/design-semantics.md`, `docs/api-reference.md`, `docs/overview.md`, `docs/README.md` at the `0.3.0` tag) 404 or move — refresh the URLs to the current pinned tag, or drop the tag suffix and accept `main` drift.
 - `flint-chart-mcp` ships a breaking change (chart-type rename, `ChartAssemblyInput` shape change, tool signature change) that this skill doesn't account for — sync §0.4 (Flint coverage) and the worked examples to the new version.
 - Any recommendation in §0.2 (question → family → chartType) is refuted by a source we trust (a case study, a Knaflic/Kirk/Few/Wexler update, or field feedback from ≥2 heir workspaces) — retire or rework that row.
 - The plugin gets ≥3 heir installs and none of them exercise §0.5 (deep-reference escalation) — that signals the compact table alone is sufficient and §0.5 is decorative; prune it.
 - The upstream fork base ([`microsoft/flint-chart/agent-skills/flint-chart-author/SKILL.md`](https://github.com/microsoft/flint-chart/blob/main/agent-skills/flint-chart-author/SKILL.md)) publishes a materially revised body — decide whether to rebase §1-N onto the new upstream or hold on the current fork point.
-- **Upstream absorbs chart selection itself.** `flint-chart` 0.3.0 shipped backend-neutral chart-type recommendations and transformations — the capability §0 exists to provide. If those recommendations become reachable through the MCP tools and match or beat §0.2 on the same question, §0 is redundant: call the upstream recommender and keep only the framing this plugin adds on top. Re-test when the pin moves past 0.2.2.
+- **Upstream absorbs chart selection itself.** `flint-chart` 0.3.0 shipped backend-neutral chart-type recommendations and transformations — the capability §0 exists to provide. The pin moved to `^0.3.0` on 2026-07-29 (see this plugin's `CHANGELOG.md`); the re-test that this falsifier calls for is now due. If those recommendations become reachable through the MCP tools and match or beat §0.2 on the same question, §0 is redundant: call the upstream recommender and keep only the framing this plugin adds on top.
 - **The backend list changes.** §0.4 and the worked examples assume Vega-Lite / ECharts / Chart.js. 0.4.0 adds Plotly (38 chart types, including Funnel, Gauge, and Density Contour) and Excel (18 native Office.js templates), which expands what "Flint can't express this" means. Re-check the coverage rules whenever `list_chart_types` reports a backend this skill does not name.

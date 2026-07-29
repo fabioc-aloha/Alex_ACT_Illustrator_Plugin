@@ -7,7 +7,130 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Decided — hold the pin at `^0.2.2`
+### Bumped MCP pin to `^0.3.0` (2026-07-29)
+
+**Trigger:** the Microsoft corporate npm mirror
+(`packagefeedproxy.microsoft.io/npm/`) caught up to `flint-chart-mcp@0.3.0` on
+2026-07-26 (or shortly after). The `^0.2.2` hold decision recorded below was
+contingent on the mirror stopping at 0.2.2; that constraint is gone.
+
+**Verified 2026-07-29** via `node scripts/verify-install.mjs`:
+
+```text
+      spec: flint-chart-mcp@^0.3.0  (from .vscode/mcp.json)
+OK    server: flint-chart-mcp v0.3.0
+OK    protocol: 2024-11-05
+OK    tools (5): render_chart, compile_chart, validate_chart, list_chart_types, create_chart_view
+```
+
+Same five tools with byte-identical TypeScript type definitions
+(`dist/server.d.ts` and `dist/render/index.d.ts` diff clean between 0.2.2 and
+0.3.0) — the plugin's tool-shape assumptions are safe drop-in.
+
+**What 0.3.0 adds** (all additive, no breaking API changes at the MCP surface):
+
+_New chart-type capacity_ — none. `list_chart_types` still returns the same
+~30 chart types across Vega-Lite, ECharts, and Chart.js. (The substantial
+new chart-type additions — Excel backend with 18 templates, Plotly backend
+expanded from 4 to 38 types — landed in 0.4.0, which is not reachable via
+the `^0.3.0` pin.)
+
+_Chart property additions_:
+
+- `dodge` prop on Grouped Bar + Boxplot (`auto` | `local` | `global`)
+- `sortSlices` prop on Pie + Rose Charts (`none` | `descending` | `ascending`)
+- `stackMode: center` value — streamgraph rendering via Area / Stacked Bar
+- `showTextLabels` prop on Waterfall — value labels on bars
+- Gantt: task-height, corner-radius, and interval-label controls
+
+_New public library APIs_ (not yet exposed as distinct MCP tools):
+
+- Backend-neutral **chart-type recommendation API** — programmatic access to
+  "here are compatible alternatives for this spec + data shape"
+- Backend-neutral **chart-type transformation API** — data-preserving
+  transitions between compatible chart types (Line → Sparkline, Bar →
+  Stacked Bar, etc.), plus arrangement controls
+- These surface only through the interactive `create_chart_view` MCP App UI
+  today; headless MCP tools (`render_chart`, `compile_chart`, `validate_chart`,
+  `list_chart_types`) are unchanged
+
+_MCP App (`create_chart_view`) UI additions_:
+
+- Dynamic controls to switch chart types, rearrange encodings, and edit chart
+  properties in place without rewriting the authored Flint spec
+- PNG copy, download, and reset actions in the widget
+
+_Documentation additions_:
+
+- Chinese-language website and translated documentation
+- Plugin skill now points at the upstream `docs/reference-*.md` per-backend
+  catalogs + `docs/design-semantics.md` (70+ semantic types) as deep
+  references, all pinned to the `0.3.0` tag
+
+_Rendering improvements (not user-facing API changes)_:
+
+- Sparse stacked areas and streamgraphs interpolate interior gaps instead of
+  dropping to zero
+- Vega-Lite axes and derived text marks share semantic formatting so currency
+  and other formatted aggregate values retain their intended units
+- Improved local dodge behavior for sparse grouped bars and boxplots
+
+**What 0.3.0 removes** — impact scan against this plugin's documented surface:
+
+| 0.3.0 removal | Plugin impact |
+| ------------- | ------------- |
+| Rose Chart `innerRadius` prop | **None.** The plugin's skills never document `innerRadius` on Rose; the prop only surfaces on Pie (Donut recipe), which is unchanged. |
+| `dodge: "none"` (Grouped Bar) | **None.** The plugin's `flint-chart` skill documents `auto` / `local` / `global` and never `none`. |
+| `independentYAxis` on Sparkline | **Handled in this bump.** Added an explicit "Not for Sparkline" note next to the cross-cutting `independentYAxis` property in `flint-chart` SKILL.md § Cross-cutting properties. Rows now always self-scale on Sparkline; the property still applies to other faceted charts. |
+
+**Files updated in this bump:**
+
+- `.vscode/mcp.json`, `manifest.json`, `scripts/verify-install.mjs`
+  (`FALLBACK_PACKAGE`)
+- `.github/copilot-instructions.md`
+- `.github/skills/flint-chart/SKILL.md` — pin literal in the mcp.json example,
+  the pin-rationale prose, the Sparkline `independentYAxis` exclusion, the
+  upstream-recommender re-test trigger in the _Would Revise If_ section, and
+  a restructured §0.5 (When to fetch a deep reference) that now covers four
+  reference layers ordered by cost:
+  - Chart selection — _The Defensible Decision_ gallery (unchanged)
+  - Chart capability, runtime — `list_chart_types` MCP tool +
+    `flint://chart-types` MCP resource (new; matches the pinned server
+    version, no fetch); includes a note on 0.3.0's recommendation and
+    transformation APIs, which are library-side and surface only through the
+    `create_chart_view` MCP App UI (no distinct MCP tool yet)
+  - Chart capability, gallery — canonical Flint gallery site (unchanged)
+  - Chart capability, deep reference — upstream `docs/reference-vegalite.md`,
+    `docs/reference-echarts.md`, `docs/reference-chartjs.md`,
+    `docs/design-semantics.md` (70+ semantic types),
+    `docs/api-reference.md`, `docs/overview.md`, `docs/README.md`, all
+    pinned to the `0.3.0` tag (new)
+- `README.md` — three `mcp.json` fragment examples, the global-install command,
+  the "last verified" date, and the "Pinned version" rationale paragraph
+- `demos/README.md` — pin reference in the intro paragraph
+
+**Still parked:** verifying `flint-chart-mcp@0.4.0` from an off-corpnet machine.
+Public npm `latest` is 0.4.0 but the corporate mirror still stops at 0.3.0.
+Caret on `^0.3.0` means `>=0.3.0 <0.4.0`, so the 0.4.0 verification remains its
+own workstream — see `HANDOFF.md`.
+
+**Follow-up not done in this bump** (per `HANDOFF.md` follow-up work list):
+
+- Item 2 (widen backend list from three to five) does not apply — 0.3.0 keeps
+  the three-backend surface. `list_chart_types` still returns Vega-Lite,
+  ECharts, and Chart.js. Widening is a 0.4.0-era task if it happens.
+- Item 3 (chart-type count widening) — same status; 0.3.0 keeps the 34
+  Vega-Lite chart-type count the README quotes.
+- Item 4 (§0 Chart Selection re-evaluation against 0.3.0's backend-neutral
+  recommender) is now due; the `flint-chart` SKILL.md _Would Revise If_ trigger
+  was updated to acknowledge it. Not done in this bump because it is a
+  substantial refactor, not a pin move.
+
+### Decided — hold the pin at `^0.2.2` (2026-07-25 — SUPERSEDED 2026-07-29)
+
+**Superseded** by the 0.3.0 bump above once the mirror caught up. Retained
+verbatim below as the historical record of why the pin held for the month
+between 2026-06-29 and 2026-07-26, and what conditions would move it.
 
 **The pin stays at `^0.2.2`, deliberately.** Caret on a `0.x` version means
 `>=0.2.2 <0.3.0`, so this is a real restriction, not a floor: 0.3.x and 0.4.x

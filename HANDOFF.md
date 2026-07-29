@@ -1,14 +1,33 @@
 # HANDOFF — verify `flint-chart-mcp` 0.4.0 off-corpnet
 
+> **Update 2026-07-29:** the pin was bumped `^0.2.2` → `^0.3.0` because the
+> Microsoft corporate npm mirror caught up to 0.3.0 (published 2026-07-19,
+> indexed on corpnet 2026-07-26 or later). The 0.4.0 verification task below
+> remains parked — public npm `latest` is still 0.4.0, and the mirror still
+> stops at 0.3.0. Two consequences for anyone picking this up:
+>
+> 1. The "Baseline to compare against (measured on 0.2.2, corpnet)" block
+>    below is out of date. Re-baseline against 0.3.0 first
+>    (`node scripts/verify-install.mjs --catalog --compat` on this machine
+>    should produce the new baseline), then compare 0.4.0 against that.
+> 2. The dual-range guidance below (`^0.2.2||^0.4.0`) is no longer the right
+>    shape. If 0.4.0 verifies clean, the dual range becomes
+>    `^0.3.0||^0.4.0` — same pattern, one version bracket higher.
+>
+> See `CHANGELOG.md` § Unreleased for the 0.3.0 bump details and the impact
+> assessment (0.3.0's three breaking changes were all safe for this plugin;
+> the one that touched documented content — Sparkline `independentYAxis` —
+> was handled in the bump).
+
 **Status:** parked — no urgency · **Raised:** 2026-07-25 · **Branch under test:** `bump/mcp-0.4.0`
 
-**Decision already taken:** the pin stays at `^0.2.2` (see the Unreleased
-section of [`CHANGELOG.md`](CHANGELOG.md)). Corpnet machines cannot install
-0.4.0 at all, so the upgrade buys them nothing and there is no deadline. This
-file stays available for whenever the repo is next opened on a machine with
-public npm access, or if the corporate mirror syncs 0.4.0.
+**Decision already taken:** the pin sits at `^0.3.0` as of 2026-07-29 (see the
+Unreleased section of [`CHANGELOG.md`](CHANGELOG.md)). Corpnet machines cannot
+install 0.4.0 at all, so the 0.4.0 upgrade buys them nothing and there is no
+deadline. This file stays available for whenever the repo is next opened on a
+machine with public npm access, or if the corporate mirror syncs 0.4.0.
 
-One task when that happens: prove 0.4.0 is a strict superset of 0.2.2 for this
+One task when that happens: prove 0.4.0 is a strict superset of 0.3.0 for this
 plugin, and capture the version-dependent facts the documentation would
 otherwise assert blindly.
 

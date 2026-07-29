@@ -3,7 +3,7 @@
     "flint": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "flint-chart-mcp@^0.2.2"]
+      "args": ["-y", "flint-chart-mcp@^0.3.0"]
     },
     "playwright": {
       "type": "stdio",

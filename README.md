@@ -274,7 +274,7 @@ first one that fails tells you where the fault is.
    chart types, and a render should produce an image.
 
 This repo runs the same four checks against its own [`.vscode/`](.vscode/) config —
-last verified 2026-07-25 against `flint-chart-mcp` 0.2.2 (MCP protocol
+last verified 2026-07-29 against `flint-chart-mcp` 0.3.0 (MCP protocol
 `2024-11-05`).
 
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).
@@ -329,7 +329,7 @@ The bundled `mcp.json` fragment is minimal:
   "servers": {
     "flint": {
       "command": "npx",
-      "args": ["-y", "flint-chart-mcp@^0.2.2"],
+      "args": ["-y", "flint-chart-mcp@^0.3.0"],
     },
   },
 }
@@ -344,7 +344,7 @@ The bundled `mcp.json` fragment is minimal:
   "servers": {
     "flint": {
       "command": "npx",
-      "args": ["-y", "flint-chart-mcp@^0.2.2", "--disable-file-reference"],
+      "args": ["-y", "flint-chart-mcp@^0.3.0", "--disable-file-reference"],
     },
   },
 }
@@ -359,7 +359,7 @@ The bundled `mcp.json` fragment is minimal:
       "command": "npx",
       "args": [
         "-y",
-        "flint-chart-mcp@^0.2.2",
+        "flint-chart-mcp@^0.3.0",
         "--backends",
         "vegalite,echarts",
       ],
@@ -371,7 +371,7 @@ The bundled `mcp.json` fragment is minimal:
 **Air-gapped / corporate npm firewall** — install once when online, then run without npx download:
 
 ```bash
-npm install -g flint-chart-mcp@0.2.2
+npm install -g flint-chart-mcp@0.3.0
 ```
 
 Then update the fragment:
@@ -380,7 +380,7 @@ Then update the fragment:
 { "servers": { "flint": { "command": "flint-chart-mcp", "args": [] } } }
 ```
 
-**Pinned version** — the pin is `^0.2.2` **by decision, not by lag**. Caret on a `0.x` version means `>=0.2.2 <0.3.0`, so 0.3.x and 0.4.x are never picked up automatically. Public npm `latest` is already 0.4.0, but it is unreachable from Microsoft corporate machines (their npm mirror stops at 0.2.2), and most heirs of this plugin are corpnet repos — so bumping would break more adopters than it helps. See the Unreleased section of [`CHANGELOG.md`](CHANGELOG.md) for the full rationale and the conditions that would change it. If you check versions yourself, run `npm config get registry` first: a corporate mirror can report a stale `latest` that is not the public one.
+**Pinned version** — the pin is `^0.3.0` as of 2026-07-29, bumped from `^0.2.2` after the Microsoft corporate npm mirror caught up to 0.3.0. Caret on a `0.x` version means `>=0.3.0 <0.4.0`, so 0.4.x is never picked up automatically. Public npm `latest` is 0.4.0, but has not been verified against this plugin's documented spec patterns from an off-corpnet machine — see [`HANDOFF.md`](HANDOFF.md) if that verification is worth doing. See the Unreleased section of [`CHANGELOG.md`](CHANGELOG.md) for the 0.3.0 bump details and the conditions for a further move. When checking versions yourself, run `npm config get registry` first: a corporate mirror can report a different `latest` than public npm.
 
 **Naming conflict** — if you already have a `flint` server registered, rename this one to `flint-chart` in your merged config. The skill and prompt reference the server by tool inventory, not by name.
 

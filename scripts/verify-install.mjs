@@ -18,7 +18,7 @@
 // `--compat` validates the chart-property patterns this plugin documents,
 // including every item from the 0.3.0 migration notes. Use it to decide whether
 // one set of skill content can serve two pinned versions at once: a dual range
-// like `^0.2.2||^0.4.0` is only safe if every pattern validates on both.
+// like `^0.3.0||^0.4.0` is only safe if every pattern validates on both.
 // A failing spec here does not fail the run — it is reported for judgment.
 //
 // No dependencies. Speaks newline-delimited JSON-RPC over stdio, which is what
@@ -32,7 +32,7 @@ import { fileURLToPath } from 'node:url';
 // Verify the spec the workspace actually asks for, not a copy of it. Reading
 // `.vscode/mcp.json` means bumping the pin in one place cannot leave this
 // checker silently validating a different version than the host will launch.
-const FALLBACK_PACKAGE = 'flint-chart-mcp@^0.2.2';
+const FALLBACK_PACKAGE = 'flint-chart-mcp@^0.3.0';
 const CONFIG_PATH = join(dirname(fileURLToPath(import.meta.url)), '..', '.vscode', 'mcp.json');
 
 function resolvePackage() {
