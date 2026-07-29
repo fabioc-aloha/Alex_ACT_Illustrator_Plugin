@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Sharpen the big-idea family with DDA illustration patterns, Phase 1 (2026-07-29)
+
+Absorbed the "partial coverage" items from a coverage-map audit against [Alex_DDA](https://github.com/fabioc-aloha/Alex_ACT_DDA) (Fabio Correa's book illustration studio for *The Defensible Decision*). Phase 1 covers items where the big-idea family already touched the concept but didn't formalize it. Backward-compatible: existing skill invocations produce the same output; the new content adds gates and catalog entries that fire when applicable.
+
+**`chart-big-idea` gains**:
+
+- **Step 0.5 — What earns a figure**: 5-criteria gate (compresses a decision rule / shows sequence / makes abstraction concrete / surfaces failure mode / anchors recurring concept) run between context-gathering (Step 0) and Big Idea drafting (Step 1). Includes the deletion test: if surrounding prose reads fine without the figure, the figure is decorative.
+- **Step 4.5 — Focus discipline**: one pre-attentive attribute per emphasis (colour OR size OR position, not all three), redundant encoding for accessibility (deuteranopia-simulate red/green pairings), BEFORE-only anti-pattern title discipline (neutral titles so the reader can diagnose the failure, paired BEFORE/AFTER can editorialize).
+
+**`render-verify` gains**:
+
+- Three new failure-catalog entries in "any rendered artifact":
+  - **SVG XML invalid** — `<img>`-strict parsers drop the document at the first error; `--` inside XML comments and bare `&` outside comments are the two common causes; fix in the generator, not the SVG.
+  - **Prose contradicts figure** — dataset moved, prose didn't; five surfaces drift.
+  - **Lazy-load blindness** — `loading="lazy"` on a coverage page verifies only what's in viewport; page can advertise 62 figures and fetch 7 without anyone noticing.
+- **New section: Prose-coupling check** — sweep 5 surfaces before shipping any published figure (Big Idea sentence, caption/alt text, anchoring paragraph, numeric claims, figure text that belongs in prose). Non-data lever preference: when numbers drift, look for a threshold or target that lives only in prose before rewriting the counts. Priority ladder for prose-vs-data conflicts.
+
+**`flint-chart` gains**:
+
+- **Publication config preset** for books / reports / exec-facing documents: Vega-Lite `config` block with `background: transparent`, `font: Inter, system-ui, sans-serif`, gray-500 axis labels, gray-800 axis titles, gray-100 grid, 18pt/700 title, and a 5-colour semantic categorical range (blue-800 correct, amber-700 Composition/warning, green-700 approval, gray-500 muted, red-700 rejection/target). Pin once at the top of the chart set; regenerated charts inherit.
+- **Report typography scale** for the surrounding HTML (title 18pt/700, section 14pt/700, body 15-16px, asides gray-500, REJECTED/APPROVED badge pills).
+- Cross-reference to the print-legibility floor (12px @ 640 viewBox = 5.93pt) with a forward-link to the `print-svg-style-guide` skill in Phase 2.
+
+All new content attributes *The Defensible Decision* (Fabio Correa) as the source discipline, via Alex_DDA's `dd-book-illustrator` skill.
+
+**Phase 2** (next release) will add two new baseline skills for the net-new items the big-idea family doesn't cover: `print-svg-style-guide` (canvas + typography grammar, Tailwind semantic palette, structural SVG composition idioms: BEFORE/AFTER paired panels, numbered critique callouts, family-band abstracts, 5-Visual Rule dashboards) and `figure-generator` (hand-authored `.mjs` pattern, `data-sha256` audit hash, dataset-first rule, contract tests pinning headline numbers, dataset inversion from approved sample SVG, fix-in-generator-not-SVG rule).
+
 ### docs-shell: HTML-source docs bypass shell wrapper (2026-07-29)
 
 A doc entry whose `sources[]` are all `.html` files now links directly to the file. The topnav still shows the button on line 2 with active-state styling, but clicking it loads the standalone HTML page rather than injecting into the shell's `#content` region. Any bookmark or external link that lands on `?area=X&doc=Y` where Y is HTML-only redirects immediately to the file via `window.location.replace` (back-button skips the shell hop). Reports that already own their own cover, hero, typography, and print styles (Flint chart reports, exported Power BI dashboards, static HTML tables) can now live in the shell nav without the shell trying to wrap them.

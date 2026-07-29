@@ -55,6 +55,22 @@ Before you ask the user for the Big Idea, look for it in the material they've al
 
 **Time budget**: Step 0 should take under a minute. If you're spelunking through 20 files trying to reconstruct intent, stop and ask the user — the doc genuinely doesn't have it.
 
+## Step 0.5: What earns a figure — the 5-criteria gate
+
+Before drafting the Big Idea, verify the figure earns its place. A figure earns its place when it does one (or more) of:
+
+1. **Compresses a decision rule** — matrix, decision tree, or before/after that turns branching prose into a single scan
+2. **Shows a temporal or procedural sequence** — a loop, flow, or timeline the prose can only enumerate
+3. **Makes an abstraction concrete** — labeled anatomy, storyboard, worked example that anchors an otherwise floating concept
+4. **Surfaces a hidden failure mode** — a side-by-side that reveals a defect the reader would miss in prose
+5. **Anchors a recurring visual concept** — a figure the reader will need to reference repeatedly across sections
+
+If none apply, the figure does not earn its place. Restate the claim as a sentence or a table instead. An unearned figure adds visual weight without adding argument, which weakens the surrounding argument.
+
+**Deletion test**: if the surrounding prose reads fine when the figure is removed, the figure is decorative. If the prose has to be substantially rewritten to compensate, the figure was doing real work.
+
+Adapted from _The Defensible Decision_ (Fabio Correa, Ch 5) via the `dd-book-illustrator` skill in Alex_DDA.
+
 ## Step 1: The Big Idea (one sentence)
 
 ### First, check the intent — not just the finding
@@ -160,6 +176,30 @@ Both are valid design choices. The tradeoff:
 | Ranking-with-context | Ranked `bar_chart`                  | Layered `lollipop_chart` overlaid on `strip_plot` (see AIRS fig07 ultimate for a worked example) |
 
 **Rule of thumb**: default to TRADITIONAL when the audience is glance-time or general-fluency. Default to INNOVATIVE when the audience is domain-fluent AND has 30+ seconds of study time AND the extra dimensions materially strengthen the Big Idea. When in doubt, ask.
+
+## Step 4.5: Focus discipline (executing the chosen stance)
+
+Style stance decides scope. Focus discipline decides execution. Three rules govern the mark-level choices once Step 4 has picked TRADITIONAL or INNOVATIVE.
+
+### One pre-attentive attribute per emphasis
+
+Colour, size, position, and typeface are pre-attentive attributes — the eye finds them without scanning. Use exactly one to mark the point of the Big Idea. Two adds no signal (the reader already found it). Three degrades the signal (the emphasis reads as random rather than intentional).
+
+Example: in a bar chart where the story is one region's shortfall, most bars in slate-300 and the story-carrying bar in blue-800 is enough. Adding stroke-width AND size on top is over-encoding.
+
+### Redundant encoding for accessibility
+
+When colour carries meaning (categorical distinction, severity, target vs actual), pair it with a second cue — shape, label, position, or texture. Roughly 8% of male readers cannot reliably distinguish red from green; a colour-only encoding fails them silently. Colour + shape and colour + label both survive deuteranopia.
+
+Deuteranopia-simulate any red/green pairing (browser DevTools, macOS Accessibility Inspector, or a color-blindness plug-in) before shipping.
+
+### BEFORE-only anti-pattern figures: neutral title
+
+When a figure teaches by showing failure (a flawed chart the reader is asked to diagnose), keep the title and subtitle neutral. "As generated" / "First draft" / "Cold Copilot output" describe the artifact state without previewing what's wrong. Editorializing in the title spoils the diagnostic task the figure exists to teach.
+
+Paired BEFORE/AFTER figures are the exception: the AFTER panel already reveals the argument, so the title can name it directly.
+
+Adapted from _The Defensible Decision_ (Fabio Correa, Ch 5-6) via the `dd-book-illustrator` skill in Alex_DDA.
 
 ## Step 5: Write the Chart Brief and hand off
 
