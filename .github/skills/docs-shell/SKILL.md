@@ -31,7 +31,7 @@ Do NOT fire when:
 
 **Manifest drives everything.** The shell reads `manifest.json` on load and renders whatever it declares. No filesystem discovery. Adding a doc = one JSON entry, no HTML changes.
 
-**Markdown stays authoritative.** MD files are for LLMs and GitHub-raw view. The shell is a viewer; it fetches, concatenates, and decorates. Never generate HTML into the repo.
+**Markdown stays authoritative.** MD files are the shell's primary source: fetched, concatenated, decorated. The shell is a viewer; never generate HTML *from* markdown into the repo. Pre-built HTML reports (Flint chart output, exported dashboards, tabular reports) are supported as an escape hatch: doc entries whose `sources[]` are all `.html` link directly to the file instead of being wrapped by the shell. See "Add an HTML-source doc" under Common tasks.
 
 **Two-line topnav.** Line 1 = brand slot + area buttons. Line 2 = documents of the active area. URL scheme is `?area=<id>&doc=<slug>` with cascading fallbacks (see reference for the full table).
 
