@@ -157,13 +157,17 @@ The plugin follows the Alex ACT constellation brand palette. Canonical machine-r
 
 Full brand-new-user walkthrough (four personas, five install stages, anti-patterns): see [`Alex_ACT_Steward/constellation/USER-EXPERIENCE.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md).
 
-### Method A — Copilot CLI plugin install (recommended)
+### Install from the Alex ACT Mall
+
+Register the mall as a marketplace (one-time, per machine):
 
 ```powershell
-# Direct from GitHub (works today):
-copilot plugin install fabioc-aloha/Alex_ACT_Illustrator_Plugin
+copilot plugin marketplace add fabioc-aloha/Alex_Skill_Mall
+```
 
-# Or via the Alex ACT Mall (already published, currently under legacy ID):
+Then install the illustrator plugin:
+
+```powershell
 copilot plugin install flint-chart-plugin@alex-mall
 ```
 
@@ -181,7 +185,7 @@ You should see either `flint-chart-plugin@alex-mall` (marketplace) or the plugin
 
 Then continue with [Registering the MCP servers](#registering-the-mcp-servers) below for the host-specific MCP wiring, and use the bundled checker to verify each capability end-to-end (see [Verify your install](#verify-your-install) further down).
 
-### Method B — manual copy for legacy Alex ACT Edition heirs
+### Legacy install for pre-plugin-era Alex ACT Edition heirs
 
 Pre-plugin-era Alex ACT Edition heirs (before the plugin-native lineage established on 2026-07-26) don't have `copilot plugin install` available. For that specific case, copy the plugin content into the heir's `.github/skills/local/` and `.github/prompts/local/` folders manually:
 
