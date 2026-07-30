@@ -134,11 +134,12 @@ Short version: vendor the current asset files into `Alex_ACT_Plugin_Mall/plugins
 
 ## Related
 
-| Resource                      | URL                                                                |
-| ----------------------------- | ------------------------------------------------------------------ |
-| Upstream flint-chart          | <https://github.com/microsoft/flint-chart>                         |
-| Alex ACT Edition (host)       | <https://github.com/fabioc-aloha/Alex_ACT_Edition>                 |
-| Alex ACT Plugin Mall (distro) | <https://github.com/fabioc-aloha/Alex_Skill_Mall>                  |
-| flint-chart-mcp on npm        | <https://www.npmjs.com/package/flint-chart-mcp>                    |
+| Resource                        | URL                                                                |
+| ------------------------------- | ------------------------------------------------------------------ |
+| Alex ACT Steward (lineage host) | <https://github.com/fabioc-aloha/Alex_ACT_Steward>                 |
+| Alex ACT Edition (v4.1.0 compat) | <https://github.com/fabioc-aloha/Alex_ACT_Edition>                |
+| Alex ACT Plugin Mall (distro)   | <https://github.com/fabioc-aloha/Alex_Skill_Mall>                  |
+| Upstream flint-chart            | <https://github.com/microsoft/flint-chart>                         |
+| flint-chart-mcp on npm          | <https://www.npmjs.com/package/flint-chart-mcp>                    |
 | Canonical Flint chart gallery | <https://microsoft.github.io/flint-chart/#/gallery/vegalite>       |
 | The Defensible Decision       | <https://www.thedefensibledecision.com/gallery/chart-gallery.html> |

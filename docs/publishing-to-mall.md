@@ -93,26 +93,41 @@ Weekly `[behaviour] catalog refresh` commits often land automatically — always
 $up = 'C:\Development\Alex_ACT_Illustrator_Plugin'
 $ma = 'C:\Development\Alex_ACT_Plugin_Mall\plugins\data-analytics\flint-chart-plugin'
 
-# Ensure target folder structure exists
-New-Item -ItemType Directory -Force -Path "$ma\skills\chart-big-idea" | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\flint-chart"    | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\render-verify"  | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\prompts"               | Out-Null
+# Ensure target folder structure exists (8 skill folders + prompts)
+New-Item -ItemType Directory -Force -Path "$ma\skills\chart-big-idea"        | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\chart-vocabulary"      | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\flint-chart"           | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\render-verify"         | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\print-svg-style-guide" | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\figure-generator"      | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\replicate-imagery"     | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\skills\docs-shell\starter"    | Out-Null
+New-Item -ItemType Directory -Force -Path "$ma\prompts"                      | Out-Null
 
-# Copy the five installable payload files byte-for-byte
-Copy-Item "$up\.github\skills\chart-big-idea\SKILL.md" -Destination "$ma\skills\chart-big-idea\SKILL.md" -Force
-Copy-Item "$up\.github\skills\flint-chart\SKILL.md"     -Destination "$ma\skills\flint-chart\SKILL.md"    -Force
-Copy-Item "$up\.github\skills\render-verify\SKILL.md"   -Destination "$ma\skills\render-verify\SKILL.md"  -Force
-Copy-Item "$up\.github\prompts\render-chart.prompt.md"  -Destination "$ma\prompts\render-chart.prompt.md" -Force
-Copy-Item "$up\.vscode\mcp.json"                        -Destination "$ma\mcp.json"                       -Force
+# Copy the ten installable payload files byte-for-byte (8 skills + 1 prompt + mcp.json)
+Copy-Item "$up\.github\skills\chart-big-idea\SKILL.md"        -Destination "$ma\skills\chart-big-idea\SKILL.md"        -Force
+Copy-Item "$up\.github\skills\chart-vocabulary\SKILL.md"      -Destination "$ma\skills\chart-vocabulary\SKILL.md"      -Force
+Copy-Item "$up\.github\skills\flint-chart\SKILL.md"           -Destination "$ma\skills\flint-chart\SKILL.md"           -Force
+Copy-Item "$up\.github\skills\render-verify\SKILL.md"         -Destination "$ma\skills\render-verify\SKILL.md"         -Force
+Copy-Item "$up\.github\skills\print-svg-style-guide\SKILL.md" -Destination "$ma\skills\print-svg-style-guide\SKILL.md" -Force
+Copy-Item "$up\.github\skills\figure-generator\SKILL.md"      -Destination "$ma\skills\figure-generator\SKILL.md"      -Force
+Copy-Item "$up\.github\skills\replicate-imagery\SKILL.md"     -Destination "$ma\skills\replicate-imagery\SKILL.md"     -Force
+Copy-Item "$up\.github\skills\docs-shell\SKILL.md"            -Destination "$ma\skills\docs-shell\SKILL.md"            -Force
+Copy-Item "$up\.github\skills\docs-shell\starter\index.html"  -Destination "$ma\skills\docs-shell\starter\index.html"  -Force
+Copy-Item "$up\.github\skills\docs-shell\starter\manifest.json" -Destination "$ma\skills\docs-shell\starter\manifest.json" -Force
+Copy-Item "$up\.github\skills\docs-shell\starter\about.md"    -Destination "$ma\skills\docs-shell\starter\about.md"    -Force
+Copy-Item "$up\.github\prompts\render-chart.prompt.md"        -Destination "$ma\prompts\render-chart.prompt.md"        -Force
+Copy-Item "$up\.vscode\mcp.json"                              -Destination "$ma\mcp.json"                              -Force
 
 # Copy the README (Mall renders this on the plugin's page)
 Copy-Item "$up\README.md" -Destination "$ma\README.md" -Force
 ```
 
+> **docs-shell bundled resources.** The `docs-shell` skill bundles a `starter/` kit (3 files: `index.html`, `manifest.json`, `about.md`) that adopters copy to their workspace root. These are payload, not documentation — vendor them alongside `SKILL.md`.
+
 ### 3. Rewrite relative references in the vendored README
 
-The Mall vendors only six files — no `assets/`, no `docs/`, no `.vscode/`. Every relative reference in the vendored README therefore resolves inside the Mall plugin folder and 404s. Rewrite both images **and** links to absolute upstream URLs. This keeps the vendored copy self-contained AND auto-tracking upstream changes without re-vendoring.
+The Mall vendors only the payload — no `assets/`, no `docs/`, no `.vscode/`. Every relative reference in the vendored README therefore resolves inside the Mall plugin folder and 404s. Rewrite both images **and** links to absolute upstream URLs. This keeps the vendored copy self-contained AND auto-tracking upstream changes without re-vendoring.
 
 ```pwsh
 $readmePath = "$ma\README.md"
@@ -149,7 +164,7 @@ The Mall's `plugin.json` is _not_ a copy of this repo's `manifest.json` — it u
 - `upstream.ref` — usually `main`; can be a specific commit SHA if pinning
 - `artifacts.skills`, `artifacts.prompts`, `artifacts.mcp` — paths _inside the Mall folder_ (e.g. `skills/chart-big-idea/SKILL.md`, not `.github/skills/…`)
 - `install_paths.*` — where a heir installs each artifact (`.github/skills/local/…`, `.vscode/mcp.json`, etc.)
-- `install_paths.mcp.merge_target` — **check this every time.** It is authored independently of the vendored files, so a wrong value here ships the bug even when all five payload files are byte-perfect. It must read `.vscode/mcp.json`.
+- `install_paths.mcp.merge_target` — **check this every time.** It is authored independently of the vendored files, so a wrong value here ships the bug even when all ten payload files are byte-perfect. It must read `.vscode/mcp.json`.
 - `token_cost` — no script derives it; scale the previous value by the measured payload-size change rather than switching estimator
 - `frontmatter.description` under each asset — copy the current description from the source file's frontmatter
 
@@ -177,11 +192,19 @@ git -C C:\Development\Alex_ACT_Plugin_Mall status --short
 
 # Vendored files should be byte-identical to upstream (except README + plugin.json)
 foreach ($p in @(
-  @('.github\skills\chart-big-idea\SKILL.md', 'skills\chart-big-idea\SKILL.md'),
-  @('.github\skills\flint-chart\SKILL.md',     'skills\flint-chart\SKILL.md'),
-  @('.github\skills\render-verify\SKILL.md',   'skills\render-verify\SKILL.md'),
-  @('.github\prompts\render-chart.prompt.md',  'prompts\render-chart.prompt.md'),
-  @('.vscode\mcp.json',                         'mcp.json')
+  @('.github\skills\chart-big-idea\SKILL.md',        'skills\chart-big-idea\SKILL.md'),
+  @('.github\skills\chart-vocabulary\SKILL.md',      'skills\chart-vocabulary\SKILL.md'),
+  @('.github\skills\flint-chart\SKILL.md',           'skills\flint-chart\SKILL.md'),
+  @('.github\skills\render-verify\SKILL.md',         'skills\render-verify\SKILL.md'),
+  @('.github\skills\print-svg-style-guide\SKILL.md', 'skills\print-svg-style-guide\SKILL.md'),
+  @('.github\skills\figure-generator\SKILL.md',      'skills\figure-generator\SKILL.md'),
+  @('.github\skills\replicate-imagery\SKILL.md',     'skills\replicate-imagery\SKILL.md'),
+  @('.github\skills\docs-shell\SKILL.md',            'skills\docs-shell\SKILL.md'),
+  @('.github\skills\docs-shell\starter\index.html',   'skills\docs-shell\starter\index.html'),
+  @('.github\skills\docs-shell\starter\manifest.json', 'skills\docs-shell\starter\manifest.json'),
+  @('.github\skills\docs-shell\starter\about.md',     'skills\docs-shell\starter\about.md'),
+  @('.github\prompts\render-chart.prompt.md',        'prompts\render-chart.prompt.md'),
+  @('.vscode\mcp.json',                              'mcp.json')
 )) {
   $uh = (Get-FileHash "$up\$($p[0])").Hash.Substring(0, 12)
   $mh = (Get-FileHash "$ma\$($p[1])").Hash.Substring(0, 12)
@@ -197,7 +220,7 @@ $maVersion = (Get-Content "$ma\plugin.json" -Raw | ConvertFrom-Json).version
 "upstream=$upVersion  mall=$maVersion  $(if($upVersion -eq $maVersion){'MATCH'}else{'MISMATCH — fix plugin.json before commit'})"
 ```
 
-All five vendored payload files should report `IDENT`. `plugin.json` should parse and return the correct `name` + `version`, and the version-consistency line should report `MATCH`.
+All 13 vendored payload files should report `IDENT` (8 skill SKILL.md + 3 docs-shell/starter files + 1 prompt + mcp.json). `plugin.json` should parse and return the correct `name` + `version`, and the version-consistency line should report `MATCH`.
 
 ### 7. Commit and push
 
@@ -206,7 +229,7 @@ cd C:\Development\Alex_ACT_Plugin_Mall
 
 git add -A
 git commit -m "[behaviour] flint-chart-plugin - vendor v<X.Y.Z>" `
-           -m "Sync from upstream fabioc-aloha/Alex_ACT_Illustrator_Plugin@<short-sha> (repo renamed 2026-07-29 from flint-chart-plugin; Mall directory + Copilot plugin ID retained under old name during transition). Byte-identical vendoring of the five installable payload files (3 skills + 1 prompt + mcp.json). README updated to use absolute raw.githubusercontent.com URLs for image references (Mall does not vendor the assets/ folder). Curation-log entry [PLUGIN-UPDATE] appended."
+           -m "Sync from upstream fabioc-aloha/Alex_ACT_Illustrator_Plugin@<short-sha> (repo renamed 2026-07-29 from flint-chart-plugin; Mall directory + Copilot plugin ID retained under old name during transition). Byte-identical vendoring of the ten installable payload files (8 skills + 1 prompt + mcp.json), plus the docs-shell starter bundle (3 files). README updated to use absolute raw.githubusercontent.com URLs for image references (Mall does not vendor the assets/ folder). Curation-log entry [PLUGIN-UPDATE] appended."
 
 # Rebase against origin one more time in case the weekly cron landed while you were working
 git pull --rebase origin main
@@ -281,10 +304,10 @@ contains your vendor commit SHA — not the previous one.
 
 Before declaring the publish complete:
 
-- [ ] Byte-identical vendored files (3 skills, 1 prompt, mcp.json) — `Get-FileHash` matches
+- [ ] Byte-identical vendored files (8 skills + 3 docs-shell/starter files + 1 prompt + mcp.json = 13 payload files) — `Get-FileHash` matches
 - [ ] `plugin.json` version matches upstream `manifest.json` version
 - [ ] `plugin.json` `install_paths.mcp.merge_target` reads `.vscode/mcp.json`
-- [ ] `plugin.json` marks the `playwright` server optional and the `flint` server required
+- [ ] `plugin.json` marks the `replicate` and `playwright` servers optional and the `flint` server required
 - [ ] Mall README has zero relative image refs **and** zero relative links
 - [ ] `node scripts/validate-catalog.cjs` passes in the Mall clone
 - [ ] Mall README image `src` attributes use `raw.githubusercontent.com/...` (no `src="assets/…"` remains)
