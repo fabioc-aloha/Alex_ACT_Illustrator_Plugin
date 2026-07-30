@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### svg-banner absorption (2026-07-30)
+
+Absorbed the `svg-banner` skill + `banner.prompt.md` from `Alex_ACT_Steward` per Fabio directive ("svg-banner should only be in the illustrator"). Fifth feature area added to the plugin.
+
+- **New skill: `svg-banner`** — 1200×320 SVG brand banner generator with pluggable brand config. Default brand is Alex ACT (slate-900 background, emerald-teal-cyan accent, x-loop mark, ACT/EDITION/SUPERVISOR/HEIR watermarks); heirs override `banner-brand.json` + `brand-palette.json` for their own brand + watermark set. Byte-identical port from Steward (MD5-verified): `SKILL.md` (11790 B), `assets/mark-mono-emerald-256.png` (17150 B), `scripts/generate-banner.cjs` (12322 B).
+- **New prompt: `/banner`** — verb-prompt workflow entry point that invokes the `svg-banner` skill. Byte-identical port from Steward (3651 B).
+- **Manifest shape**: `eight-skill + one-prompt + three-mcp-sidecars + vscode-settings` → `nine-skill + two-prompt + three-mcp-sidecars + vscode-settings`.
+- **Version bump**: `0.5.1` → `0.6.0` (minor, additive).
+- **README**: gains 2 rows in "What ships" table.
+
+**Not carried from Steward yet**: routing pointers back in Steward for `svg-banner` + cross-ref updates in Steward's `flint-chart`/`browser-tools`/`markdown-mermaid` skills. Steward-side companion commits happen separately.
+
 ### Shell topnav-sub multi-row polish (2026-07-30)
 
 Small CSS refinement to the canonical `docs-shell/starter/index.html` shell for cleaner multi-row nav wrap when an area contains many docs.

@@ -1,8 +1,8 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "0.5.1",
-  "shape": "eight-skill + one-prompt + three-mcp-sidecars + vscode-settings",
-  "description": "Visual-authoring bundle for AI agents. Eight skills organized into four feature areas: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in The Defensible Decision), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), and Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports). Shared framing gate (chart-big-idea Step 0.5) and verification pass (render-verify Prose-coupling) apply across all features. Alex ACT constellation plugin, maintained by Alex_ACT_Steward. Renamed from flint-chart-plugin on 2026-07-29; see illustrator/plan.md in Alex_ACT_Steward for roadmap and provenance.",
+  "version": "0.6.0",
+  "shape": "nine-skill + two-prompt + three-mcp-sidecars + vscode-settings",
+  "description": "Visual-authoring bundle for AI agents. Nine skills organized into five feature areas: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in The Defensible Decision), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports), and Banner (1200×320 SVG brand banners with pluggable brand config, absorbed from Alex_ACT_Steward on 2026-07-30 per Fabio directive). Shared framing gate (chart-big-idea Step 0.5) and verification pass (render-verify Prose-coupling) apply across all features. Alex ACT constellation plugin, maintained by Alex_ACT_Steward. Renamed from flint-chart-plugin on 2026-07-29; see illustrator/plan.md in Alex_ACT_Steward for roadmap and provenance.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
   "authors": [
@@ -105,6 +105,27 @@
         "frontmatter": {
           "description": "Route AI image generation and editing requests to Replicate (FLUX, Ideogram, Recraft, SDXL, imagen) via the bundled `replicate` MCP server. Use when a document, book, or report needs an illustration, hero image, character/concept art, photorealistic scene, or style-transferred image that neither Flint (data charts), Mermaid (technical diagrams), nor svg-banner (brand banners) can produce. Composes with Replicate's upstream agent skills (prompt-images, find-models, run-models, compare-models, prompt-videos) installable via `npx skills add replicate/skills`. Requires `REPLICATE_API_TOKEN`."
         }
+      },
+      {
+        "name": "svg-banner",
+        "path": ".github/skills/svg-banner/SKILL.md",
+        "install_to": ".github/skills/local/svg-banner/SKILL.md",
+        "role": "1200×320 SVG brand banner generator with pluggable brand config; default is Alex ACT (slate-900 bg, emerald-teal-cyan accent, x-loop mark) but heirs override banner-brand.json + brand-palette.json for their own brand. Absorbed from Alex_ACT_Steward on 2026-07-30 per Fabio directive (svg-banner should only be in the illustrator).",
+        "frontmatter": {
+          "description": "Generate 1200×320 SVG banners for READMEs, plans, notes, and release artifacts. Ships with a pluggable brand config: default is the Alex ACT brand (slate-900 background, emerald-teal-cyan accent, x-loop mark, ACT/EDITION/SUPERVISOR/HEIR watermarks) but heirs override banner-brand.json + brand-palette.json for their own brand and watermark set. Use when authoring a doc header, plan hero, release announcement, or any place a 1200×320 branded banner belongs. Not a chart, not a diagram, not an AI-generated illustration — a deterministic hand-crafted brand mark rendered as inline SVG."
+        },
+        "bundled_resources": [
+          {
+            "path": ".github/skills/svg-banner/assets/mark-mono-emerald-256.png",
+            "install_to": ".github/skills/local/svg-banner/assets/mark-mono-emerald-256.png",
+            "role": "Alex ACT default mark (256px monochrome emerald x-loop) — heirs override with their own brand mark PNG"
+          },
+          {
+            "path": ".github/skills/svg-banner/scripts/generate-banner.cjs",
+            "install_to": ".github/skills/local/svg-banner/scripts/generate-banner.cjs",
+            "role": "Node CLI generator — reads brand-palette.json + banner-brand.json, produces 1200×320 SVG. Flags: --brand-config <path>, --palette-config <path>, --title, --subtitle, --watermark, --out."
+          }
+        ]
       }
     ],
     "prompts": [
@@ -115,6 +136,15 @@
         "role": "verb-prompt workflow entry point (/render-chart)",
         "frontmatter": {
           "description": "Pick the right chart for the user's data + question, then author, render, and verify it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, the flint-chart skill for selection and rendering, and the render-verify skill to confirm the render actually says what it was meant to say."
+        }
+      },
+      {
+        "name": "banner",
+        "path": ".github/prompts/banner.prompt.md",
+        "install_to": ".github/prompts/local/banner.prompt.md",
+        "role": "verb-prompt workflow entry point (/banner)",
+        "frontmatter": {
+          "description": "Generate a 1200×320 SVG banner using the active brand config (default: Alex ACT), with title, subtitle, and watermark. Use for READMEs, plans, notes, and release artifacts."
         }
       }
     ],
