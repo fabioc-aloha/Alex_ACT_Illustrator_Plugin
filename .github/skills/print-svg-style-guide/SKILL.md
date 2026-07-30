@@ -1,6 +1,6 @@
 ---
 name: print-svg-style-guide
-description: "Author print-quality SVG figures for books, reports, and exec-facing documents. Ships the canvas + typography grammar (viewBoxes, print-legibility floor with math, type hierarchy, font stack, data-print-role markers, text-fits ladder), a Tailwind-grounded semantic palette (Blue = correct, Red = critique, Green = approval, Amber triple-duty, Grays scaffolding), and four structural composition idioms (BEFORE/AFTER paired panels with badges, numbered critique callouts, family-band abstracts, 5-Visual Rule dashboards). Use when authoring SVG figures for print, when reviewing a figure for print legibility, or when picking colours for a figure whose colours will carry meaning across a book or report."
+description: "Author print-quality SVG figures for books, reports, and exec-facing documents. Ships the canvas + typography grammar (viewBoxes, print-legibility floor with math, type hierarchy, font stack, data-print-role markers, text-fits ladder), a Tailwind-grounded semantic palette (Blue = correct, Red = critique, Green = approval, Amber triple-duty, Grays scaffolding), and four structural composition idioms (BEFORE/AFTER paired panels with badges, numbered critique callouts, family-band abstracts, 5-Visual Rule dashboards). Use when authoring SVG figures for print, when reviewing a figure for print legibility, or when picking colors for a figure whose colors will carry meaning across a book or report."
 lastReviewed: 2026-07-29
 ---
 
@@ -15,7 +15,7 @@ Complements the big-idea family: `big-idea` and `chart-big-idea` decide what the
 - Authoring a new SVG figure for a book, report, or exec-facing document
 - Reviewing an existing figure for print-legibility, palette consistency, or composition
 - Picking canvas dimensions when the target is print + on-screen
-- Deciding a colour role for a new figure that will co-exist with other figures in the same artifact
+- Deciding a color role for a new figure that will co-exist with other figures in the same artifact
 - Composing a BEFORE/AFTER paired panel, a numbered critique callout, a family-band abstract, or a dashboard subject to the 5-Visual Rule
 
 ## Canvas + font stack
@@ -83,15 +83,15 @@ A figure whose subject IS bad typography (collapsed hierarchy, unreadable clutte
 
 | Role                  | Style                                        | Notes                                                                                                                            |
 | --------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Figure title          | 18px / 700 / `#1f2937` / centred / y≈22-28   | 16px for very tall figures                                                                                                       |
-| Subtitle              | 12px italic / `#6b7280` / centred / y≈40-48  | One-line takeaway                                                                                                                |
-| Source note           | 9px / `#6b7280` / centred / y≈64             | Only when synthetic dataset needs attribution. Requires `data-print-role="micro"`                                                |
+| Figure title          | 18px / 700 / `#1f2937` / centered / y≈22-28   | 16px for very tall figures                                                                                                       |
+| Subtitle              | 12px italic / `#6b7280` / centered / y≈40-48  | One-line takeaway                                                                                                                |
+| Source note           | 9px / `#6b7280` / centered / y≈64             | Only when synthetic dataset needs attribution. Requires `data-print-role="micro"`                                                |
 | Panel title           | 13px / 700 / `#1f2937` / left / x+12 / y+22  |                                                                                                                                  |
 | Panel subtitle        | 12px italic / `#6b7280` / left               |                                                                                                                                  |
 | Body / data           | 12px / `#1f2937` (data) or `#6b7280` (axis)  | 12px is the instructional minimum                                                                                                |
 | Axis tick labels      | 12px / `#6b7280`                             | If ticks crowd at 12px, reduce tick COUNT or abbreviate values. Never shrink below 12px                                          |
 | KPI number            | 14px / 700 / `#1e40af` inside white card     |                                                                                                                                  |
-| Category label        | 12px / 700 / coloured to match family accent | e.g., `COMPARISON` in `#1d4ed8`                                                                                                  |
+| Category label        | 12px / 700 / colored to match family accent | e.g., `COMPARISON` in `#1d4ed8`                                                                                                  |
 
 ## `data-print-role` markers (how to mark below-floor text safely)
 
@@ -104,7 +104,7 @@ Both share the 2.9pt floor. The taxonomy exists because a coverage scanner other
 
 ## Tailwind-grounded semantic palette
 
-Colour carries meaning — pick from this palette rather than introducing new hues. Consistency across chapters is the reader's cross-reference tool.
+Color carries meaning — pick from this palette rather than introducing new hues. Consistency across chapters is the reader's cross-reference tool.
 
 > **Relationship to the constellation brand palette.** These are the **print variants** of the Alex ACT semantic role coding — darker Tailwind values (gray-800, blue-800, amber-700) tuned for high-contrast on white paper. The **screen variants** (`ddf4ff` pastels for mermaid classDefs, banner emerald `#10b981`) live in [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Steward`. Same semantic roles across both variants (Input / Output / Processing / Decision / Error / Neutral); different lightness for the target surface.
 
@@ -139,13 +139,13 @@ Colour carries meaning — pick from this palette rather than introducing new hu
 | `#fee2e2`                         | red-100                     | Rejection-callout background box                                                                          |
 | `#15803d`                         | green-700                   | APPROVED badge (paired with red rejection)                                                                |
 | `#7c2d12`                         | orange-900 ("burgundy")     | Additional dark accent for a second critique tone                                                         |
-| `#b45309`                         | amber-700                   | (a) Composition chart family label; (b) footer-takeaway strip colour at bottom of many figures            |
+| `#b45309`                         | amber-700                   | (a) Composition chart family label; (b) footer-takeaway strip color at bottom of many figures            |
 | `#d97706` / `#f59e0b` / `#fbbf24` | amber-600 → 400             | Composition-family data gradient                                                                          |
 | `#fef3c7`                         | amber-50 ("warning yellow") | (a) Composition-family background; (b) warning / caution callout box background                           |
 
 ### Semantic discipline
 
-Colour carries meaning; role depends on figure context.
+Color carries meaning; role depends on figure context.
 
 - **Blue family** = correct / principled / primary emphasis
 - **Red** = rejection / critique / must-fix / target-line (never decorative)
@@ -194,7 +194,7 @@ Skeleton:
 Used to walk the reader through a sequence of defects in a single flawed artifact. Each number matches a paragraph in the chapter body.
 
 - Red-700 circle radius 10, top-right of each sub-panel or callout region
-- White bold number 12pt/700 centred inside
+- White bold number 12pt/700 centered inside
 - Sequential numbering 1, 2, 3, 4 matches the prose walkthrough
 - Prose in the chapter body references the number, not the visual position
 
@@ -209,10 +209,10 @@ Place the circle at the top-right of the region being called out. If two numbers
 
 ### 3. Family-band abstract figures
 
-Used to compare 5 related concepts (chart families, decision moves, verification steps) side-by-side. Each band gets its own accent colour matched to the family it represents.
+Used to compare 5 related concepts (chart families, decision moves, verification steps) side-by-side. Each band gets its own accent color matched to the family it represents.
 
 - 5 vertical panels side-by-side, each ~115px wide
-- Panel border: 1.5px in family accent colour (blue-700, amber-700, purple-700, green-700, red-700)
+- Panel border: 1.5px in family accent color (blue-700, amber-700, purple-700, green-700, red-700)
 - Panel background: matching 50-tone (blue-50, amber-50, purple-50, green-50, red-50)
 - Category label at top: 12pt/700 in family accent
 - Italic question quote: 12pt italic in gray-500 ("Which is larger?", "What share?")
@@ -236,7 +236,7 @@ Used for dashboard-shaped figures. From dashboard-design literature (Wexler / Sh
 
 - ≤5 visuals per dashboard
 - One dominant KPI (largest single visual, top-left, blue-800 emphasis)
-- Position → size → colour hierarchy (readers scan top-left to bottom-right; big elements before small; bright before muted)
+- Position → size → color hierarchy (readers scan top-left to bottom-right; big elements before small; bright before muted)
 - **Blurred-thumbnail test**: shrink the figure to thumbnail size and apply Gaussian blur. The dominant KPI should still be identifiable. If the blur destroys the hierarchy, position or size is wrong.
 - **Mobile-preserved hierarchy**: mentally re-flow the dashboard as a single column. The reading order should still make sense.
 
@@ -253,7 +253,7 @@ Used for dashboard-shaped figures. From dashboard-design literature (Wexler / Sh
 | Shrink text below 12px to fit more in                          | The instructional floor exists for the reader; going below it fails them silently      |
 | Use `data-print-role="micro"` on instructional content         | The taxonomy is not an escape hatch; instructional means the reader has to read it     |
 | Ship an anti-pattern figure below the floor                    | The gate cannot distinguish deliberate from accidental illegibility                    |
-| Skip the deuteranopia check on red/green pairings              | Roughly 8% of male readers see them the same; colour + shape or colour + label survive |
+| Skip the deuteranopia check on red/green pairings              | Roughly 8% of male readers see them the same; color + shape or color + label survive |
 
 ## Related skills
 
@@ -261,14 +261,14 @@ Used for dashboard-shaped figures. From dashboard-design literature (Wexler / Sh
 - [`flint-chart`](../flint-chart/SKILL.md) § Publication config preset — pins the Vega-Lite `config` block that emits statistical charts obeying this style guide.
 - [`render-verify`](../render-verify/SKILL.md) § Prose-coupling check — verifies the surrounding prose after the figure ships.
 - [`figure-generator`](../figure-generator/SKILL.md) — the engineering discipline that emits SVGs conforming to this guide (`.mjs` generators, `data-sha256` audit hash, contract tests).
-- [`markdown-mermaid`](../markdown-mermaid/SKILL.md) — sibling for Mermaid-authored diagrams (different rendering model, shares palette discipline where colours carry meaning).
+- [`markdown-mermaid`](../markdown-mermaid/SKILL.md) — sibling for Mermaid-authored diagrams (different rendering model, shares palette discipline where colors carry meaning).
 
 ## Would revise if
 
 The floor formula, palette, or composition idioms have failed if any of the following occur within 90 days:
 
 - A figure shipped through this skill's discipline fails a print-legibility audit that this skill was supposed to prevent
-- Adopters report the semantic-palette rules are ambiguous ≥3 times in a quarter (colour role unclear)
+- Adopters report the semantic-palette rules are ambiguous ≥3 times in a quarter (color role unclear)
 - The `data-print-role="note"` auto-promote rule (≥40 chars) misses a class of content it should catch
 - The 5-Visual Rule dashboard blurred-thumbnail test is skipped ≥3 times because the tooling is too heavy
 

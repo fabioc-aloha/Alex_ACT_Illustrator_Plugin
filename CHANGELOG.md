@@ -26,7 +26,7 @@ New baseline skill for statistical chart selection. Adapted from the `visual-voc
 - **CSAR evaluation loop** (Composition / Semantic role / Audience / Reveal) for weighing chart candidates against the Big Idea.
 - **Override decision table** for when an AI-suggested chart type is defensible vs when to route back to the Big Idea.
 - **5-Visual Rule** with audience-composition guidance.
-- **Five living-gallery pointers** — FT Visual Vocabulary, Data-to-Viz, Data Viz Catalogue, Vega-Lite examples, Storytelling with Data — as external references the skill deliberately does not duplicate.
+- **Five living-gallery pointers** — FT Visual Vocabulary, Data-to-Viz, Data Viz Catalog, Vega-Lite examples, Storytelling with Data — as external references the skill deliberately does not duplicate.
 - **6-step chart selection decision tree** as the fast-path router when the goal is obvious.
 
 **Cross-linking**:
@@ -109,7 +109,7 @@ Absorbed the "partial coverage" items from a coverage-map audit against [Alex_DD
 **`chart-big-idea` gains**:
 
 - **Step 0.5 — What earns a figure**: 5-criteria gate (compresses a decision rule / shows sequence / makes abstraction concrete / surfaces failure mode / anchors recurring concept) run between context-gathering (Step 0) and Big Idea drafting (Step 1). Includes the deletion test: if surrounding prose reads fine without the figure, the figure is decorative.
-- **Step 4.5 — Focus discipline**: one pre-attentive attribute per emphasis (colour OR size OR position, not all three), redundant encoding for accessibility (deuteranopia-simulate red/green pairings), BEFORE-only anti-pattern title discipline (neutral titles so the reader can diagnose the failure, paired BEFORE/AFTER can editorialize).
+- **Step 4.5 — Focus discipline**: one pre-attentive attribute per emphasis (color OR size OR position, not all three), redundant encoding for accessibility (deuteranopia-simulate red/green pairings), BEFORE-only anti-pattern title discipline (neutral titles so the reader can diagnose the failure, paired BEFORE/AFTER can editorialize).
 
 **`render-verify` gains**:
 
@@ -121,7 +121,7 @@ Absorbed the "partial coverage" items from a coverage-map audit against [Alex_DD
 
 **`flint-chart` gains**:
 
-- **Publication config preset** for books / reports / exec-facing documents: Vega-Lite `config` block with `background: transparent`, `font: Inter, system-ui, sans-serif`, gray-500 axis labels, gray-800 axis titles, gray-100 grid, 18pt/700 title, and a 5-colour semantic categorical range (blue-800 correct, amber-700 Composition/warning, green-700 approval, gray-500 muted, red-700 rejection/target). Pin once at the top of the chart set; regenerated charts inherit.
+- **Publication config preset** for books / reports / exec-facing documents: Vega-Lite `config` block with `background: transparent`, `font: Inter, system-ui, sans-serif`, gray-500 axis labels, gray-800 axis titles, gray-100 grid, 18pt/700 title, and a 5-color semantic categorical range (blue-800 correct, amber-700 Composition/warning, green-700 approval, gray-500 muted, red-700 rejection/target). Pin once at the top of the chart set; regenerated charts inherit.
 - **Report typography scale** for the surrounding HTML (title 18pt/700, section 14pt/700, body 15-16px, asides gray-500, REJECTED/APPROVED badge pills).
 - Cross-reference to the print-legibility floor (12px @ 640 viewBox = 5.93pt) with a forward-link to the `print-svg-style-guide` skill in Phase 2.
 

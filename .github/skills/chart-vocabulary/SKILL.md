@@ -1,6 +1,6 @@
 ---
 name: chart-vocabulary
-description: "Reference catalog of chart types organized by seven communication goals (comparison, change-over-time, proportion, distribution, relationship, flow, deviation), plus a CSAR evaluation loop for AI-generated chart choices, override decision table, 5-visual rule for dashboard density, living gallery pointers (FT Visual Vocabulary, Data-to-Viz, Data Viz Catalogue, Vega-Lite examples, Storytelling with Data), and a 6-step selection algorithm. Use when picking a chart type, evaluating an AI-suggested chart, reviewing chart choices for story-intent alignment, sanity-checking a dashboard's density, or explaining chart taxonomy to a heir."
+description: "Reference catalog of chart types organized by seven communication goals (comparison, change-over-time, proportion, distribution, relationship, flow, deviation), plus a CSAR evaluation loop for AI-generated chart choices, override decision table, 5-visual rule for dashboard density, living gallery pointers (FT Visual Vocabulary, Data-to-Viz, Data Viz Catalog, Vega-Lite examples, Storytelling with Data), and a 6-step selection algorithm. Use when picking a chart type, evaluating an AI-suggested chart, reviewing chart choices for story-intent alignment, sanity-checking a dashboard's density, or explaining chart taxonomy to a heir."
 lastReviewed: 2026-07-30
 ---
 
@@ -175,7 +175,7 @@ Use these galleries to browse real examples when Module 1's tables aren't enough
 | --- | --- | --- | --- |
 | **FT Visual Vocabulary** | [ft-interactive.github.io/visual-vocabulary](https://ft-interactive.github.io/visual-vocabulary/) | Communication goal | Choosing chart type by what you want to say |
 | **From Data to Viz** | [data-to-viz.com](https://www.data-to-viz.com/) | Data type and relationship | Choosing chart type by what your data looks like |
-| **Data Viz Catalogue** | [datavizcatalogue.com](https://datavizcatalogue.com/) | Chart function | Understanding individual chart strengths/weaknesses |
+| **Data Viz Catalog** | [datavizcatalogue.com](https://datavizcatalogue.com/) | Chart function | Understanding individual chart strengths/weaknesses |
 | **Vega-Lite Examples** | [vega.github.io/vega-lite/examples](https://vega.github.io/vega-lite/examples/) | Chart type | Declarative spec examples for programmatic generation |
 | **Storytelling with Data** | [community.storytellingwithdata.com/exercises](https://community.storytellingwithdata.com/exercises) | Story challenge | Real-world "makeover" exercises with before / after |
 
@@ -222,7 +222,7 @@ Run this algorithm when choosing charts for a dashboard, report, or book figure:
 
 The chart catalog (Module 1), CSAR loop (Module 2), 5-visual rule (Module 3), gallery references (Module 4), and selection tree (Module 5) are adapted from the `visual-vocabulary` skill in [`fabioc-aloha/Alex_ACT_Visual_Storytelling`](https://github.com/fabioc-aloha/Alex_ACT_Visual_Storytelling) (v1.2.0, absorbed 2026-07-30). The upstream skill also carries Module 4 SVG composition patterns (panel primitive, pie sizing, dark-slate palette); those are covered in the plugin's [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) and [`figure-generator`](../figure-generator/SKILL.md) with print-legibility math + brand-palette semantic colors, so they are not duplicated here.
 
-FT Visual Vocabulary, Data-to-Viz, Data Viz Catalogue, Vega-Lite examples, and Storytelling with Data are cited under their published URLs; this skill is a decision framework built on top of those galleries, not a replacement for them.
+FT Visual Vocabulary, Data-to-Viz, Data Viz Catalog, Vega-Lite examples, and Storytelling with Data are cited under their published URLs; this skill is a decision framework built on top of those galleries, not a replacement for them.
 
 ## Would Revise If
 

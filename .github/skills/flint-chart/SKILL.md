@@ -367,7 +367,7 @@ inherit it without per-chart overrides.
 ```
 
 **Semantic discipline in the categorical range** — the palette carries meaning
-across the artifact, so use each colour only for its assigned role:
+across the artifact, so use each color only for its assigned role:
 
 - `#1e40af` (blue-800) — correct / principled / primary emphasis
 - `#b45309` (amber-700) — Composition family / warning / footer takeaway

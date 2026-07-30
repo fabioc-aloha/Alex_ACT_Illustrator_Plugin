@@ -183,13 +183,13 @@ Style stance decides scope. Focus discipline decides execution. Three rules gove
 
 ### One pre-attentive attribute per emphasis
 
-Colour, size, position, and typeface are pre-attentive attributes — the eye finds them without scanning. Use exactly one to mark the point of the Big Idea. Two adds no signal (the reader already found it). Three degrades the signal (the emphasis reads as random rather than intentional).
+Color, size, position, and typeface are pre-attentive attributes — the eye finds them without scanning. Use exactly one to mark the point of the Big Idea. Two adds no signal (the reader already found it). Three degrades the signal (the emphasis reads as random rather than intentional).
 
 Example: in a bar chart where the story is one region's shortfall, most bars in slate-300 and the story-carrying bar in blue-800 is enough. Adding stroke-width AND size on top is over-encoding.
 
 ### Redundant encoding for accessibility
 
-When colour carries meaning (categorical distinction, severity, target vs actual), pair it with a second cue — shape, label, position, or texture. Roughly 8% of male readers cannot reliably distinguish red from green; a colour-only encoding fails them silently. Colour + shape and colour + label both survive deuteranopia.
+When color carries meaning (categorical distinction, severity, target vs actual), pair it with a second cue — shape, label, position, or texture. Roughly 8% of male readers cannot reliably distinguish red from green; a color-only encoding fails them silently. Color + shape and color + label both survive deuteranopia.
 
 Deuteranopia-simulate any red/green pairing (browser DevTools, macOS Accessibility Inspector, or a color-blindness plug-in) before shipping.
 

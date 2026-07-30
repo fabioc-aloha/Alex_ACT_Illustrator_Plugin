@@ -149,7 +149,7 @@ Manual SVG edits get clobbered on the next regen. The rule is absolute:
 | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Number wrong in the SVG                        | The generator's layout math, or the dataset                                                              |
 | Text truncated                                 | The generator's layout — see `print-svg-style-guide` § "when text won't fit" (cut / reflow / abbreviate / grow) |
-| Colour miscoded                                | The generator's palette lookup, not the SVG's `fill` attribute                                           |
+| Color miscoded                                | The generator's palette lookup, not the SVG's `fill` attribute                                           |
 | XML-invalid comment (`--` inside, bare `&`)    | The generator's comment emission — see `render-verify` § SVG XML invalid                                 |
 | Regenerating clobbers your patch               | That is the rule working, not a bug                                                                      |
 
@@ -240,7 +240,7 @@ Before hoisting, the figure count typically lives scattered across three or four
 
 - ≥2 figures generated through this skill's discipline ship with drift a contract test should have caught within a quarter
 - Dataset inversion procedure fails on ≥1 real sample where the derivation was correct but the byte-identity check failed
-- Figure-count hoist is skipped ≥3 times in favour of scattered constants (rule is not landing)
+- Figure-count hoist is skipped ≥3 times in favor of scattered constants (rule is not landing)
 - The generator-vs-SVG-patch rule is violated ≥2 times where the manual patch survived because "the generator will never re-run" (rule too soft)
 
 Track outcomes at [`operations/ledgers/curation-log.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/operations/ledgers/curation-log.md) in Alex_ACT_Steward.
