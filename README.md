@@ -2,20 +2,20 @@
 
 **Visual authoring for AI-driven workflows — pick the right chart, render it locally, and verify it says what it was meant to say.**
 
-An [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) plugin bundling visual-authoring skills for AI agents. Maintained by [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward), distributed via the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). First-cut scope is **charting + documentation viewer**: three skills wrap the upstream [`flint-chart-mcp`](https://www.npmjs.com/package/flint-chart-mcp) MCP server (from [microsoft/flint-chart](https://github.com/microsoft/flint-chart)) so the agent can go from _"chart this"_ to a rendered image without your data ever leaving the machine, and a fourth `docs-shell` skill ships the single-page HTML pattern for browsable documentation, chart galleries, and illustration catalogs (ported from Alex_ACT_Steward on 2026-07-29 as the canonical source-of-truth). Scope is broadening to additional illustration capabilities (SVG banners, Mermaid diagrams); see the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md) for roadmap and provenance.
+An [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) plugin bundling visual-authoring skills for AI agents. Maintained by [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward), distributed via the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). Eight skills organized into **four feature areas** — Flint (statistical chart authoring via the local-first [`flint-chart-mcp`](https://www.npmjs.com/package/flint-chart-mcp) MCP server from [microsoft/flint-chart](https://github.com/microsoft/flint-chart)), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in *The Defensible Decision*), Replicate (AI image generation over Replicate's HTTP API), and Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports) — with the framing (`chart-big-idea`) and verification (`render-verify`) skills shared across all four. Data stays on the machine for the Flint and Print features; the Replicate feature is HTTP-based and opt-in via `REPLICATE_API_TOKEN`. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md) for feature docs, roadmap, and provenance.
 
 > **Renamed 2026-07-29.** This plugin was previously named `flint-chart-plugin`. Existing installations via `copilot plugin install flint-chart-plugin@alex-mall` continue to work; the Copilot plugin ID will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md) for the rename rationale.
 
 ## What it does
 
-Four capabilities in one plugin:
+Four feature areas share the same framing gate (`chart-big-idea` Step 0.5) and the same verification pass (`render-verify` Prose-coupling check):
 
-1. **Chart framing.** Before picking a chart type, the `chart-big-idea` skill distills the one-sentence Big Idea, story arc, audience, and TRADITIONAL vs INNOVATIVE style stance into a compact Chart Brief. It reads the surrounding docs / prose / ticket for an existing Big Idea first (so it doesn't ask you to re-articulate what you already wrote); if none is found, a 3-question elicitation ladder helps you get to one.
-2. **Chart selection.** When you ask _"which chart should I use?"_, the `flint-chart` skill walks a compact question → family → chartType framework (Comparison / Trend / Distribution / Relationship / Proportion / Flow / KPI) distilled from Knaflic, Kirk, Few, and Wexler — constrained by the Brief. For deep per-chart design tips, it escalates to [_The Defensible Decision_ gallery](https://www.thedefensibledecision.com/gallery/chart-gallery.html) on demand.
-3. **Chart rendering.** When you're ready to draw, the skill authors a compact `ChartAssemblyInput` and the bundled MCP server renders it locally (PNG / SVG) or opens an interactive chart panel via `create_chart_view`. No data leaves the machine.
-4. **Render verification.** After rendering, the `render-verify` skill opens the result, reads its console errors, and walks a failure catalog — empty binding, collapsed scale, merged color scale, undefined category, double-scaled units. A chart with any of those renders as a **valid image that tells the wrong story**, and `validate_chart` cannot catch it. Only looking does. The skill is not chart-only: a second catalog covers any rendered artifact — 404'd images, clipped text, missing fonts, layout collapse, surviving placeholders.
+1. **Flint — statistical chart authoring.** `chart-big-idea` → `chart-vocabulary` (7-goal catalog + CSAR loop) → `flint-chart` (§0 selection router + `ChartAssemblyInput` spec) → render via `flint-chart-mcp` (Vega-Lite / ECharts / Chart.js, local) → `render-verify`. Data never leaves the machine. Entry point: the `/render-chart` slash command.
+2. **Print figures — hand-authored SVG for books and reports.** `chart-big-idea` (Step 0.5 earn-a-figure gate) → `print-svg-style-guide` (canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four composition idioms) → `figure-generator` (`.mjs` generator + `data/<slug>.json` + `data-sha256` audit hash + contract tests + dataset inversion). Book-tested across 53 figures in *The Defensible Decision* (Fabio Correa).
+3. **Replicate — AI image generation.** `chart-big-idea` → `replicate-imagery` (model routing + brand alignment + cost awareness) → upstream `replicate/skills` for prompting → `replicate` MCP calls the Replicate HTTP API. FLUX / Ideogram / Recraft / Imagen + editing / inpaint / upscale / background-removal. Requires `REPLICATE_API_TOKEN`; nothing spins up until you use it.
+4. **Shell — browsable / gallery / catalog surface.** `docs-shell` skill + `starter/` bundle (index.html + manifest.json + about.md) render concatenated markdown as a single-page HTML shell with two-line topnav, sticky page header, and sidebar TOC. HTML-source docs (pre-built Flint reports, exported dashboards) bypass the shell wrapper.
 
-### Demo — the heart chart, with meaning
+### Demo — the heart chart, with meaning (Flint feature walkthrough)
 
 > **Big Idea** — _Love's iconic silhouette **is** the four-archetype map of love: the heart's two upper lobes sit in the high-passion quadrants (infatuation left, consummate right), and its two lower sides sit in the low-passion quadrants (indifference left, companionate right)._
 
@@ -34,33 +34,44 @@ That one sentence — the load-bearing output of the [`chart-big-idea`](.github/
 
 The rendered demo ships in [`demos/heart-with-axes/`](demos/heart-with-axes/) — an interactive `report.html` you can open in any browser, plus a folder README with the Chart Brief and layer breakdown. Design decisions and the plugin's own genesis live in [`docs/`](docs/).
 
-## Architecture — four skills, one prompt
+## Architecture — eight skills, one prompt, four features
+
+The Flint feature (chart authoring) is the most orchestrated flow and the only one with a slash-command prompt (`/render-chart`). The other three features compose skills directly when the intent surfaces:
 
 ```text
-/render-chart <request>
+/render-chart <request>            (Flint feature only)
       │
-      ├─▶ chart-big-idea skill  ─────────────▶  Chart Brief
+      ├─▶ chart-big-idea skill  ─────────────▶  Chart Brief          (shared across all features)
       │     Step 0: read surrounding context
+      │     Step 0.5: earn-a-figure gate
       │     Step 1: Big Idea (or 3-Q ladder)
-      │     Step 2: story arc
-      │     Step 3: audience + stakes
-      │     Step 4: TRADITIONAL vs INNOVATIVE (asks the user)
+      │     Steps 2-4: arc + audience + style stance
+      │     Step 4.5: focus discipline
       │     Step 5: emit Chart Brief
       │
-      ├─▶ flint-chart skill  ────────────────▶  rendered chart
+      ├─▶ chart-vocabulary skill  ──────────▶  chart family + type
+      │     7-goal catalog + CSAR evaluation loop
+      │     override decision table + 5-visual rule
+      │
+      ├─▶ flint-chart skill  ───────────────▶  rendered chart
       │     §0.2 selection (constrained by Brief)
-      │     §0.4 Flint-coverage check
       │     Steps 1-N: author ChartAssemblyInput
       │     MCP call: create_chart_view / render_chart
       │
-      └─▶ render-verify skill  ──────────────▶  verified artifact
-            open the artifact (host browser or playwright MCP)
-            read console errors BEFORE judging the picture
-            walk the failure catalogs
-            check the picture against the Big Idea
+      └─▶ render-verify skill  ────────────▶  verified artifact    (shared across all features)
+            open + read console errors + failure catalogs + Prose-coupling
+
+Print figures feature (no MCP; hand-authored)
+      chart-big-idea → print-svg-style-guide → figure-generator → render-verify
+
+Replicate feature (AI image generation)
+      chart-big-idea → replicate-imagery → replicate MCP + upstream replicate/skills → render-verify
+
+Shell feature (browsable / gallery / catalog surface)
+      docs-shell skill + starter/ bundle (index.html + manifest.json + about.md)
 ```
 
-The Brief locks the framing; the selection skill handles the mechanical chartType lookup and MCP dispatch; the verification skill closes the loop that the selection skill deliberately opens (a post-Flint Vega-Lite edit can no longer be validated by the server). Any skill can be invoked standalone if you already have the other parts of the picture.
+The Brief locks the framing across all four features. Each feature's rendering / authoring / generation stage is independent, but every rendered artifact goes through `render-verify` before it ships. Any skill can be invoked standalone if you already have the other parts of the picture.
 
 ## What ships
 
@@ -130,7 +141,7 @@ The plugin follows the Alex ACT constellation brand palette. Canonical machine-r
   (1.118+), **GitHub Copilot CLI**, and the **GitHub Copilot app**. Other MCP
   stdio clients (Claude Desktop, Cursor, …) should work and their config paths
   are listed below as a courtesy, but they are not verified against each release.
-- **A configured Alex ACT installation** — either an Alex_ACT_Edition compatibility heir or an Alex_ACT_Steward-maintained brain, with `.github/skills/local/` and `.github/prompts/local/` registered as discovery roots (default in current Edition heirs; older heirs see [`mall-installation.instructions.md`](https://github.com/fabioc-aloha/Alex_ACT_Edition/blob/main/.github/instructions/mall-installation.instructions.md) for the manual settings fallback)
+- **A configured Alex ACT installation** — either an [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward)-maintained brain (primary, plugin-native lineage) or an [Alex_ACT_Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) heir (v4.1.0 compatibility line, frozen), with `.github/skills/local/` and `.github/prompts/local/` registered as discovery roots (default in both). Older Edition heirs see [`mall-installation.instructions.md`](https://github.com/fabioc-aloha/Alex_ACT_Edition/blob/main/.github/instructions/mall-installation.instructions.md) for the manual settings fallback
 - **An installed browser** — _only_ if you enable the optional `playwright` server. Edge, Chrome, Firefox, or WebKit. Nothing is bundled; see [Registering the MCP servers](#registering-the-mcp-servers). Not needed on hosts with built-in browser tools (e.g. VS Code Copilot).
 - **A `REPLICATE_API_TOKEN`** — _only_ if you use the `replicate-imagery` skill for AI-generated illustrations. Get one at [replicate.com/account/api-tokens](https://replicate.com/account/api-tokens) and set it in your shell environment: `$env:REPLICATE_API_TOKEN = 'r8_...'` (PowerShell) or `export REPLICATE_API_TOKEN=r8_...` (bash). The plugin's `.vscode/mcp.json` references `${env:REPLICATE_API_TOKEN}` so the token stays out of source control. Users who never generate AI imagery pay no cost and see no failure; the `replicate` MCP server starts on demand and only fails auth if invoked without a token.
 - Recommended one-shot install of Replicate's upstream agent skills (`find-models`, `compare-models`, `run-models`, `prompt-images`, `prompt-videos`) for the substantive prompting knowledge the `replicate-imagery` skill delegates to: `npx skills add replicate/skills`
@@ -272,7 +283,7 @@ The CLI is a step worse again:
 
 VS Code discovers skills in `.github/skills/` and prompts in `.github/prompts/`.
 It does **not** search their subfolders, so a plugin installed under `local/`
-loads nothing — again with no error. On an Alex ACT Edition heir these roots are
+loads nothing — again with no error. On an Alex ACT Steward brain or an Alex ACT Edition heir these roots are
 already registered; on a plain VS Code workspace, add them to
 `.vscode/settings.json`:
 
@@ -322,6 +333,11 @@ first one that fails tells you where the fault is.
    backends and per-backend chart-type counts, and `--compat` validates the
    chart-property patterns this plugin documents. Both report version-dependent
    facts that the docs would otherwise assert blindly.
+
+   To also verify the optional MCP servers (Replicate + Playwright): `--replicate`,
+   `--playwright`, or `--all-mcps`. Both optional servers degrade gracefully —
+   Replicate SKIPs if `REPLICATE_API_TOKEN` is unset; Playwright reports FAIL
+   (non-fatal) if the browser can't launch. Only the flint check gates exit code.
 
    Installed from the Alex Mall instead? That vendors only the skills, the
    prompt, and `mcp.json` — no `scripts/`. Either clone this repo to run the
@@ -382,6 +398,41 @@ Agent: [calls compile_chart with backend: 'vegalite' → returns native spec, no
 ```text
 User: What chart types can Flint make for ECharts?
 Agent: [calls list_chart_types with backend: 'echarts' → returns full catalog]
+```
+
+### Print figure for a book chapter (Print figures feature)
+
+```text
+User: I need a BEFORE/AFTER paired panel figure for the report showing wait-time
+      distribution before and after triage redesign.
+Agent: [loads chart-big-idea → Step 0.5 earn-a-figure gate → emits Brief →
+        loads print-svg-style-guide → picks BEFORE/AFTER paired panels idiom +
+        Tailwind semantic palette (Red-700 = critique, Green-700 = approval) →
+        loads figure-generator → authors data/wait-times.json + contract test →
+        writes .mjs generator with print-legibility floor math + data-sha256 hash →
+        emits SVG to assets/figures/ → render-verify Prose-coupling check]
+```
+
+### AI illustration for a chapter opener (Replicate feature)
+
+```text
+User: Chapter 7 needs a hero image — a photorealistic scene of a decision maker
+      at a crossroads at dusk, warm tones, editorial illustration style.
+Agent: [loads chart-big-idea → Step 0.5 (does the chapter earn an illustration or is
+        a diagram better?) → confirms illustration → loads replicate-imagery →
+        picks model (Ideogram v3 for editorial illustration $0.09/image) →
+        weaves brand-palette hex codes into prompt for warm tones → calls
+        replicate MCP predictions.create → render-verify Prose-coupling on the result]
+```
+
+### Browsable illustration catalog (Shell feature)
+
+```text
+User: Set up a single-page HTML shell to browse all 53 figures in the book with
+      per-chapter navigation.
+Agent: [loads docs-shell → copies starter/ bundle (index.html + manifest.json + about.md)
+        to workspace root → authors manifest.json declaring areas + docs →
+        authors per-chapter markdown source files that reference the figures]
 ```
 
 ## Configuration
@@ -450,16 +501,36 @@ Then update the fragment:
 
 ## What the plugin does NOT do
 
+**Flint feature** —
+
 - Author or render charts outside Flint's supported chart types (Beeswarm, Chord Diagram, Waffle Chart, Word Cloud, SPC charts, AI-Powered analytics — see the skill's §0.4 Flint coverage table for substitutions)
 - Transform / aggregate / filter data — do that with your data tool first, then hand Flint the prepared rows
 - Handle Power BI, Tableau, or other BI tools — Flint targets Vega-Lite, ECharts, and Chart.js only
 - Ship the MCP server code — it downloads from npm on demand (bundling would be 80-120 MB per plugin across 6 OS/arch native-binary variants)
 
+**Print figures feature** —
+
+- Auto-generate figures without a Big Idea — Step 0.5 earn-a-figure gate refuses artifacts that don't clear it
+- Ship a chart-rendering library — print figures are hand-authored SVG via `.mjs` generators reading from `data/<slug>.json`; the discipline is deterministic-and-diffable, not automated
+- Transform data into figure data — the generator reads a dataset the user prepares; the dataset-first + `data-sha256` rule exists to make provenance auditable
+
+**Replicate feature** —
+
+- Reinvent Replicate's own primitives — the `replicate-imagery` skill is a thin router; the substantive prompting lives in Replicate's upstream agent skills (`npx skills add replicate/skills`) which the plugin composes with
+- Handle non-image Replicate workloads — audio, code, music, translation models are out of the illustrator identity
+- Store the API token — `REPLICATE_API_TOKEN` must be set in the shell env; the plugin references it via `${env:REPLICATE_API_TOKEN}` so it never enters source control
+- Guarantee data privacy for AI generation — prompts and reference images go to Replicate's HTTP API. Do not use this feature for classified / regulated content
+
+**Shell feature** —
+
+- Serve dynamic content — the shell is single-page HTML that renders concatenated markdown; no server, no database, no build step
+- Replace a full documentation site generator — for anything beyond a browsable single-page shell (search, versioning, multi-page routing), use MkDocs / Docusaurus / mdBook
+
 ## Publishing to the Mall
 
-This repo is the source-of-truth. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors a specific version at `plugins/data-analytics/flint-chart-plugin/`. To publish a new version — or refresh the Mall's vendored README after upstream doc edits — follow the step-by-step runbook in **[`docs/publishing-to-mall.md`](docs/publishing-to-mall.md)**.
+This repo is the source-of-truth. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors a specific version at `plugins/data-analytics/flint-chart-plugin/` (Mall directory retained under the old name during transition; will rename with the Copilot plugin ID at the first illustrator-scoped release). To publish a new version — or refresh the Mall's vendored README after upstream doc edits — follow the step-by-step runbook in **[`docs/publishing-to-mall.md`](docs/publishing-to-mall.md)**.
 
-Short version: vendor the five installable payload files (3 skills + 1 prompt + `mcp.json`) byte-for-byte into the Mall's plugin folder, copy the README with image `src` rewritten to absolute `raw.githubusercontent.com` URLs, update the Mall's `plugin.json` version, append a curation-log entry, rebase on the Mall's `main`, commit with a severity tag, push. The runbook has the exact commands and a verification checklist.
+Short version: vendor the ten installable payload files (8 skills + 1 prompt + `mcp.json`) byte-for-byte into the Mall's plugin folder, copy the README with image `src` rewritten to absolute `raw.githubusercontent.com` URLs, update the Mall's `plugin.json` version, append a curation-log entry, rebase on the Mall's `main`, commit with a severity tag, push. The runbook has the exact commands and a verification checklist.
 
 ## Contributing
 
@@ -467,9 +538,10 @@ Issues and PRs welcome. See [`.github/copilot-instructions.md`](.github/copilot-
 
 This repo pairs with:
 
-- Upstream flint-chart (Microsoft): <https://github.com/microsoft/flint-chart>
-- Alex ACT Edition (host framework): <https://github.com/fabioc-aloha/Alex_ACT_Edition>
+- Alex ACT Steward (plugin lineage host + maintainer): <https://github.com/fabioc-aloha/Alex_ACT_Steward>
+- Alex ACT Edition (v4.1.0 compatibility host): <https://github.com/fabioc-aloha/Alex_ACT_Edition>
 - Alex ACT Plugin Mall (distribution): <https://github.com/fabioc-aloha/Alex_Skill_Mall>
+- Upstream flint-chart (Microsoft): <https://github.com/microsoft/flint-chart>
 
 ## Attribution
 
@@ -490,7 +562,21 @@ For live examples of every Flint `chartType` across all backends, organized by s
 
 **The `flint-chart` skill body** in this repo is forked from [`microsoft/flint-chart/agent-skills/flint-chart-author/SKILL.md`](https://github.com/microsoft/flint-chart/blob/main/agent-skills/flint-chart-author/SKILL.md) (MIT-licensed), with a prepended §0 Chart Selection section added by this plugin.
 
-**The `chart-big-idea` skill and the `/render-chart` prompt** are new work in this repo.
+**New work in this repo**:
+
+- `chart-big-idea` skill and the `/render-chart` prompt
+- `print-svg-style-guide` and `figure-generator` skills (Print figures feature; book-tested across 53 shipped figures in *The Defensible Decision* by Fabio Correa)
+- `replicate-imagery` skill (Replicate feature; thin routing over Replicate's own primitives)
+
+**Adapted with attribution**:
+
+- `chart-vocabulary` skill — adapted from [`fabioc-aloha/Alex_ACT_Visual_Storytelling`](https://github.com/fabioc-aloha/Alex_ACT_Visual_Storytelling) v1.2.0 `visual-vocabulary` skill on 2026-07-30
+- `docs-shell` skill + `starter/` bundle — ported from [`fabioc-aloha/Alex_ACT_Steward`](https://github.com/fabioc-aloha/Alex_ACT_Steward) on 2026-07-29; this plugin is now the canonical source-of-truth (Steward + CX-Vitals + QuestionnaireFlow + airs-enterprise pull from here)
+
+**Upstream primitives** (installed separately, not vendored):
+
+- Replicate agent skills (`find-models`, `compare-models`, `run-models`, `prompt-images`, `prompt-videos`) at [`github.com/replicate/skills`](https://github.com/replicate/skills) — install via `npx skills add replicate/skills`. The plugin's `replicate-imagery` skill delegates substantive prompting to these.
+- `replicate-mcp` — Replicate's official MCP server on npm, wraps their HTTP API.
 
 ## License
 
