@@ -140,8 +140,10 @@ The plugin follows the Alex ACT constellation brand palette. Canonical machine-r
 ### Option A — via Alex Mall (once landed)
 
 ```text
-/mall-install flint-chart-plugin
+/mall-install alex-act-illustrator-plugin
 ```
+
+> The Mall v3 marketplace currently still publishes the plugin under its legacy ID `flint-chart-plugin` (from before the 2026-07-29 rename). Post-0.1.0 release the ID becomes `alex-act-illustrator-plugin`. Installations under the old ID continue working until you next run `copilot plugin update`.
 
 ### Option B — manual (works today)
 
@@ -149,11 +151,16 @@ The plugin follows the Alex ACT constellation brand palette. Canonical machine-r
 # From your Alex ACT workspace root:
 git clone https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin.git /tmp/alex-act-illustrator-plugin
 
-# Copy the three skills into your heir-local skill folder
+# Copy all eight skills into your heir-local skill folder
 mkdir -p .github/skills/local
-cp -r /tmp/alex-act-illustrator-plugin/.github/skills/chart-big-idea .github/skills/local/
-cp -r /tmp/alex-act-illustrator-plugin/.github/skills/flint-chart .github/skills/local/
-cp -r /tmp/alex-act-illustrator-plugin/.github/skills/render-verify .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/chart-big-idea        .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/chart-vocabulary      .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/flint-chart           .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/render-verify         .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/print-svg-style-guide .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/figure-generator      .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/replicate-imagery     .github/skills/local/
+cp -r /tmp/alex-act-illustrator-plugin/.github/skills/docs-shell            .github/skills/local/
 
 # Copy the prompt into your heir-local prompt folder
 mkdir -p .github/prompts/local
@@ -169,11 +176,16 @@ cp /tmp/alex-act-illustrator-plugin/.github/prompts/render-chart.prompt.md .gith
 git clone https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin.git $env:TEMP\Alex_ACT_Illustrator_Plugin
 $src = "$env:TEMP\Alex_ACT_Illustrator_Plugin"
 
-# Copy the three skills into your heir-local skill folder
+# Copy all eight skills into your heir-local skill folder
 New-Item -ItemType Directory -Force -Path .github\skills\local | Out-Null
-Copy-Item "$src\.github\skills\chart-big-idea" -Destination .github\skills\local\ -Recurse -Force
-Copy-Item "$src\.github\skills\flint-chart"    -Destination .github\skills\local\ -Recurse -Force
-Copy-Item "$src\.github\skills\render-verify"  -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\chart-big-idea"        -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\chart-vocabulary"      -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\flint-chart"           -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\render-verify"         -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\print-svg-style-guide" -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\figure-generator"      -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\replicate-imagery"     -Destination .github\skills\local\ -Recurse -Force
+Copy-Item "$src\.github\skills\docs-shell"            -Destination .github\skills\local\ -Recurse -Force
 
 # Copy the prompt into your heir-local prompt folder
 New-Item -ItemType Directory -Force -Path .github\prompts\local | Out-Null
@@ -188,10 +200,11 @@ Inspect [`.vscode/mcp.json`](.vscode/mcp.json) first, then **merge** its entries
 into your host's config. Merge, don't overwrite — if the file already exists it
 almost certainly holds other servers you'd destroy.
 
-| Server       | Required? | Role                                                        |
-| ------------ | --------- | ----------------------------------------------------------- |
-| `flint`      | Yes       | Renders the chart                                           |
-| `playwright` | **No**    | Verification browser — needed on Copilot CLI, not VS Code   |
+| Server       | Required? | Role                                                                          |
+| ------------ | --------- | ----------------------------------------------------------------------------- |
+| `flint`      | Yes       | Renders the chart (Flint feature)                                             |
+| `replicate`  | No        | AI image generation (Replicate feature) — needs `REPLICATE_API_TOKEN`         |
+| `playwright` | No        | Verification browser — needed on Copilot CLI, not VS Code                     |
 
 | Host                         | Config path                       | Top-level key |
 | ---------------------------- | --------------------------------- | ------------- |

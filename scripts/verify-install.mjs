@@ -1,15 +1,20 @@
 #!/usr/bin/env node
-// Verify the flint-chart MCP server is installable and healthy, independently of
+// Verify the plugin's MCP servers are installable and healthy, independently of
 // any MCP host. This is check 1 of the README's "Verify your install" ladder,
 // deliberately executable: if your agent is the thing that's broken, you still
 // need a way to prove the server half works.
 //
 //   node scripts/verify-install.mjs
-//   node scripts/verify-install.mjs --catalog   (also list backends + chart-type counts)
-//   node scripts/verify-install.mjs --compat    (also validate this plugin's spec patterns)
+//   node scripts/verify-install.mjs --catalog     (also list backends + chart-type counts)
+//   node scripts/verify-install.mjs --compat      (also validate this plugin's spec patterns)
+//   node scripts/verify-install.mjs --replicate   (also handshake replicate MCP; needs REPLICATE_API_TOKEN)
+//   node scripts/verify-install.mjs --playwright  (also handshake playwright MCP; needs a browser)
+//   node scripts/verify-install.mjs --all-mcps    (all three MCP servers with graceful skip)
 //
-// Exit 0 = server handshakes and advertises all expected tools.
-// Exit 1 = server failed to start, handshake, or advertise the expected tools.
+// Exit 0 = flint server handshakes and advertises all expected tools. Optional
+//          server checks (replicate, playwright) never fail the run — they
+//          report pass / skip / fail as info.
+// Exit 1 = flint server failed to start, handshake, or advertise the expected tools.
 //
 // `--catalog` additionally calls list_chart_types. Use it when bumping the pin:
 // the README and skill quote a backend list and a Vega-Lite chart-type count,
@@ -21,8 +26,18 @@
 // like `^0.3.0||^0.4.0` is only safe if every pattern validates on both.
 // A failing spec here does not fail the run — it is reported for judgment.
 //
+// `--replicate` handshakes the optional `replicate` MCP server declared in
+// `.vscode/mcp.json` (`npx replicate-mcp`, the Replicate feature). Skips if
+// `REPLICATE_API_TOKEN` is unset. Never fails the run — Replicate is optional.
+//
+// `--playwright` handshakes the optional `playwright` MCP server declared in
+// `.vscode/mcp.json` (`npx @playwright/mcp --headless --isolated`, the
+// render-verify browser sidecar). Skips if the browser launch fails. Never
+// fails the run — Playwright is only needed on hosts without built-in browser
+// tools (e.g. Copilot CLI).
+//
 // No dependencies. Speaks newline-delimited JSON-RPC over stdio, which is what
-// flint-chart-mcp expects.
+// all three MCP servers expect.
 
 import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -52,6 +67,32 @@ function resolvePackage() {
 const { spec: PACKAGE, source: PACKAGE_SOURCE } = resolvePackage();
 const WANT_CATALOG = process.argv.includes('--catalog');
 const WANT_COMPAT = process.argv.includes('--compat');
+const WANT_ALL_MCPS = process.argv.includes('--all-mcps');
+const WANT_REPLICATE = WANT_ALL_MCPS || process.argv.includes('--replicate');
+const WANT_PLAYWRIGHT = WANT_ALL_MCPS || process.argv.includes('--playwright');
+
+// Optional MCP servers declared in .vscode/mcp.json. These are the "Replicate"
+// and "Shell / render-verify browser sidecar" features. They are optional at
+// install time: users who don't need them shouldn't pay for the check.
+const OPTIONAL_MCPS = {
+  replicate: {
+    label: 'replicate',
+    command: 'npx',
+    args: ['-y', 'replicate-mcp'],
+    envRequired: 'REPLICATE_API_TOKEN',
+    expectedToolPrefixes: ['predictions', 'models'],
+    role: 'AI image generation (Replicate feature)',
+  },
+  playwright: {
+    label: 'playwright',
+    command: 'npx',
+    args: ['-y', '@playwright/mcp', '--headless', '--isolated'],
+    envRequired: null,
+    expectedToolPrefixes: ['browser'],
+    role: 'browser sidecar for render-verify (Copilot CLI hosts)',
+  },
+};
+const OPTIONAL_TIMEOUT_MS = 30_000;
 
 // Patterns this plugin's skill documents. The first three are the 0.3.0
 // migration items — the ones most likely to diverge between pinned versions.
@@ -259,10 +300,16 @@ function report() {
   if (WANT_CATALOG) reportCatalog(messages);
   if (WANT_COMPAT) reportCompat(messages);
 
-  console.log('\nPASS  Server half is healthy.');
-  console.log('      If your host still shows no flint tools, the fault is on the');
-  console.log('      client side: config path, trust prompt, or a stale session.');
-  console.log('      See README "If the tools still don\'t appear".');
+  const optionalChecks = [];
+  if (WANT_REPLICATE) optionalChecks.push(verifyOptionalMcp(OPTIONAL_MCPS.replicate));
+  if (WANT_PLAYWRIGHT) optionalChecks.push(verifyOptionalMcp(OPTIONAL_MCPS.playwright));
+
+  Promise.all(optionalChecks).then(() => {
+    console.log('\nPASS  Flint server half is healthy.');
+    console.log('      If your host still shows no flint tools, the fault is on the');
+    console.log('      client side: config path, trust prompt, or a stale session.');
+    console.log('      See README "If the tools still don\'t appear".');
+  });
 }
 
 function reportCompat(messages) {
@@ -318,4 +365,111 @@ function reportCatalog(messages) {
     const count = entry.count ?? entry.chartTypes?.length ?? '?';
     console.log(`        ${String(entry.backend).padEnd(10)} ${count} chart types`);
   }
+}
+
+// Optional MCP server handshake. Never fails the run — these servers are
+// declared optional in .vscode/mcp.json. Reports SKIP (env missing), OK
+// (handshake + tools/list succeeded), or FAIL (server didn't respond in time
+// or advertised no tools matching the expected prefixes).
+function verifyOptionalMcp(config) {
+  const { label, command, args, envRequired, expectedToolPrefixes, role } = config;
+
+  if (envRequired && !process.env[envRequired]) {
+    console.log(`\n      optional ${label} MCP: SKIP (${envRequired} not set)`);
+    console.log(`        role: ${role}`);
+    return Promise.resolve();
+  }
+
+  console.log(`\n      optional ${label} MCP: handshaking (${command} ${args.join(' ')})`);
+
+  return new Promise((resolve) => {
+    const proc = isWindows
+      ? spawn(`${command} ${args.map((a) => (/\s/.test(a) ? `"${a}"` : a)).join(' ')}`, {
+          stdio: ['pipe', 'pipe', 'pipe'],
+          shell: true,
+        })
+      : spawn(command, args, { stdio: ['pipe', 'pipe', 'pipe'], shell: false });
+
+    let out = '';
+    let err = '';
+    let done = false;
+
+    proc.stdout.setEncoding('utf8');
+    proc.stderr.setEncoding('utf8');
+    proc.stdout.on('data', (chunk) => {
+      out += chunk;
+    });
+    proc.stderr.on('data', (chunk) => {
+      err += chunk;
+    });
+
+    const finish = (verdict, detail = '') => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      try {
+        proc.kill();
+      } catch {
+        // ignore
+      }
+      const line = detail ? ` — ${detail}` : '';
+      console.log(`        ${verdict}${line}`);
+      if (verdict.startsWith('FAIL') && err.trim()) {
+        // Show first line of stderr as a debugging hint, indented.
+        const first = err.trim().split('\n')[0].slice(0, 160);
+        console.log(`        stderr: ${first}`);
+      }
+      resolve();
+    };
+
+    const timer = setTimeout(
+      () => finish('FAIL', `no handshake within ${OPTIONAL_TIMEOUT_MS / 1000}s`),
+      OPTIONAL_TIMEOUT_MS,
+    );
+
+    proc.on('error', (e) => finish('FAIL', `could not launch: ${e.message}`));
+    proc.stdin.on('error', () => {
+      // Server closed stdin early — surface via close event.
+    });
+
+    proc.on('close', () => {
+      if (done) return;
+      const messages = parseMessages(out);
+      const init = messages.find((m) => m.result?.serverInfo);
+      const listing = messages.find((m) => Array.isArray(m.result?.tools));
+      if (!init) {
+        finish('FAIL', 'no initialize response');
+        return;
+      }
+      const toolNames = listing?.result?.tools?.map((t) => t.name) ?? [];
+      const matched = toolNames.filter((t) =>
+        expectedToolPrefixes.some((p) => t === p || t.startsWith(`${p}.`) || t.startsWith(`${p}_`)),
+      );
+      if (matched.length === 0) {
+        finish(
+          'FAIL',
+          `advertised no tools matching prefixes ${expectedToolPrefixes.join(', ')} (got: ${toolNames.slice(0, 4).join(', ') || 'none'})`,
+        );
+        return;
+      }
+      const { name, version } = init.result.serverInfo;
+      finish('OK', `${name} v${version}, ${matched.length}/${toolNames.length} tools match (${matched.slice(0, 3).join(', ')}${matched.length > 3 ? '…' : ''})`);
+    });
+
+    const initReq = {
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'initialize',
+      params: {
+        protocolVersion: '2024-11-05',
+        capabilities: {},
+        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '1.0.0' },
+      },
+    };
+    const listReq = { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} };
+    proc.stdin.write(`${JSON.stringify(initReq)}\n`);
+    proc.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' })}\n`);
+    proc.stdin.write(`${JSON.stringify(listReq)}\n`);
+    proc.stdin.end();
+  });
 }

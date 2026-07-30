@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Shell topnav-sub multi-row polish (2026-07-30)
+
+Small CSS refinement to the canonical `docs-shell/starter/index.html` shell for cleaner multi-row nav wrap when an area contains many docs.
+
+- **`.topnav-list` gains `row-gap: 0.3rem`** — vertical breathing room between wrapped rows so labels don't visually touch when the browser wraps onto a second line.
+- **`.topnav-sub` `align-items` shifts from `center` to `flex-start`** — labels left-align to the top of the row rather than being center-justified across the full wrapped height.
+
+Fix is polish, not enablement: `flex-wrap: wrap` on `.topnav-list` already made multi-row wrap work; these two properties make the wrapped state look intentional. Verified empirically at 4 viewport / doc-count combinations via Playwright screenshot (350px + 1200px × 6 real docs and 16 injected docs). Steward propagated the same change to its own root shell (`cb2a81f`) and to all three known adopter heirs (CX-Vitals `f7a8720`, QuestionnaireFlow `2f05c22`, airs-enterprise `3dbf8d5`) same-day so byte-identity across the fleet is preserved. Plugin commit `667ecf3`.
+
+### `chart-vocabulary` skill absorbed from `Alex_ACT_Visual_Storytelling` v1.2.0 (2026-07-30)
+
+New baseline skill for statistical chart selection. Adapted from the `visual-vocabulary` skill in the paused `fabioc-aloha/Alex_ACT_Visual_Storytelling` v1.2.0 (last updated 2026-05-06). Absorption pattern: partial — only `visual-vocabulary` had substantive overlap with a canonical selection layer illustrator was missing; the other 7 VS plugins (data pipeline, non-print delivery, orchestration) stay in the Mall as independent items, orthogonal to illustrator's identity.
+
+**Ships**:
+
+- **7-goal chart catalog** organized by communication intent: comparison / change over time / proportion / distribution / relationship / flow / deviation. Each goal names best fits and what-to-avoid patterns.
+- **CSAR evaluation loop** (Composition / Semantic role / Audience / Reveal) for weighing chart candidates against the Big Idea.
+- **Override decision table** for when an AI-suggested chart type is defensible vs when to route back to the Big Idea.
+- **5-Visual Rule** with audience-composition guidance.
+- **Five living-gallery pointers** — FT Visual Vocabulary, Data-to-Viz, Data Viz Catalogue, Vega-Lite examples, Storytelling with Data — as external references the skill deliberately does not duplicate.
+- **6-step chart selection decision tree** as the fast-path router when the goal is obvious.
+
+**Cross-linking**:
+
+- `flint-chart` §0.2 gains a blockquote pointing at `chart-vocabulary` as the deeper reference behind its compact 7-row router.
+- `chart-big-idea` Related section gains `chart-vocabulary` between `big-idea` and `flint-chart`.
+- `render-verify` Related section gains a CSAR composition note: "did AI pick the right chart family" (route to `chart-vocabulary` Module 2) vs "did render match the message" (Prose-coupling check).
+
+**Not absorbed**: upstream Module 4 (SVG dashboard composition patterns — panel primitive, pie sizing, dark-slate palette). Illustrator's `print-svg-style-guide` + `figure-generator` already cover the same problem space with print-legibility math + Tailwind semantic palette + `data-sha256` audit hash discipline; re-absorbing would create the parallel-vocabulary problem the 2026-07-30 palette unification just resolved.
+
+**Manifest** bumped from seven-skill+three-mcp to eight-skill+three-mcp shape. `README.md` What-ships table gained a `chart-vocabulary` row. Attribution + link back to the VS repo in the skill body. Plugin commit `74d40f8`.
+
+### Replicate AI image-generation activated (Priority 9, 2026-07-30)
+
+The `replicate-imagery` routing skill activates the "AI illustration / hero image / editorial art" workload as the plugin's fourth feature area (alongside Flint chart authoring, Print figures, and Shell). Approach: consume Replicate's upstream primitives rather than reinvent — the official `replicate` MCP server (`npx replicate-mcp`) + five upstream agent skills (`find-models`, `compare-models`, `run-models`, `prompt-images`, `prompt-videos`) at `github.com/replicate/skills` installable via `npx skills add replicate/skills`.
+
+**Ships**:
+
+- **`replicate-imagery` skill** — thin routing over Replicate's own primitives. Names WHEN to reach for Replicate vs the plugin's other visual capabilities (charts / mermaid / banners / hand-authored figures). Covers model selection working set (FLUX schnell / dev / 1.1-pro, Ideogram v3, Recraft v3, Imagen 4, editing / inpaint / upscale models), cost table (schnell $0.003 → Ideogram $0.09 per image; video $0.10–$5.00/sec), brand alignment by weaving `brand-palette.json` hex codes into prompts, and composition with the plugin's other skills (Big Idea gate → generate → render-verify Prose-coupling).
+- **`replicate` MCP server** declared in `.vscode/mcp.json` as optional (`required: false`). Config references `${env:REPLICATE_API_TOKEN}` so token stays out of source. Users who never generate AI imagery pay no cost and see no failure; the server starts on demand.
+- **Prerequisites** section in `README.md` extended with `REPLICATE_API_TOKEN` note and the recommended `npx skills add replicate/skills` one-shot install.
+
+**Manifest** bumped six-skill+two-mcp → seven-skill+three-mcp+vscode-settings shape. Prerequisites section gained `replicate_api_token` optional line. Grounded in Replicate's current docs at `replicate.com/docs/reference/mcp` + `replicate.com/docs/reference/skills` fetched 2026-07-30. Plugin commit `0a231b4`.
+
+### Brand palette unification with Steward (2026-07-30)
+
+Steward introduced `.github/config/brand-palette.json` as the single source of truth for colors, gradient, 6-role semantic coding, chart palettes, and typography across the constellation (Steward commit `881800f`). The plugin caught up:
+
+- **`README.md`** gained a "Brand palette" section with three inline-SVG swatch tables (brand identity 8-row, semantic role coding 6-row, chart categorical 5-row) mirroring the identity in Steward's `BRAND-KIT.md`.
+- **`print-svg-style-guide/SKILL.md`** and **`flint-chart/SKILL.md`** (publication config preset) gained blockquote callouts atop the palette sections explaining the plugin's Tailwind values are **print-quality variants** of the constellation `brand-palette.json` — same 6-role semantic coding, deeper contrast for print legibility. Screen values live in Steward's `brand-palette.json`; print variants live in the plugin skills. Documented as intentional divergence for target surface, not drift.
+- **`.markdownlint.json`** MD033 `allowed_elements` extended to include `svg` and `rect` (same pattern already used in Steward's `BRANDING.md`).
+
+Plugin commit `d43d650`. Steward-side companion commits: `881800f` (palette introduction), `c0caed0` (BRAND-KIT swatch sync).
+
 ### Two new baseline skills for illustration authoring, Phase 2 (2026-07-29)
 
 Completes the DDA absorption arc opened in Phase 1. Two new baseline skills ship for the net-new patterns the big-idea family doesn't cover.
