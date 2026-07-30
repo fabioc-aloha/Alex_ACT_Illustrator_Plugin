@@ -1,7 +1,7 @@
 {
   "plugin": "alex-act-illustrator-plugin",
   "version": "0.5.1",
-  "shape": "seven-skill + one-prompt + three-mcp-sidecars + vscode-settings",
+  "shape": "eight-skill + one-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Visual-authoring bundle for AI agents. First-cut scope: chart framing (Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), chart selection + spec authoring (Vega-Lite / ECharts / Chart.js via the flint-chart MCP server), and post-render verification. Scope broadening over time to additional illustration capabilities; see illustrator/plan.md in the Alex_ACT_Steward repo for roadmap. Alex ACT constellation plugin, maintained by Alex_ACT_Steward. Renamed from flint-chart-plugin on 2026-07-29.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
@@ -24,6 +24,15 @@
         "role": "framing (invoked before chart selection)",
         "frontmatter": {
           "description": "Distill the one-sentence Big Idea, story arc, audience, and style stance for a chart BEFORE picking a chart type. Starts by questioning intent — whether the artifact should exist at all, and whether the stated purpose is the real one. Reads the surrounding docs / prose / ticket for an existing Big Idea first, then helps the user articulate one via a 3-question elicitation ladder if none is found. Asks whether the user wants a TRADITIONAL (safe) or INNOVATIVE (higher-impact, higher-risk) treatment. Use before invoking the flint-chart skill or the /render-chart prompt whenever the user's ask is 'chart this', 'visualize', 'make a chart', 'show the data', or when framing is unclear."
+        }
+      },
+      {
+        "name": "chart-vocabulary",
+        "path": ".github/skills/chart-vocabulary/SKILL.md",
+        "install_to": ".github/skills/local/chart-vocabulary/SKILL.md",
+        "role": "chart selection + evaluation reference (7-goal catalog, CSAR loop, override decision table, 5-visual rule, gallery pointers, selection decision tree). Deeper reference behind flint-chart §0.2; also invoked when reviewing an AI-suggested chart, sanity-checking dashboard density, or teaching chart taxonomy. Adapted from Alex_ACT_Visual_Storytelling v1.2.0 on 2026-07-30.",
+        "frontmatter": {
+          "description": "Reference catalog of chart types organized by seven communication goals (comparison, change-over-time, proportion, distribution, relationship, flow, deviation), plus a CSAR evaluation loop for AI-generated chart choices, override decision table, 5-visual rule for dashboard density, living gallery pointers (FT Visual Vocabulary, Data-to-Viz, Data Viz Catalogue, Vega-Lite examples, Storytelling with Data), and a 6-step selection algorithm. Use when picking a chart type, evaluating an AI-suggested chart, reviewing chart choices for story-intent alignment, sanity-checking a dashboard's density, or explaining chart taxonomy to a heir."
         }
       },
       {

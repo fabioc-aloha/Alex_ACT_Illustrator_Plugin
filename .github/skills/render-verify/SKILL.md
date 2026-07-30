@@ -318,6 +318,7 @@ path inside that folder. Verified 2026-07-25: a bare filename leaked into
 ## Related skills
 
 - [`chart-big-idea`](../chart-big-idea/SKILL.md) — Step 0.5 earn-a-figure gate + Step 4.5 focus discipline. Framing side of the same discipline.
+- [`chart-vocabulary`](../chart-vocabulary/SKILL.md) — Module 2 CSAR evaluation loop asks *did the AI pick the right chart family*. This skill's Prose-coupling check asks *did the render match the message*. Both fire on an AI-generated chart; different failure modes.
 - [`flint-chart`](../flint-chart/SKILL.md) — spec authoring + Publication config preset. Verification runs against what this skill produces.
 - [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) — the visual grammar the shipped SVG obeys. The failure-catalog entries in this skill fire when that grammar is violated.
 - [`figure-generator`](../figure-generator/SKILL.md) — where the "fix in the generator, never in the SVG" rule for the SVG XML invalid catalog entry lives.

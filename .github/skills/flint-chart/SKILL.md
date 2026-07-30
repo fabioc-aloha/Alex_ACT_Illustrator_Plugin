@@ -463,6 +463,8 @@ chart choice.
 
 ### 0.2 Question → family → chart
 
+> **Deeper reference**: the [`chart-vocabulary`](../chart-vocabulary/SKILL.md) skill carries the full 7-goal × ~30-chart catalog, CSAR evaluation loop, override decision table, and 5-visual rule. Reach for it when the 7 rows below aren't enough, when evaluating an AI-suggested chart, or when the artifact will be hand-authored (not rendered via Flint).
+
 | Analytical question            | Family       | Primary chart                                                                                                     | Alternates                                                                                                                                                                                                                                                                               |
 | ------------------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Rank or compare categories?    | Comparison   | `Bar Chart` (2-15 items; horizontal orientation for long labels)                                                  | `Grouped Bar Chart` (2-4 series), `Stacked Bar Chart` (composition + total; use `stackMode: normalize` for 100% stacked), `Slope Chart` (before/after 2 periods), `Bar Chart` with `row`/`column` facet (many items, aka Small Multiples), `Waterfall Chart` (sequential adds/subtracts) |
