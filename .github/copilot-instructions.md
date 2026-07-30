@@ -8,30 +8,35 @@ This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constell
 
 ## What this repo is
 
-An Alex ACT constellation plugin for visual authoring. First-cut scope is charting; additional illustration workloads (SVG banners, Mermaid diagrams, shell renderer for gallery previews) are planned. Currently:
+An Alex ACT constellation plugin for visual authoring. Ships **four feature areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), and Shell (browsable / gallery / catalog surface). Currently:
 
-- **Four skills** — `chart-big-idea` (framing preflight — Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), `flint-chart` (selection + spec authoring against the [microsoft/flint-chart](https://github.com/microsoft/flint-chart) MCP server), `render-verify` (verification — open the rendered artifact, read its console errors, walk the failure catalogs), and `docs-shell` (documentation viewer / gallery renderer — single-page HTML shell with two-line topnav, sticky page header, sidebar TOC; ported from Alex_ACT_Steward 2026-07-29 as the canonical source-of-truth)
-- **One slash-command prompt** — `/render-chart` (loads the three chart skills, drives the end-to-end charting workflow)
-- **MCP sidecars** — `.vscode/mcp.json` spawning `flint-chart-mcp@^0.3.0` (required) and `@playwright/mcp@0.0.78` (optional — omit on hosts with built-in browser tools, e.g. VS Code) from npm via `npx`
+- **Eight skills** — `chart-big-idea` (framing preflight: Big Idea + Step 0.5 earn-a-figure gate + Step 4.5 focus discipline, shared across all features), `chart-vocabulary` (7-goal chart catalog + CSAR evaluation loop + 5-visual rule, absorbed from Alex_ACT_Visual_Storytelling v1.2.0 on 2026-07-30), `flint-chart` (chart-family router §0.2 + `ChartAssemblyInput` spec authoring + publication config preset, forked from [microsoft/flint-chart](https://github.com/microsoft/flint-chart)), `render-verify` (failure catalogs + Prose-coupling check + host-capability table, shared across all features), `print-svg-style-guide` (canvas + typography grammar + print-legibility floor math + Tailwind 6-role semantic palette + four composition idioms), `figure-generator` (`.mjs` generator + `data/<slug>.json` + `data-sha256` audit hash + contract tests + dataset inversion + fix-in-generator rule), `replicate-imagery` (thin routing over Replicate's own primitives + brand alignment + cost awareness), and `docs-shell` (single-page HTML shell with two-line topnav, sticky page header, sidebar TOC, HTML-source docs bypass; canonical source-of-truth, adopted by CX-Vitals + QuestionnaireFlow + airs-enterprise)
+- **One slash-command prompt** — `/render-chart` (Flint feature workflow: chart-big-idea → chart-vocabulary / flint-chart → render → render-verify)
+- **Three MCP sidecars** in `.vscode/mcp.json` — `flint-chart-mcp@^0.3.0` (required, spawns via `npx`, powers the Flint feature), `replicate` (optional, `npx replicate-mcp`, needs `REPLICATE_API_TOKEN`, powers the Replicate feature), `@playwright/mcp@0.0.78` (optional, browser sidecar for `render-verify` on hosts without built-in browser tools — omit on VS Code Copilot)
 
 This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors a specific version at `plugins/data-analytics/flint-chart-plugin/` (Mall directory retained under the old name; will rename with the Copilot plugin ID at the first illustrator-scoped release).
 
 ## Repo layout
 
-| Path                                   | Purpose                                                                     |
-| -------------------------------------- | --------------------------------------------------------------------------- |
-| `.github/skills/chart-big-idea/`       | Installable skill (framing)                                                 |
-| `.github/skills/flint-chart/`          | Installable skill (selection + rendering)                                   |
-| `.github/skills/render-verify/`        | Installable skill (verification)                                            |
-| `.github/prompts/`                     | Installable prompt (`/render-chart`)                                        |
-| `.vscode/mcp.json`                     | MCP server sidecar — the path VS Code actually reads                        |
-| `.vscode/settings.json`                | Registers the `local/` skill + prompt discovery roots                       |
-| `manifest.json`                        | Plugin manifest — enumerates all shipping assets                            |
-| `scripts/`                             | Repo tooling (`verify-install.mjs`, `check-language.mjs`) — **not** payload |
-| `assets/`                              | README-only images (**NOT** part of the installable payload)                |
-| `demos/`                               | Self-contained demo report (heart-with-axes)                                |
-| `docs/`                                | Long-form design docs, plans, publishing runbook                            |
-| `LICENSE`, `README.md`, `CHANGELOG.md` | Standard repo files                                                         |
+| Path                                     | Purpose                                                                     |
+| ---------------------------------------- | --------------------------------------------------------------------------- |
+| `.github/skills/chart-big-idea/`         | Installable skill (framing, shared across features)                         |
+| `.github/skills/chart-vocabulary/`       | Installable skill (chart selection catalog, Flint feature)                  |
+| `.github/skills/flint-chart/`            | Installable skill (chart family router + spec authoring, Flint feature)     |
+| `.github/skills/render-verify/`          | Installable skill (verification, shared across features)                    |
+| `.github/skills/print-svg-style-guide/`  | Installable skill (print SVG grammar, Print figures feature)                |
+| `.github/skills/figure-generator/`       | Installable skill (deterministic figure production, Print figures feature)  |
+| `.github/skills/replicate-imagery/`      | Installable skill (AI image routing, Replicate feature)                     |
+| `.github/skills/docs-shell/`             | Installable skill (single-page HTML shell, Shell feature) + `starter/` kit  |
+| `.github/prompts/`                       | Installable prompt (`/render-chart`)                                        |
+| `.vscode/mcp.json`                       | MCP server sidecars — `flint` (required), `replicate` + `playwright` (optional) |
+| `.vscode/settings.json`                  | Registers the `local/` skill + prompt discovery roots                       |
+| `manifest.json`                          | Plugin manifest — enumerates all shipping assets                            |
+| `scripts/`                               | Repo tooling (`verify-install.mjs`, `check-language.mjs`) — **not** payload |
+| `assets/`                                | README-only images (**NOT** part of the installable payload)                |
+| `demos/`                                 | Self-contained demo report (heart-with-axes)                                |
+| `docs/`                                  | Long-form design docs, plans, publishing runbook                            |
+| `LICENSE`, `README.md`, `CHANGELOG.md`   | Standard repo files                                                         |
 
 ## Conventions
 
