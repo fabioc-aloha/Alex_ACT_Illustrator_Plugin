@@ -150,15 +150,40 @@ The plugin follows the Alex ACT constellation brand palette. Canonical machine-r
 
 ## Install
 
-### Option A — via Alex Mall (once landed)
+**Additional prerequisites for CLI-plugin install** (once per machine, on top of the Prerequisites section above):
 
-```text
-/mall-install alex-act-illustrator-plugin
+- **Copilot CLI ≥ 1.0.75** — [install docs](https://docs.github.com/copilot/how-tos/set-up/install-copilot-cli). Update with `winget upgrade --id GitHub.CopilotCLI` on Windows.
+- **GitHub CLI authenticated** — `gh auth login` and confirm with `gh auth status`.
+
+Full brand-new-user walkthrough (four personas, five install stages, anti-patterns): see [`Alex_ACT_Steward/constellation/USER-EXPERIENCE.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md).
+
+### Method A — Copilot CLI plugin install (recommended)
+
+```powershell
+# Direct from GitHub (works today):
+copilot plugin install fabioc-aloha/Alex_ACT_Illustrator_Plugin
+
+# Or via the Alex ACT Mall (already published, currently under legacy ID):
+copilot plugin install flint-chart-plugin@alex-mall
 ```
 
-> The Mall v3 marketplace currently still publishes the plugin under its legacy ID `flint-chart-plugin` (from before the 2026-07-29 rename). Post-0.1.0 release the ID becomes `alex-act-illustrator-plugin`. Installations under the old ID continue working until you next run `copilot plugin update`.
+Installs at user scope — the eight skills and two prompts become available in every workspace on the machine. After the install you still need to **register the MCP servers** for your host (see [Registering the MCP servers](#registering-the-mcp-servers) below); the plugin content is installed, but its `flint` / `replicate` / `playwright` MCP servers only spawn when your host reads a config that references them.
 
-### Option B — manual (works today)
+> **Rename note.** The Mall entry currently publishes under the legacy ID `flint-chart-plugin` (from before the 2026-07-29 rename). Post-0.1.0 release the ID renames to `alex-act-illustrator-plugin`. Installations under the old ID keep working until `copilot plugin update` picks up the new ID.
+
+### Verify the install
+
+```powershell
+copilot plugin list
+```
+
+You should see either `flint-chart-plugin@alex-mall` (marketplace) or the plugin under `_direct` (Method A direct-install). From Copilot Chat, `/render-chart` and `/banner` should appear in the slash-command picker; `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `render-verify`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, and `docs-shell` should appear in the skill dropdown.
+
+Then continue with [Registering the MCP servers](#registering-the-mcp-servers) below for the host-specific MCP wiring, and use the bundled checker to verify each capability end-to-end (see [Verify your install](#verify-your-install) further down).
+
+### Method B — manual copy for legacy Alex ACT Edition heirs
+
+Pre-plugin-era Alex ACT Edition heirs (before the plugin-native lineage established on 2026-07-26) don't have `copilot plugin install` available. For that specific case, copy the plugin content into the heir's `.github/skills/local/` and `.github/prompts/local/` folders manually:
 
 ```bash
 # From your Alex ACT workspace root:
@@ -175,9 +200,10 @@ cp -r /tmp/alex-act-illustrator-plugin/.github/skills/figure-generator      .git
 cp -r /tmp/alex-act-illustrator-plugin/.github/skills/replicate-imagery     .github/skills/local/
 cp -r /tmp/alex-act-illustrator-plugin/.github/skills/docs-shell            .github/skills/local/
 
-# Copy the prompt into your heir-local prompt folder
+# Copy the prompts into your heir-local prompt folder
 mkdir -p .github/prompts/local
 cp /tmp/alex-act-illustrator-plugin/.github/prompts/render-chart.prompt.md .github/prompts/local/
+cp /tmp/alex-act-illustrator-plugin/.github/prompts/banner.prompt.md      .github/prompts/local/
 
 # Then: register the local/ roots, and merge the MCP server entry (both below).
 ```
@@ -360,6 +386,28 @@ last verified 2026-07-29 against `flint-chart-mcp` 0.3.0 (MCP protocol
 `2024-11-05`).
 
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).
+
+### Update
+
+Copilot CLI does not auto-update plugins — updates are manual.
+
+```powershell
+copilot plugin update flint-chart-plugin       # if installed via mall
+copilot plugin update alex-act-illustrator-plugin  # once the mall entry renames post-0.1.0
+```
+
+Read the [CHANGELOG](CHANGELOG.md) before applying breaking changes. If you have `alex-act-core` installed, its `/update-plugins` prompt reads CHANGELOGs for you and consent-gates breaking updates across the whole constellation.
+
+### Uninstall
+
+```powershell
+copilot plugin uninstall flint-chart-plugin       # if installed via mall
+copilot plugin uninstall alex-act-illustrator-plugin  # once the mall entry renames
+```
+
+Uninstalling the plugin removes the eight skills and two prompts but does **not** touch the MCP server registrations you added to `.vscode/mcp.json` or `~/.copilot/mcp-config.json` — those are your host's config, not the plugin's. Remove the `flint`, `replicate`, and `playwright` entries manually if you want a fully clean slate.
+
+**Troubleshooting.** If uninstall fails with `Access is denied` on Windows (close every VS Code window first — Copilot Chat holds file handles on plugin binaries) or `Plugin "..." is not installed` while the plugin still shows in `plugin list` as `[disabled]` (zombie entry in `~/.copilot/config.json`'s `installedPlugins` array), see [`USER-EXPERIENCE.md § Optional — start from a clean slate`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md) for the working two-file config cleanup pattern.
 
 ## Usage patterns
 
