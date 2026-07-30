@@ -1,7 +1,7 @@
 {
   "plugin": "alex-act-illustrator-plugin",
   "version": "0.5.1",
-  "shape": "six-skill + one-prompt + two-mcp-sidecars + vscode-settings",
+  "shape": "seven-skill + one-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Visual-authoring bundle for AI agents. First-cut scope: chart framing (Big Idea, story arc, audience, TRADITIONAL vs INNOVATIVE stance), chart selection + spec authoring (Vega-Lite / ECharts / Chart.js via the flint-chart MCP server), and post-render verification. Scope broadening over time to additional illustration capabilities; see illustrator/plan.md in the Alex_ACT_Steward repo for roadmap. Alex ACT constellation plugin, maintained by Alex_ACT_Steward. Renamed from flint-chart-plugin on 2026-07-29.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
@@ -87,6 +87,15 @@
         "frontmatter": {
           "description": "Ship deterministic hand-authored SVG generators for print-quality figures backed by real published datasets. Ships the .mjs generator pattern reading from data/<slug>.json, the data-sha256 audit hash embed for provenance, the dataset-first rule with contract tests pinning headline numbers, the dataset-inversion procedure for reverse-engineering data from an approved sample SVG, the fix-in-generator-never-in-SVG rule, and the figure-count hoist to one JSON. Use when authoring reproducible book or report figures, when a figure's numbers might drift silently, or when reverse-engineering data from a graphic whose dataset is missing."
         }
+      },
+      {
+        "name": "replicate-imagery",
+        "path": ".github/skills/replicate-imagery/SKILL.md",
+        "install_to": ".github/skills/local/replicate-imagery/SKILL.md",
+        "role": "thin routing + brand alignment for AI image generation and editing on Replicate; delegates substantive prompting to Replicate's upstream prompt-images / find-models / run-models / compare-models skills (npx skills add replicate/skills)",
+        "frontmatter": {
+          "description": "Route AI image generation and editing requests to Replicate (FLUX, Ideogram, Recraft, SDXL, imagen) via the bundled `replicate` MCP server. Use when a document, book, or report needs an illustration, hero image, character/concept art, photorealistic scene, or style-transferred image that neither Flint (data charts), Mermaid (technical diagrams), nor svg-banner (brand banners) can produce. Composes with Replicate's upstream agent skills (prompt-images, find-models, run-models, compare-models, prompt-videos) installable via `npx skills add replicate/skills`. Requires `REPLICATE_API_TOKEN`."
+        }
       }
     ],
     "prompts": [
@@ -115,6 +124,20 @@
           "transport": "stdio",
           "role": "renders the ChartAssemblyInput (Vega-Lite / ECharts / Chart.js)",
           "notes": "Version pin: ^0.3.0 as of 2026-07-29 (bumped from ^0.2.2 when the Microsoft corporate npm mirror caught up to 0.3.0). Caret on 0.x means >=0.3.0 <0.4.0, so 0.4.x is not picked up automatically. Public npm 'latest' is 0.4.0 but has not been verified against this plugin's documented spec patterns from an off-corpnet machine yet; see HANDOFF.md if that verification is worth doing. When checking versions, confirm 'npm config get registry' first: a corporate mirror can report a different 'latest' than public npm."
+        },
+        {
+          "server_name": "replicate",
+          "required": false,
+          "command": "npx",
+          "args": ["-y", "replicate-mcp"],
+          "transport": "stdio",
+          "role": "connects the agent to Replicate's HTTP API for AI image / video generation, model discovery, comparison, and prediction execution",
+          "env": {
+            "REPLICATE_API_TOKEN": "${env:REPLICATE_API_TOKEN}"
+          },
+          "optional_because": "Only needed when the replicate-imagery skill fires. Users who never generate AI imagery pay no cost and see no failure; the MCP server starts on demand and fails auth only if invoked without REPLICATE_API_TOKEN set.",
+          "prereq": "REPLICATE_API_TOKEN environment variable. Get one at https://replicate.com/account/api-tokens. Set in shell env; the plugin's mcp.json references `${env:REPLICATE_API_TOKEN}` so the token never enters source control.",
+          "notes": "replicate-mcp is Replicate's official MCP server, published to npm and auto-updated when the Replicate HTTP API adds new operations. Covers models.search, models.list, models.get, predictions.create, predictions.get, and the rest of the HTTP API surface. Complement with Replicate's upstream agent skills (`npx skills add replicate/skills`) which provide the prompting knowledge to use these tools well. Docs: https://replicate.com/docs/reference/mcp."
         },
         {
           "server_name": "playwright",
@@ -165,7 +188,8 @@
     "mcp_host": "VS Code Copilot 1.118+ | Claude Desktop | Cursor | GitHub Copilot CLI | any MCP stdio client",
     "browser": "Only if using the optional 'playwright' server: an installed Chrome, Edge, Firefox, or WebKit. No browser ships with the package. Not needed on hosts with built-in browser tools (e.g. VS Code Copilot).",
     "alex_edition": ">=3.x with local/ skill+prompt roots registered",
-    "vscode_settings": "On a plain VS Code workspace (no Alex ACT Edition), the assets.settings keys must be present or the local/ install paths are never discovered."
+    "vscode_settings": "On a plain VS Code workspace (no Alex ACT Edition), the assets.settings keys must be present or the local/ install paths are never discovered.",
+    "replicate_api_token": "Optional — only required if using the replicate-imagery skill. Get one at https://replicate.com/account/api-tokens and set REPLICATE_API_TOKEN in your shell environment. The plugin's mcp.json references ${env:REPLICATE_API_TOKEN} so the token stays out of source control."
   },
   "upstream": {
     "flint_chart": "https://github.com/microsoft/flint-chart",
