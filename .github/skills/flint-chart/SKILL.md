@@ -330,6 +330,14 @@ artifact so the visuals read as one voice. This is a Vega-Lite `config` block
 you can drop into the compiled spec (via Step 3 semantic types →
 `compile_chart` → backend edit as described above).
 
+> **Print variant of the constellation brand palette.** The categorical range
+> below (blue-800 / amber-700 / green-700 / gray-500 / red-700) is the
+> **print-quality variant** of the Alex ACT `chart.categorical` palette. The
+> **screen variant** (`#10b981` / `#0ea5e9` / `#f59e0b` / `#8b5cf6` / `#ef4444`)
+> lives in [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/config/brand-palette.json)
+> in `Alex_ACT_Steward`. Same 5-role semantic categorical, deeper contrast for
+> paper.
+
 Pin this once at the top of the artifact's chart set; regenerated charts
 inherit it without per-chart overrides.
 

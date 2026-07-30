@@ -4,7 +4,7 @@
   "MD013": false,
   "MD024": { "siblings_only": true },
   "MD033": {
-    "allowed_elements": ["p", "img", "br", "sub", "sup"]
+    "allowed_elements": ["p", "img", "br", "sub", "sup", "svg", "rect"]
   },
   "MD049": false
 }

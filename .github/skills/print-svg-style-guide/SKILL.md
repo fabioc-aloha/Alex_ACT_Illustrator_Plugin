@@ -106,6 +106,8 @@ Both share the 2.9pt floor. The taxonomy exists because a coverage scanner other
 
 Colour carries meaning — pick from this palette rather than introducing new hues. Consistency across chapters is the reader's cross-reference tool.
 
+> **Relationship to the constellation brand palette.** These are the **print variants** of the Alex ACT semantic role coding — darker Tailwind values (gray-800, blue-800, amber-700) tuned for high-contrast on white paper. The **screen variants** (`ddf4ff` pastels for mermaid classDefs, banner emerald `#10b981`) live in [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Steward`. Same semantic roles across both variants (Input / Output / Processing / Decision / Error / Neutral); different lightness for the target surface.
+
 ### Grays (neutral scaffolding)
 
 | Hex       | Tailwind  | Use                                                |

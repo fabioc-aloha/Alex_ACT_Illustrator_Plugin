@@ -79,6 +79,48 @@ The Brief locks the framing; the selection skill handles the mechanical chartTyp
 | `README.md`                                     | This file                                                                                                                                                                        |
 | `LICENSE`                                       | MIT (dual-copyright: Fabio Correa for plugin work + Microsoft for the flint-chart body)                                                                                          |
 
+## Brand palette
+
+The plugin follows the Alex ACT constellation brand palette. Canonical machine-readable source: [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Steward`. The tables below are a human-readable snapshot; edit the JSON file to rebrand the constellation.
+
+**Brand identity** — banners, marks, hero surfaces (`brand.*` + `gradient[]`):
+
+| Swatch | Hex | Role |
+| :---: | --- | --- |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#0f172a"/></svg> | `#0f172a` | Deep slate — background (`brand.primaryDark`) |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#10b981"/></svg> | `#10b981` | Emerald — primary accent, gradient start (`brand.primary`, `gradient[0]`) |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#14b8a6"/></svg> | `#14b8a6` | Teal — gradient mid (`gradient[1]`) |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#06b6d4"/></svg> | `#06b6d4` | Cyan — gradient end (`gradient[2]`) |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#f1f5f9"/></svg> | `#f1f5f9` | Near-white — text on dark (`brand.primaryLight`, `typography.textOnDark`) |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#94a3b8"/></svg> | `#94a3b8` | Muted — secondary text (`brand.muted`) |
+
+**Semantic role coding** — screen-first diagram node fills (mermaid classDef vocabulary, `semantic.*`):
+
+| Swatch | Class | Fill | Stroke | Text | Role |
+| :---: | --- | --- | --- | --- | --- |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#ddf4ff" stroke="#80ccff"/></svg> | `:::blue` | `#ddf4ff` | `#80ccff` | `#0550ae` | Input, source, start |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#d3f5db" stroke="#6fdd8b"/></svg> | `:::green` | `#d3f5db` | `#6fdd8b` | `#1a7f37` | Output, result, success |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#d8b9ff" stroke="#bf8aff"/></svg> | `:::purple` | `#d8b9ff` | `#bf8aff` | `#6639ba` | Processing, model, transformation |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#fff8c5" stroke="#d4a72c"/></svg> | `:::gold` | `#fff8c5` | `#d4a72c` | `#9a6700` | Decision, condition, gate |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#ffebe9" stroke="#f5a3a3"/></svg> | `:::red` | `#ffebe9` | `#f5a3a3` | `#cf222e` | Error, warning, failure |
+| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#eaeef2" stroke="#d0d7de"/></svg> | `:::neutral` | `#eaeef2` | `#d0d7de` | `#24292f` | Context, optional, out-of-scope |
+
+**Chart categorical** — screen-quality data-series colors (`chart.categorical[]`):
+
+| # | Swatch | Hex | Role hint |
+| :---: | :---: | --- | --- |
+| 0 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#10b981"/></svg> | `#10b981` | Primary / focus (matches brand accent) |
+| 1 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#0ea5e9"/></svg> | `#0ea5e9` | Secondary series |
+| 2 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#f59e0b"/></svg> | `#f59e0b` | Tertiary / comparison |
+| 3 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#8b5cf6"/></svg> | `#8b5cf6` | Quaternary |
+| 4 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#ef4444"/></svg> | `#ef4444` | Quinary / warning |
+
+### Print variants ship in the plugin
+
+`print-svg-style-guide` (Tailwind-grounded semantic palette) and `flint-chart` (publication preset categorical range) ship darker print-quality variants of these palettes for book / report / exec-facing figures where the render surface is white paper or high-DPI screens. Those are **print variants of the same brand identity**, not a separate palette — same semantic role coding, deeper contrast for print legibility. Deltas documented in each skill.
+
+**Typography** — `Segoe UI, Helvetica, Arial, sans-serif` on screen (from `typography.fontStack`). Print figures follow the plugin's `print-svg-style-guide` typography scale.
+
 ## Prerequisites
 
 - **Node.js ≥ 22** on your machine (required for `npx flint-chart-mcp`)
