@@ -1,7 +1,7 @@
 {
   "plugin": "alex-act-illustrator-plugin",
   "version": "0.6.0",
-  "shape": "nine-skill + two-prompt + three-mcp-sidecars + vscode-settings",
+  "shape": "ten-skill + three-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Visual-authoring bundle for AI agents. Nine skills organized into five feature areas: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in The Defensible Decision), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports), and Banner (1200×320 SVG brand banners with pluggable brand config, absorbed from Alex_ACT_Steward on 2026-07-30 per Fabio directive). Shared framing gate (chart-big-idea Step 0.5) and verification pass (render-verify Prose-coupling) apply across all features. Alex ACT constellation plugin, maintained by Alex_ACT_Steward. Renamed from flint-chart-plugin on 2026-07-29; see illustrator/plan.md in Alex_ACT_Steward for roadmap and provenance.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
@@ -126,6 +126,15 @@
             "role": "Node CLI generator — reads brand-palette.json + banner-brand.json, produces 1200×320 SVG. Flags: --brand-config <path>, --palette-config <path>, --title, --subtitle, --watermark, --out."
           }
         ]
+      },
+      {
+        "name": "install-visual-companions",
+        "path": ".github/skills/install-visual-companions/SKILL.md",
+        "install_to": ".github/skills/local/install-visual-companions/SKILL.md",
+        "role": "install-composition surface: offers to install 9 marketplace companion plugins (chromium-control-canvas, eyeball, diagram-viewer, napkin, image-annotations, chart-interpretation, visual-artifact-qa, visual-pr, storytelling-requirements) that compose visual-authoring workflows around Illustrator. Consent-gated, per-plugin. Vision loop: storytelling-requirements → visual-artifact-qa → chart-interpretation → eyeball. Ownership moved from alex-act-core install-constellation Step 7 on 2026-08-01 per Fabio directive.",
+        "frontmatter": {
+          "description": "Offer to install nine marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval. Use when the heir asks to enable visual-workflow tooling, or when the illustrator's chart / figure / print-SVG authoring produces artifacts that need runtime verification (multimodal vision loop). Companion to install-constellation in alex-act-core."
+        }
       }
     ],
     "prompts": [
@@ -145,6 +154,15 @@
         "role": "verb-prompt workflow entry point (/banner)",
         "frontmatter": {
           "description": "Generate a 1200×320 SVG banner using the active brand config (default: Alex ACT), with title, subtitle, and watermark. Use for READMEs, plans, notes, and release artifacts."
+        }
+      },
+      {
+        "name": "install-visual-companions",
+        "path": ".github/prompts/install-visual-companions.prompt.md",
+        "install_to": ".github/prompts/local/install-visual-companions.prompt.md",
+        "role": "verb-prompt workflow entry point (/install-visual-companions)",
+        "frontmatter": {
+          "description": "Offer to install nine marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval."
         }
       }
     ],
