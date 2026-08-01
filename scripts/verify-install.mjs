@@ -27,11 +27,11 @@
 // A failing spec here does not fail the run — it is reported for judgment.
 //
 // `--replicate` handshakes the optional `replicate` MCP server declared in
-// `.vscode/mcp.json` (`npx replicate-mcp`, the Replicate feature). Skips if
+// `.vscode/mcp.json` (`replicate-mcp@0.9.0`, the Replicate feature). Skips if
 // `REPLICATE_API_TOKEN` is unset. Never fails the run — Replicate is optional.
 //
 // `--playwright` handshakes the optional `playwright` MCP server declared in
-// `.vscode/mcp.json` (`npx @playwright/mcp --headless --isolated`, the
+// `.vscode/mcp.json` (`@playwright/mcp@0.0.78 --headless --isolated`, the
 // render-verify browser sidecar). Skips if the browser launch fails. Never
 // fails the run — Playwright is only needed on hosts without built-in browser
 // tools (e.g. Copilot CLI).
@@ -47,8 +47,60 @@ import { fileURLToPath } from 'node:url';
 // Verify the spec the workspace actually asks for, not a copy of it. Reading
 // `.vscode/mcp.json` means bumping the pin in one place cannot leave this
 // checker silently validating a different version than the host will launch.
-const FALLBACK_PACKAGE = 'flint-chart-mcp@^0.3.0';
-const CONFIG_PATH = join(dirname(fileURLToPath(import.meta.url)), '..', '.vscode', 'mcp.json');
+const ROOT_PATH = join(dirname(fileURLToPath(import.meta.url)), '..');
+const FALLBACK_PACKAGE = 'flint-chart-mcp@0.3.0';
+const CONFIG_PATH = join(ROOT_PATH, '.vscode', 'mcp.json');
+
+function registryPolicyFail(reason) {
+  console.error(`FAIL  npm registry policy: ${reason}`);
+  process.exit(1);
+}
+
+function assertRegistryPolicy() {
+  const sources = [
+    {
+      label: '.vscode/mcp.json',
+      raw: readFileSync(CONFIG_PATH, 'utf8'),
+      servers: JSON.parse(readFileSync(CONFIG_PATH, 'utf8')).servers,
+    },
+    {
+      label: 'plugin.json',
+      raw: readFileSync(join(ROOT_PATH, 'plugin.json'), 'utf8'),
+      servers: JSON.parse(readFileSync(join(ROOT_PATH, 'plugin.json'), 'utf8')).mcpServers,
+    },
+  ];
+
+  const manifestRaw = readFileSync(join(ROOT_PATH, 'manifest.json'), 'utf8');
+  const manifest = JSON.parse(manifestRaw);
+  sources.push({
+    label: 'manifest.json',
+    raw: manifestRaw,
+    servers: Object.fromEntries(
+      manifest.assets.mcp.servers.map((server) => [server.server_name, server]),
+    ),
+  });
+
+  for (const source of sources) {
+    if (/registry\.npmjs\.org/i.test(source.raw)) {
+      registryPolicyFail(`${source.label} hardcodes the public npm registry`);
+    }
+    for (const [name, server] of Object.entries(source.servers ?? {})) {
+      if (server.command !== 'npx') continue;
+      const args = server.args ?? [];
+      if (!args.includes('--prefer-offline')) {
+        registryPolicyFail(`${source.label} server ${name} is missing --prefer-offline`);
+      }
+      const packageSpec = args.find((arg) => typeof arg === 'string' && !arg.startsWith('-'));
+      if (!packageSpec || !/@\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(packageSpec)) {
+        registryPolicyFail(`${source.label} server ${name} lacks an exact package version`);
+      }
+    }
+  }
+
+  console.log('OK    npm registry policy: exact pins, cache-first, configured registry only');
+}
+
+assertRegistryPolicy();
 
 function resolvePackage() {
   try {
@@ -78,7 +130,7 @@ const OPTIONAL_MCPS = {
   replicate: {
     label: 'replicate',
     command: 'npx',
-    args: ['-y', 'replicate-mcp'],
+    args: ['-y', '--prefer-offline', 'replicate-mcp@0.9.0'],
     envRequired: 'REPLICATE_API_TOKEN',
     expectedToolPrefixes: ['predictions', 'models'],
     role: 'AI image generation (Replicate feature)',
@@ -86,7 +138,7 @@ const OPTIONAL_MCPS = {
   playwright: {
     label: 'playwright',
     command: 'npx',
-    args: ['-y', '@playwright/mcp', '--headless', '--isolated'],
+    args: ['-y', '--prefer-offline', '@playwright/mcp@0.0.78', '--headless', '--isolated'],
     envRequired: null,
     expectedToolPrefixes: ['browser'],
     role: 'browser sidecar for render-verify (Copilot CLI hosts)',
@@ -204,8 +256,8 @@ const isWindows = process.platform === 'win32';
 console.log(`      spec: ${PACKAGE}  (from ${PACKAGE_SOURCE})`);
 
 const child = isWindows
-  ? spawn(`npx -y "${PACKAGE}"`, { stdio: ['pipe', 'pipe', 'pipe'], shell: true })
-  : spawn('npx', ['-y', PACKAGE], { stdio: ['pipe', 'pipe', 'pipe'], shell: false });
+  ? spawn(`npx -y --prefer-offline "${PACKAGE}"`, { stdio: ['pipe', 'pipe', 'pipe'], shell: true })
+  : spawn('npx', ['-y', '--prefer-offline', PACKAGE], { stdio: ['pipe', 'pipe', 'pipe'], shell: false });
 
 let stdout = '';
 let stderr = '';
@@ -273,7 +325,7 @@ function report() {
   const initialize = messages.find((m) => m.result?.serverInfo);
   if (!initialize) {
     fail('no initialize response — the server never completed a handshake', [
-      'Run `npx -y flint-chart-mcp` by hand to see what it prints.',
+      'Run `npx -y --prefer-offline flint-chart-mcp@0.3.0` by hand to see what it prints.',
     ]);
   }
 

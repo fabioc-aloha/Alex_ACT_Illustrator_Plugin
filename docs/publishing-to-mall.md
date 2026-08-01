@@ -1,342 +1,168 @@
-# Publishing to the Alex ACT Plugin Mall
+# Publishing Illustrator to the Mall
 
-> **Renamed 2026-07-29.** This repo was renamed from `flint-chart-plugin` to `Alex_ACT_Illustrator_Plugin`. The **upstream references** in this runbook (local paths, GitHub URLs) use the new name. The **Mall-side references** (vendored directory `plugins/data-analytics/flint-chart-plugin/`, Copilot plugin ID `flint-chart-plugin`, Mall commit message subject) stay under the old name during the transition. Both will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md).
+**A released Illustrator source becomes installable only after the Mall packages, validates, and publishes an approved snapshot, keeping implementation ownership separate from distribution governance.**
 
-Step-by-step runbook for vendoring this plugin (or a new version of it) into the [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall). Complete this when:
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"edgeLabelBackground":"#ffffff","lineColor":"#57606a","primaryColor":"#ddf4ff"}}}%%
+flowchart TB
+    A["Tagged Illustrator<br/>release"]:::blue
+    B["Mall vendor<br/>dry run"]:::purple
+    C["Fabio reviews<br/>the plan"]:::gold
+    D["Vendor apply +<br/>curated maintenance"]:::purple
+    E["Mall tests +<br/>validators"]:::gold
+    F["Marketplace + catalog<br/>published"]:::green
+    G["Users install<br/>approved snapshot"]:::green
 
-- (a) Publishing this plugin to the Mall for the first time
-- (b) Shipping a new version — `manifest.json` bumped, `CHANGELOG.md` entry added
-- (c) Refreshing the Mall's vendored README or docs after upstream doc edits (no version bump)
+    A --> B --> C --> D --> E --> F --> G
 
-The Mall vendors a **snapshot** of this repo at a specific commit. It does **not** auto-track — you must run this runbook (or wait for the Mall's weekly automated catalog-refresh cron to pick up changes).
+    classDef blue fill:#ddf4ff,stroke:#80ccff,color:#0550ae
+    classDef green fill:#d3f5db,stroke:#6fdd8b,color:#1a7f37
+    classDef purple fill:#d8b9ff,stroke:#bf8aff,color:#6639ba
+    classDef gold fill:#fff8c5,stroke:#d4a72c,color:#9a6700
+    linkStyle default stroke:#57606a,stroke-width:1.5px
+```
+
+**Figure 1:** *The source repo owns the release; the Mall owns normalized packaging, approval, validation, and publication.*
+
+## Ownership
+
+| Responsibility | Owner | Evidence |
+| --- | --- | --- |
+| Skills, prompts, MCP declarations, release tag | Illustrator repo | `plugin.json`, `manifest.json`, `CHANGELOG.md` |
+| Normalized payload and marketplace entry | Mall repo | `npm run vendor` |
+| Curated publication approval | Fabio | Reviewed dry-run plan and diff |
+| Catalog, trust, marketplace, generated README | Mall repo | `npm run maintain -- --curated` |
+| Structural and regression gates | Mall repo | `npm run check` |
+
+Mall scripts never approve, commit, push, or merge. Fabio retains those decisions.
 
 ## Prerequisites
 
-1. **Local clone of the Mall repo** at `..\Alex_ACT_Plugin_Mall\` (sibling to this repo). If not present:
-
-   ```pwsh
-   cd ..
-   gh repo clone fabioc-aloha/Alex_Skill_Mall Alex_ACT_Plugin_Mall
-   ```
-
-2. **`gh` authenticated as an account with write access** to `fabioc-aloha/Alex_Skill_Mall`. Verify:
-
-   ```pwsh
-   gh auth status
-   ```
-
-   Expected: at least one active account showing `repo` and `workflow` scopes.
-
-3. **This repo's `main` branch clean and pushed**:
-
-   ```pwsh
-   git -C C:\Development\Alex_ACT_Illustrator_Plugin status --short   # should be empty
-   git -C C:\Development\Alex_ACT_Illustrator_Plugin rev-list --left-right --count 'origin/main...HEAD'   # should be "0  0"
-   ```
-
-4. **Version numbers aligned** between `manifest.json` and `CHANGELOG.md`:
-
-   ```pwsh
-   (Get-Content C:\Development\Alex_ACT_Illustrator_Plugin\manifest.json -Raw | ConvertFrom-Json).version
-   (Select-String -Path C:\Development\Alex_ACT_Illustrator_Plugin\CHANGELOG.md -Pattern '^## \[' | Select-Object -First 1).Line
-   ```
-
-   Both should show the same version.
-
-## Mall submission shape
-
-The Mall vendors plugin files under `plugins/data-analytics/flint-chart-plugin/`. **Note the paths differ from this repo** — the Mall drops the `.github/` prefix and puts skills and prompts under `skills/` and `prompts/` at the plugin folder root:
-
-```text
-Alex_ACT_Plugin_Mall/plugins/data-analytics/flint-chart-plugin/
-├── plugin.json              Mall-specific manifest (NOT this repo's manifest.json)
-├── README.md                Vendored copy of this repo's top-level README.md
-├── mcp.json                 Byte-identical copy of this repo's .vscode/mcp.json
-├── skills/
-│   ├── chart-big-idea/SKILL.md
-│   ├── flint-chart/SKILL.md
-│   └── render-verify/SKILL.md
-└── prompts/
-    └── render-chart.prompt.md
-```
-
-The Mall stores the MCP fragment flat as `mcp.json`; the heir installs it to
-`.vscode/mcp.json`. That install path is declared in `plugin.json` — see Step 4.
-
-Since v0.4.0 that fragment declares **two** servers: `flint` (required) and
-`playwright` (optional — heirs on hosts with built-in browser tools, notably VS
-Code, should omit it). The file is vendored byte-identical, so the optional-ness
-must be expressed in `plugin.json` metadata and the vendored README — `mcp.json`
-has to stay strict JSON and cannot carry a comment saying so.
-
-`.vscode/settings.json` is a declared asset in this repo's `manifest.json` but is
-deliberately **not** vendored. It registers the `local/` discovery roots, which
-Alex ACT Edition heirs already provide (`requires_edition >=3.0.0`); it is only
-needed on a plain VS Code workspace. `plugin.json`'s `install_notes` says so.
-
-Do **not** vendor `assets/`, `demos/`, `docs/`, `scripts/`, `LICENSE`, `CHANGELOG.md`, `.gitignore`, or `.markdownlintignore` — those live only in this repo.
-
-## Steps
-
-### 1. Refresh the Mall clone
+1. Release Illustrator and push its tag.
+2. Confirm source and Mall worktrees are clean.
+3. Pull Mall `main` before packaging.
+4. Use Node.js 24 or newer.
 
 ```pwsh
-cd C:\Development\Alex_ACT_Plugin_Mall
-git pull --rebase origin main
+$source = 'C:\Development\Alex_ACT_Illustrator_Plugin'
+$mall = 'C:\Development\Alex_ACT_Plugin_Mall'
+
+git -C $source status --short
+git -C $mall pull --rebase origin main
+git -C $mall status --short
 ```
 
-Weekly `[behaviour] catalog refresh` commits often land automatically — always rebase before starting to avoid a diverging-branch merge later.
+## Maintainer Refresh
 
-### 2. Copy the current asset files into the Mall
+Run from the Mall repository. Replace `<tag>` with the released tag, not `main`.
 
-```pwsh
-$up = 'C:\Development\Alex_ACT_Illustrator_Plugin'
-$ma = 'C:\Development\Alex_ACT_Plugin_Mall\plugins\data-analytics\flint-chart-plugin'
+### 1. Preview the package
 
-# Ensure target folder structure exists (8 skill folders + prompts)
-New-Item -ItemType Directory -Force -Path "$ma\skills\chart-big-idea"        | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\chart-vocabulary"      | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\flint-chart"           | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\render-verify"         | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\print-svg-style-guide" | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\figure-generator"      | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\replicate-imagery"     | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\skills\docs-shell\starter"    | Out-Null
-New-Item -ItemType Directory -Force -Path "$ma\prompts"                      | Out-Null
-
-# Copy the ten installable payload files byte-for-byte (8 skills + 1 prompt + mcp.json)
-Copy-Item "$up\.github\skills\chart-big-idea\SKILL.md"        -Destination "$ma\skills\chart-big-idea\SKILL.md"        -Force
-Copy-Item "$up\.github\skills\chart-vocabulary\SKILL.md"      -Destination "$ma\skills\chart-vocabulary\SKILL.md"      -Force
-Copy-Item "$up\.github\skills\flint-chart\SKILL.md"           -Destination "$ma\skills\flint-chart\SKILL.md"           -Force
-Copy-Item "$up\.github\skills\render-verify\SKILL.md"         -Destination "$ma\skills\render-verify\SKILL.md"         -Force
-Copy-Item "$up\.github\skills\print-svg-style-guide\SKILL.md" -Destination "$ma\skills\print-svg-style-guide\SKILL.md" -Force
-Copy-Item "$up\.github\skills\figure-generator\SKILL.md"      -Destination "$ma\skills\figure-generator\SKILL.md"      -Force
-Copy-Item "$up\.github\skills\replicate-imagery\SKILL.md"     -Destination "$ma\skills\replicate-imagery\SKILL.md"     -Force
-Copy-Item "$up\.github\skills\docs-shell\SKILL.md"            -Destination "$ma\skills\docs-shell\SKILL.md"            -Force
-Copy-Item "$up\.github\skills\docs-shell\starter\index.html"  -Destination "$ma\skills\docs-shell\starter\index.html"  -Force
-Copy-Item "$up\.github\skills\docs-shell\starter\manifest.json" -Destination "$ma\skills\docs-shell\starter\manifest.json" -Force
-Copy-Item "$up\.github\skills\docs-shell\starter\about.md"    -Destination "$ma\skills\docs-shell\starter\about.md"    -Force
-Copy-Item "$up\.github\prompts\render-chart.prompt.md"        -Destination "$ma\prompts\render-chart.prompt.md"        -Force
-Copy-Item "$up\.vscode\mcp.json"                              -Destination "$ma\mcp.json"                              -Force
-
-# Copy the README (Mall renders this on the plugin's page)
-Copy-Item "$up\README.md" -Destination "$ma\README.md" -Force
-```
-
-> **docs-shell bundled resources.** The `docs-shell` skill bundles a `starter/` kit (3 files: `index.html`, `manifest.json`, `about.md`) that adopters copy to their workspace root. These are payload, not documentation — vendor them alongside `SKILL.md`.
-
-### 3. Rewrite relative references in the vendored README
-
-The Mall vendors only the payload — no `assets/`, no `docs/`, no `.vscode/`. Every relative reference in the vendored README therefore resolves inside the Mall plugin folder and 404s. Rewrite both images **and** links to absolute upstream URLs. This keeps the vendored copy self-contained AND auto-tracking upstream changes without re-vendoring.
-
-```pwsh
-$readmePath = "$ma\README.md"
-$base = 'https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin'
-
-# Images: assets/… -> raw.githubusercontent.com
-$c = Get-Content $readmePath -Raw
-$c = $c -replace 'src="assets/', "src=$([char]34)https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/"
-
-# Links: any relative ](path) -> absolute blob/main (files) or tree/main (dirs)
-$c = [regex]::Replace($c, '\]\((?!https?://|#)([^)]+)\)', {
-  param($m)
-  $t = $m.Groups[1].Value
-  $kind = if ($t.EndsWith('/')) { 'tree' } else { 'blob' }
-  "]($base/$kind/main/$t)"
-})
-
-Set-Content -Path $readmePath -Value $c -Encoding UTF8 -NoNewline
-
-# Verify: both counts must be 0
-$v = Get-Content $readmePath -Raw
-'relative img refs: {0}' -f ([regex]::Matches($v, 'src="assets/')).Count
-'relative links:    {0}' -f ([regex]::Matches($v, '\]\((?!https?://|#)([^)]+)\)')).Count
-```
-
-Both counts must report `0`.
-
-### 4. Update the Mall's plugin.json
-
-The Mall's `plugin.json` is _not_ a copy of this repo's `manifest.json` — it uses the Mall's own schema. Key fields to verify:
-
-- `version` — must match this repo's `manifest.json` version
-- `upstream.repo` — `https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin`
-- `upstream.ref` — usually `main`; can be a specific commit SHA if pinning
-- `artifacts.skills`, `artifacts.prompts`, `artifacts.mcp` — paths _inside the Mall folder_ (e.g. `skills/chart-big-idea/SKILL.md`, not `.github/skills/…`)
-- `install_paths.*` — where a heir installs each artifact (`.github/skills/local/…`, `.vscode/mcp.json`, etc.)
-- `install_paths.mcp.merge_target` — **check this every time.** It is authored independently of the vendored files, so a wrong value here ships the bug even when all ten payload files are byte-perfect. It must read `.vscode/mcp.json`.
-- `token_cost` — no script derives it; scale the previous value by the measured payload-size change rather than switching estimator
-- `frontmatter.description` under each asset — copy the current description from the source file's frontmatter
-
-Open the current file at `Alex_ACT_Plugin_Mall\plugins\data-analytics\flint-chart-plugin\plugin.json` for the template. Update `version` and any frontmatter descriptions that changed since last publish.
-
-### 5. Append a curation-log entry
-
-`Alex_ACT_Plugin_Mall/docs/curation-log.md` is append-only. Add one row using the table format at the top of that file:
-
-| Column           | Value                                                                                                                                  |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Date             | Today's date, `YYYY-MM-DD`                                                                                                             |
-| Tag              | `` `[PLUGIN-UPDATE]` `` for version bump, `` `[PLUGIN-ADDITION]` `` for first publish, `` `[PLUGIN-DOC-REFRESH]` `` for docs-only sync |
-| Source / trigger | What surfaced the update — new version, docs improvement, etc.                                                                         |
-| Decision         | `S — accept` with a one-sentence rationale                                                                                             |
-| Evidence         | Commit SHA in this repo + short summary                                                                                                |
-
-The tag vocabulary is defined at the top of `curation-log.md`. `[PLUGIN-ADDITION]` covers this plugin's initial submission (already logged 2026-07-24) — for subsequent updates use `[PLUGIN-UPDATE]` or `[PLUGIN-DOC-REFRESH]`.
-
-### 6. Verify before commit
-
-```pwsh
-# All Mall pending changes
-git -C C:\Development\Alex_ACT_Plugin_Mall status --short
-
-# Vendored files should be byte-identical to upstream (except README + plugin.json)
-foreach ($p in @(
-  @('.github\skills\chart-big-idea\SKILL.md',        'skills\chart-big-idea\SKILL.md'),
-  @('.github\skills\chart-vocabulary\SKILL.md',      'skills\chart-vocabulary\SKILL.md'),
-  @('.github\skills\flint-chart\SKILL.md',           'skills\flint-chart\SKILL.md'),
-  @('.github\skills\render-verify\SKILL.md',         'skills\render-verify\SKILL.md'),
-  @('.github\skills\print-svg-style-guide\SKILL.md', 'skills\print-svg-style-guide\SKILL.md'),
-  @('.github\skills\figure-generator\SKILL.md',      'skills\figure-generator\SKILL.md'),
-  @('.github\skills\replicate-imagery\SKILL.md',     'skills\replicate-imagery\SKILL.md'),
-  @('.github\skills\docs-shell\SKILL.md',            'skills\docs-shell\SKILL.md'),
-  @('.github\skills\docs-shell\starter\index.html',   'skills\docs-shell\starter\index.html'),
-  @('.github\skills\docs-shell\starter\manifest.json', 'skills\docs-shell\starter\manifest.json'),
-  @('.github\skills\docs-shell\starter\about.md',     'skills\docs-shell\starter\about.md'),
-  @('.github\prompts\render-chart.prompt.md',        'prompts\render-chart.prompt.md'),
-  @('.vscode\mcp.json',                              'mcp.json')
-)) {
-  $uh = (Get-FileHash "$up\$($p[0])").Hash.Substring(0, 12)
-  $mh = (Get-FileHash "$ma\$($p[1])").Hash.Substring(0, 12)
-  "$(if($uh -eq $mh){'IDENT'}else{'DIFF '})  $($p[0])"
-}
-
-# plugin.json + README parse OK
-Get-Content "$ma\plugin.json" -Raw | ConvertFrom-Json | Select-Object name, version
-
-# plugin.json version matches upstream manifest.json version
-$upVersion = (Get-Content "$up\manifest.json" -Raw | ConvertFrom-Json).version
-$maVersion = (Get-Content "$ma\plugin.json" -Raw | ConvertFrom-Json).version
-"upstream=$upVersion  mall=$maVersion  $(if($upVersion -eq $maVersion){'MATCH'}else{'MISMATCH — fix plugin.json before commit'})"
-```
-
-All 13 vendored payload files should report `IDENT` (8 skill SKILL.md + 3 docs-shell/starter files + 1 prompt + mcp.json). `plugin.json` should parse and return the correct `name` + `version`, and the version-consistency line should report `MATCH`.
-
-### 7. Commit and push
+Dry run is the default:
 
 ```pwsh
 cd C:\Development\Alex_ACT_Plugin_Mall
 
-git add -A
-git commit -m "[behaviour] flint-chart-plugin - vendor v<X.Y.Z>" `
-           -m "Sync from upstream fabioc-aloha/Alex_ACT_Illustrator_Plugin@<short-sha> (repo renamed 2026-07-29 from flint-chart-plugin; Mall directory + Copilot plugin ID retained under old name during transition). Byte-identical vendoring of the ten installable payload files (8 skills + 1 prompt + mcp.json), plus the docs-shell starter bundle (3 files). README updated to use absolute raw.githubusercontent.com URLs for image references (Mall does not vendor the assets/ folder). Curation-log entry [PLUGIN-UPDATE] appended."
-
-# Rebase against origin one more time in case the weekly cron landed while you were working
-git pull --rebase origin main
-
-git push origin main
+npm run vendor -- `
+  --source ..\Alex_ACT_Illustrator_Plugin `
+  --category data-analytics `
+  --repository https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin `
+  --ref <tag> `
+  --submitted-by @fabioc-aloha `
+  --evidence "Released and verified in the source repo" `
+  --replace
 ```
 
-Use `[typo]` instead of `[behaviour]` for doc-only refreshes with no version bump.
+Review the JSON plan. It must identify `alex-act-illustrator-plugin`, preserve the `data-analytics` category, and stay within the platform payload limit.
 
-### 8. Verify the Mall reflects the update
+### 2. Obtain approval
+
+Show Fabio the source tag and commit, planned payload path, component changes, version and file-count changes, and any new executable, network, credential, or license surface. Do not add `--apply` until Fabio approves the plan.
+
+### 3. Apply and regenerate curated outputs
 
 ```pwsh
-gh api repos/fabioc-aloha/Alex_Skill_Mall/contents/plugins/data-analytics/flint-chart-plugin --jq '.[] | "\(.type)\t\(.size)\t\(.name)"'
-gh api repos/fabioc-aloha/Alex_Skill_Mall/commits/main --jq '.sha[0:10] + "  " + .commit.message'
+npm run vendor -- `
+  --source ..\Alex_ACT_Illustrator_Plugin `
+  --category data-analytics `
+  --repository https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin `
+  --ref <tag> `
+  --submitted-by @fabioc-aloha `
+  --evidence "Released and verified in the source repo" `
+  --replace `
+  --apply `
+  --maintain
 ```
 
-The commit message should be the one you just pushed. The file listing should show the updated file sizes.
-
-> [!WARNING]
-> **This is not the end of the publish.** Vendoring the files and refreshing the
-> catalog are two different things, and stopping here ships a half-published
-> plugin that looks fully published. Continue to Step 9.
-
-### 9. Refresh the catalog — the step that actually publishes it
-
-The Mall's `catalog/index.json` is what heirs search, and its `source_url`
-**pins a specific commit SHA**:
-
-```text
-https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/<SHA>/plugins/data-analytics/flint-chart-plugin
-```
-
-Until the catalog is regenerated, that SHA points at the _previous_ vendor
-commit. The new files sit in `plugins/` unreachable through the catalog path,
-and an install resolves the **old** version's content. Nothing errors. The
-plugin folder shows the new version; the catalog serves the old one.
-
-The catalog is regenerated by the **Scan Sources** workflow — `cron: '0 11 * * 1'`
-(Mondays, 11:00 UTC), plus `workflow_dispatch`. Either wait for Monday, or
-trigger it:
+`--maintain` runs the curated maintenance pipeline after packaging. Running it explicitly is also valid:
 
 ```pwsh
-gh workflow run scan-sources.yml --repo fabioc-aloha/Alex_Skill_Mall
-gh run list --repo fabioc-aloha/Alex_Skill_Mall --workflow scan-sources.yml --limit 1 --json databaseId,status --jq '.[0].databaseId'
-gh run watch <run-id> --repo fabioc-aloha/Alex_Skill_Mall --exit-status --interval 20
+npm run maintain -- --curated
 ```
 
-It takes ~3 minutes: it re-clones every registered store, re-scans all plugins,
-re-fetches GitHub stats, and recomputes trust scores. It then **opens a
-`catalog-refresh/<date>` PR that auto-merges** — so the branch is gone by the
-time you look for it, and `gh pr view <n>` will already report `MERGED`. Do not
-read that as a failure.
-
-Then verify the entry — pull first, since the merge landed after your push:
+### 4. Run the complete gate
 
 ```pwsh
-cd C:\Development\Alex_ACT_Plugin_Mall
-git pull --ff-only origin main
-node -e "const c=require('./catalog/index.json');console.log(JSON.stringify((c.plugins||c).filter(x=>x.name==='flint-chart-plugin'),null,1))"
+npm run check
+git diff --check
+git status --short
 ```
 
-Both must be true: `version` is the one you just published, **and** `source_url`
-contains your vendor commit SHA — not the previous one.
+Review the diff before committing. Expected changes include the Illustrator payload, marketplace entry, first-party catalog and trust outputs, and generated Mall documentation.
 
-> Do not fetch `catalog/index.json` through `gh api .../contents/` and decode the
-> base64 — the file is large enough that the response is truncated and the JSON
-> fails to parse. Pull the repo and read it from disk. Equally, a clean
-> `git status` on a local clone that is level with `origin/main` means the local
-> copy _is_ the remote copy; that is a cheaper check than any API round-trip.
+## Approval Gate
 
-## Verification checklist
+For repository enforcement, preview and then apply the Mall's branch-protection contract:
 
-Before declaring the publish complete:
+```pwsh
+npm run admin:configure-approval
+npm run admin:configure-approval -- --apply
+```
 
-- [ ] Byte-identical vendored files (8 skills + 3 docs-shell/starter files + 1 prompt + mcp.json = 13 payload files) — `Get-FileHash` matches
-- [ ] `plugin.json` version matches upstream `manifest.json` version
-- [ ] `plugin.json` `install_paths.mcp.merge_target` reads `.vscode/mcp.json`
-- [ ] `plugin.json` marks the `replicate` and `playwright` servers optional and the `flint` server required
-- [ ] Mall README has zero relative image refs **and** zero relative links
-- [ ] `node scripts/validate-catalog.cjs` passes in the Mall clone
-- [ ] Mall README image `src` attributes use `raw.githubusercontent.com/...` (no `src="assets/…"` remains)
-- [ ] Curation-log entry present with today's date and correct tag
-- [ ] Commit tagged appropriately (`[behaviour]` version bump, `[typo]` doc-only, `[PLUGIN-ADDITION]` first publish)
-- [ ] Rebased on `origin/main` before push
-- [ ] Push successful — `gh api commits/main` shows the new commit SHA
-- [ ] **Catalog refreshed** — `Scan Sources` run completed and its PR merged
-- [ ] **Catalog entry shows the new `version`**
-- [ ] **Catalog `source_url` contains the new vendor commit SHA**, not the previous one — this is the check that distinguishes "files pushed" from "actually published"
+Contributor plugin PRs require the validation check and CODEOWNER approval. Generated catalog-refresh paths follow their separate automation lane.
 
-## Common gotchas
+## Validation Checklist
 
-- **PowerShell's parser hangs on the Step 3 rewrite block.** The README-rewrite snippet nests a single-quoted regex containing `//` and `#` inside a `$(...)` subexpression inside a double-quoted string. Pasted as one multi-line block it can leave the shell sitting at a `>>` continuation prompt, having executed nothing — and the _next_ command you type gets swallowed as continuation input. Measured 2026-07-25: it stalled twice, and the recovery was killing the terminal. If it happens, do not try to complete the quote; kill the shell and put the rewrite in a small `.mjs` file instead, where the regex needs no shell escaping.
-- **`gh repo create --push` uses SSH by default.** When creating a new sibling repo, `gh` configures `origin` as `git@github.com:…` — which needs SSH keys. If keys aren't set up, the initial push fails silently. Fix: `git remote set-url origin https://github.com/<owner>/<repo>.git` and re-push. `gh`'s HTTPS credential helper handles auth automatically once the URL is HTTPS.
-- **Mall README drift is expected between publishes.** The vendored README is a snapshot at publish time; subsequent doc-only edits in this repo won't reach the Mall until the next explicit publish (or the weekly automated catalog-refresh cron, whichever comes first).
-- **Weekly catalog-refresh cron.** The Mall runs an automated `[behaviour] catalog refresh` commit weekly. Always rebase before push (Step 1 does this before you start, and Step 7 does it again — both are cheap).
-- **Backtick hazard on commit messages.** Multi-line commit messages containing backticks require a temp file: `git commit -F <tempfile>` instead of ``-m "…`…`…"``. See Alex ACT Edition's `terminal-command-safety.instructions.md` for the full pattern. In practice, if the message is short and backtick-free, `-m "…" -m "…"` works fine.
+- [ ] Illustrator source tag exists and matches `plugin.json` and `manifest.json`.
+- [ ] Dry-run plan was reviewed before `--apply`.
+- [ ] Fabio approved the curated publication.
+- [ ] Mall payload is `plugins/data-analytics/alex-act-illustrator-plugin/`.
+- [ ] Marketplace identity is `alex-act-illustrator-plugin@alex-mall`.
+- [ ] `npm run maintain -- --curated` passed.
+- [ ] `npm run check` passed.
+- [ ] Diff contains no unrelated catalog, plugin, or trust changes.
+- [ ] Commit and push remain separate, explicit maintainer actions.
 
-## What NOT to include in the Mall
+## Contributor Route
 
-- `assets/` — README-only, and the Mall vendored README references them via absolute URL instead
-- `demos/` — capability-demo reports, tied to this repo's structure
-- `docs/` — internal design docs and this publishing runbook itself
-- `LICENSE`, `CHANGELOG.md` — remain in this repo only
-- `.gitignore`, `.markdownlint.json`, `.markdownlintignore`, `.github/copilot-instructions.md` — repo-tooling, not shipping payload
+External contributors use the Mall's [`CONTRIBUTING.md`](https://github.com/fabioc-aloha/Alex_Skill_Mall/blob/main/CONTRIBUTING.md) flow:
 
-## Related
+1. Run `npm run submit:prepare` in a fork.
+2. Run `npm run submit:validate`, Mall tests, and validation.
+3. Open a plugin-submission PR.
+4. Wait for CODEOWNER review and approval.
 
-- Alex ACT Plugin Mall repo: <https://github.com/fabioc-aloha/Alex_Skill_Mall>
-- Full plan for the first publish (with locked-decisions table): [`plans/2026-07-24-mall-plugin.md`](plans/2026-07-24-mall-plugin.md)
-- Repo conventions for AI agents: [`../.github/copilot-instructions.md`](../.github/copilot-instructions.md)
+Contributor scripts never overwrite an existing curated plugin and never publish autonomously.
+
+## Failure And Rollback
+
+| Failure | Action |
+| --- | --- |
+| Dry-run shows the wrong name, category, or component set | Stop; fix source declarations or vendor arguments. |
+| `--replace` is missing | Add it only after confirming this is the existing curated Illustrator entry. |
+| Maintenance changes unrelated first-party plugins | Stop; restore the Mall worktree and investigate source selection. |
+| Tests or validation fail | Fix in the owning repo, rerun dry-run, and seek approval again if the payload changes. |
+| Published payload is defective | Revert the Mall publication commit or re-vendor the last known-good Illustrator tag, then rerun curated maintenance and checks. |
+| Source tag is wrong | Do not rewrite the tag silently; cut a corrected source release. |
+
+## Boundaries
+
+- Do not hand-copy plugin files into the Mall.
+- Do not use the weekly external-store refresh as a substitute for curated publication.
+- Do not edit generated catalog or marketplace outputs by hand.
+- Do not let packaging scripts commit, push, approve, or merge.
+- Do not publish from an untagged source revision.
+
+## Would Revise If
+
+Revisit by **2026-11-01**, or sooner if the Mall changes the `vendor` or `maintain` contract, the platform payload limit changes, or a published Illustrator release bypasses dry-run review or CODEOWNER approval.

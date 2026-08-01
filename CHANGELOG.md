@@ -5,6 +5,21 @@ All notable changes to this plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.6.1] - 2026-08-01
+
+### Documentation
+
+- Reconciled the public README, source manifest, and Mall publishing runbook with the released v0.6.0 shape: five authoring areas, install composition, ten skills, three prompts, three MCP sidecars, and the current `alex-act-illustrator-plugin@alex-mall` identity.
+- Replaced legacy hand-copy publishing guidance with the Mall-owned `vendor`, `maintain`, and approval workflow; added claim-led architecture diagrams.
+
+### Changed
+
+- Replaced loose MCP package ranges with exact configured-registry pins: `flint-chart-mcp@0.3.0`, `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78`.
+- Added `--prefer-offline` to every MCP-sidecar invocation and a verifier gate that rejects loose versions or hardcoded `registry.npmjs.org` references across `.vscode/mcp.json`, `plugin.json`, and `manifest.json`.
+- Removed active public/latest-version probing guidance. Illustrator now uses only npm's configured registry; package upgrades require an explicit compatibility review.
+
 ## [0.6.0] - 2026-08-01
 
 ### install-visual-companions bundling (2026-08-01)

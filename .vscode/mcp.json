@@ -3,12 +3,12 @@
     "flint": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "flint-chart-mcp@^0.3.0"]
+      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.3.0"]
     },
     "replicate": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "replicate-mcp"],
+      "args": ["-y", "--prefer-offline", "replicate-mcp@0.9.0"],
       "env": {
         "REPLICATE_API_TOKEN": "${env:REPLICATE_API_TOKEN}"
       }
@@ -18,6 +18,7 @@
       "command": "npx",
       "args": [
         "-y",
+        "--prefer-offline",
         "@playwright/mcp@0.0.78",
         "--headless",
         "--isolated",

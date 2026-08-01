@@ -1,6 +1,6 @@
 # Demos
 
-One demo, one MCP backend. Rendered end-to-end via `/render-chart` against the local `flint` MCP server (`flint-chart-mcp@^0.3.0`).
+One demo, one MCP backend. Rendered end-to-end via `/render-chart` against the local `flint` MCP server (`flint-chart-mcp@0.3.0`).
 
 ## What ships
 
