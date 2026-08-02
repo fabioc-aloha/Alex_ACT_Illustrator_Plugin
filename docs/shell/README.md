@@ -14,14 +14,27 @@ The shell is a two-file pattern at repo root:
 
 | File | Role |
 |---|---|
-| [`../../index.html`](../../index.html) | The shell itself. Single HTML file (~50 KB) with inline CSS and JS. Loads marked, mermaid, and highlight.js from CDN. **Note**: this plugin repo doesn't ship a live root shell; adopters install the starter and get `index.html` + `manifest.json` at their repo root. |
+| [`../../index.html`](../../index.html) | The shell itself. Single HTML file (~50 KB) with inline CSS and JS. Loads marked, DOMPurify, Mermaid, and highlight.js from pinned CDN assets with SHA-384 integrity checks. **Note**: this plugin repo doesn't ship a live root shell; adopters install the starter and get `index.html` + `manifest.json` at their repo root. |
 | [`../../manifest.json`](../../manifest.json) | The hand-edited source of truth. Declares brand, theme, areas, docs, sources. Zero build step. **Note**: same caveat — the reference lives in adopter repos, not here. |
 
 The shell reads `manifest.json`, resolves which area + doc is active from the URL, fetches every source `.md` file that doc declares, strips per-file boilerplate, concatenates with a blank line between, runs marked with a small set of custom decorators, and renders under a sticky two-line topnav plus sidebar table of contents. Markdown stays authoritative. GitHub renders the same source files independently.
 
-## Current state (2026-07-29)
+## Current state (2026-08-01)
 
 The pattern is **one shell at repo root** — `index.html` and `manifest.json` at the top of a repo. The [Alex ACT Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward) repo is the reference implementation; adopters include [CX-Vitals](https://github.com/fabioc-aloha/CX-Vitals) and [QuestionnaireFlow](https://github.com/fabioc-aloha/QuestionnaireFlow). Before 2026-07-28, an earlier iteration used three per-folder shells with a build script; that pattern was retired in favor of the single-root pattern. The starter at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) ships the single-root pattern for adopters.
+
+## Reading-surface policy
+
+The shell intentionally does not render raw Markdown controls. The `.md` files remain the authoring source of truth, but the browser surface is for reading. Relative links to sources already registered in the manifest resolve to `?area=<id>&doc=<id>` and stay rendered. Unregistered files keep ordinary relative-link fallback behavior. Authors open source files through their editor or repository tree.
+
+## Responsive and accessible behavior
+
+- At widths up to 700px, area and document nav rows stay on one line and scroll horizontally. This keeps the sticky navigation compact without truncating labels.
+- At widths up to 1100px, the TOC becomes static above the article and starts collapsed unless `localStorage` contains an explicit reader preference. An expanded narrow TOC is capped at 360px with internal scrolling, so it cannot stick over the article. The toggle and `[` shortcut still work.
+- A keyboard-visible skip link moves focus to the rendered article. Active area and document links carry `aria-current="page"`; empty verification metadata is hidden.
+- Copy buttons remain visible on keyboard focus and touch-first devices. `prefers-reduced-motion` disables the pulse, smooth scrolling, and transitions.
+- Hero sizes use fixed responsive breakpoints rather than viewport-scaled type, and letter spacing remains zero.
+- Long inline code and content can wrap without widening the page; fenced code blocks retain horizontal scrolling.
 
 ## URL scheme
 
@@ -93,10 +106,6 @@ Each doc becomes a button on line 2 of the topnav (when its area is active) and 
   "icon": "🛒",
   "title": "Mall Plan — role + modernization",
   "verified": "Phase 0 closed 2026-07-27 (ADR-014)",
-  "sourceLink": {
-    "label": "Mall Plan source",
-    "href": "plan/mall/README.md"
-  },
   "hero": { /* ... */ },
   "sources": [ "plan/mall/README.md" ]
 }
@@ -109,8 +118,6 @@ Each doc becomes a button on line 2 of the topnav (when its area is active) and 
 | `icon` | string | no | Single emoji character shown in the sticky page-title header. Empty or absent = no icon (collapses via `:empty`). Emoji only. |
 | `title` | string | yes | Big page title + browser `<title>` tag. |
 | `verified` | string | no | Provenance line under the title (e.g. `"Updated 2026-07-28"`). |
-| `sourceLink.label` | string | no | Text for the source-link chip in the sticky header. |
-| `sourceLink.href` | string | no | Link target for the source-link chip. Typically the primary source `.md` on GitHub or as a local relative path. |
 | `hero` | object | no | Hero block. Absent = no hero rendered. See [Hero](#hero) below. |
 | `sources` | array | yes | Ordered list of source paths, relative to the manifest (repo root for the root shell). `.md` sources are fetched in parallel, stripped, concatenated with `\n\n`, and rendered through marked. `.html` sources trigger a direct-link path; see [HTML-source docs](#html-source-docs-bypass-shell-wrapper) below. |
 
@@ -134,13 +141,13 @@ When every entry in a doc's `sources[]` array ends in `.html` (case-insensitive)
 - Every entry must end in `.html` (case-insensitive) for direct-link behavior to fire.
 - Mixed sources (`.md` + `.html`) fall through to the Markdown render pass, which would try to concat the HTML as text. Keep the two shapes in separate doc entries.
 - The topnav still shows the doc's `label` and applies active-state styling on the currently loaded doc; only `href` and the bootstrap flow change.
-- Optional doc fields (`icon`, `title`, `verified`, `sourceLink`, `hero`) survive in the manifest but are not rendered by the shell (the standalone HTML owns its own hero). Keep them for consistency and for future indexing / search use.
+- Optional doc fields (`icon`, `title`, `verified`, `hero`) survive in the manifest but are not rendered by the shell (the standalone HTML owns its own hero). Keep them for consistency and for future indexing or search use.
 
 A working demo ships in the starter kit at `.github/skills/docs-shell/starter/example-report.html`. Absorbed into the canonical starter on 2026-07-29.
 
 ### Hero
 
-The hero block sits between the sticky page-title header and the body content. It carries the doc's Big Idea, a one-sentence thesis authored via the [big-idea skill](../../.github/skills/big-idea/SKILL.md).
+The hero block sits between the sticky page-title header and the body content. It carries the doc's Big Idea, a one-sentence thesis authored via Steward's [big-idea skill](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/skills/big-idea/SKILL.md).
 
 ```json
 {
@@ -283,14 +290,22 @@ Bootstrap sequence at the bottom of the shell's `<script>` block:
 10. Rewrite relative links with the source's base directory.
 11. Concatenate with `\n\n` between sources.
 12. Parse via marked (with a custom code renderer that turns `mermaid` fences into `<div class="mermaid">`).
-13. Decorate: heading anchors, tables wrapped in scroll containers, alert blockquotes, code-copy buttons, TOC.
-14. Initialize Mermaid last (a render failure never blocks the TOC).
+13. Sanitize parsed HTML through DOMPurify before DOM insertion. Active-content tags, form controls, and event-handler attributes are forbidden; sanitizer failure blocks rendering.
+14. Insert sanitized HTML and decorate: heading anchors, hardened external links, scroll-wrapped tables, alert blockquotes, accessible code-copy buttons, TOC.
+15. Initialize Mermaid last in `strict` security mode (a render failure never blocks the TOC).
 
 CDN dependencies pinned in `<head>`:
 
 - `marked@12.0.0`
+- `dompurify@3.2.6`
 - `mermaid@11.4.0`
 - `highlight.js@11.9.0`
+
+Every CDN stylesheet and script carries a verified SHA-384 `integrity` value plus `crossorigin="anonymous"`. Version pinning controls the requested release; SRI controls the exact bytes that may execute.
+
+### Markdown security boundary
+
+The render order is non-negotiable: marked → DOMPurify → DOM insertion → Mermaid. DOMPurify removes scripts, styles, frames, embedded objects, forms, interactive form controls, and event-handler attributes while preserving ordinary HTML and inline SVG. Links opened in a new tab receive `rel="noopener noreferrer"`. If DOMPurify does not load or sanitization fails, the shell renders an error state instead of falling back to raw `innerHTML`.
 
 ## Auto-stripping from source markdown
 
@@ -318,9 +333,9 @@ Skipped:
 - Anchor-only (`#foo`).
 - Root-relative (`/foo`).
 
-### README-to-shell routing
+### Manifest-source routing
 
-The starter kit's `shellRoute()` rewrites `<path>/(area)/README.md` links to `<path>/(area)/index.html` so clicks route to the rendered shell instead of raw markdown. Some root shell implementations (e.g., Alex_ACT_Steward) disable this rewriting (identity function) because all navigation goes through the two-line nav; body links to `plan/mall/README.md` load raw markdown as a fallback.
+`shellRoute()` compares each relative Markdown target with every source registered in the manifest. A match becomes `?area=<area>&doc=<doc>` and stays inside the rendered shell. Unregistered files retain normal relative-link fallback behavior.
 
 ## Alert callouts
 
@@ -347,7 +362,11 @@ Emoji-prefixed blockquotes also work (`⚠️`, `ℹ️`, `✅`, `❌`). The she
 
 ## Mermaid diagrams
 
-Fenced code blocks tagged ` ```mermaid ` get converted to `<div class="mermaid">` during parse and rendered by mermaid.run() at the end of bootstrap. Dark mode auto-detected via `prefers-color-scheme` and applied to Mermaid's theme.
+Fenced code blocks tagged ` ```mermaid ` get converted to `<div class="mermaid">` during parse, pass through DOMPurify as escaped diagram text, and render via `mermaid.run()` at the end of bootstrap. Mermaid runs with `securityLevel: "strict"`; dark mode is detected via `prefers-color-scheme` and applied to the theme.
+
+After rendering, `fitMermaidDiagrams()` replaces Mermaid's often oversized viewBox with the actual root graph bounds plus 16–32px padding. It then derives one ideal width from the cropped viewBox and the source font size, targeting readable 16px labels. Compact diagrams shrink-wrap with their frame instead of stretching to page width. A diagram receives contained horizontal scrolling only when it cannot preserve a 13px desktop or 11px mobile label floor within the available width.
+
+The fitter is deliberately single-pass. Do not read rendered label measurements and repeatedly expand the viewBox: layout may not have repainted yet, so stale measurements can enlarge the SVG viewport while leaving the graph tiny inside it. Refactor dense source from `LR`/`RL` to `TD`, shorten labels, or split the graph first. Runtime fitting removes viewport waste; source design still owns density and horizontal structure.
 
 ## Syntax highlighting
 
@@ -357,7 +376,7 @@ Each `<pre>` block also gets a Copy button that copies the code content to the c
 
 ## Sidebar table of contents
 
-`buildTOC()` walks every H1/H2/H3 in the rendered content, generates a slug matching marked's anchor scheme, and populates the sidebar. The TOC is collapsible via a toggle button at the top; state persists in `sessionStorage`.
+`buildTOC()` walks every H1/H2/H3 in the rendered content, generates a slug matching marked's anchor scheme, and populates the sidebar. The TOC is collapsible via a toggle button at the top; state persists in `localStorage` under a key scoped to the shell path.
 
 The TOC's `sticky top` uses `--sticky-offset` so it clears the two-row nav plus the page-title header on all viewport widths.
 
@@ -376,7 +395,7 @@ The starter kit renders quickJumps by default (its topnav is single-line with a 
 
 ## Adopting the shell in another project
 
-The starter kit at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) is a ready-to-adopt three-file bundle:
+The starter kit at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) is a ready-to-adopt four-file bundle:
 
 ```text
 starter/
