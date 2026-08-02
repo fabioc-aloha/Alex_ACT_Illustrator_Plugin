@@ -126,6 +126,10 @@ Use the installed namespaced commands for the workloads you selected:
 - Enterprise defaults its downstream Microsoft plugins to repository scope.
 - MSFT setup is user-scoped and must fail closed off Microsoft's corporate
   network.
+- Agency project skills are not runnable merely because the plugin is
+  installed. Run `agency config get profiles`; a missing `profiles` key means
+  `installed-unconfigured`, and each configured profile still needs a harmless
+  MCP/auth smoke check.
 
 ## 7. Keep the Constellation Current
 
