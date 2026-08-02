@@ -4,17 +4,17 @@ Context for AI agents (and humans) working in this repo. Loaded automatically by
 
 This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) plugin, maintained by [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward). The full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring, memory triggers) is _not_ loaded here. This file gives agents the essentials for working on the plugin itself.
 
-> **Renamed 2026-07-29** from `flint-chart-plugin`. Charting is now the first workload in a broader visual-authoring bundle. Existing `copilot plugin install flint-chart-plugin@alex-mall` installations continue working; the Copilot plugin ID will rename at the first illustrator-scoped release. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md).
+> **Renamed 2026-07-29** from `flint-chart-plugin`. Charting is now the first workload in a broader visual-authoring bundle. The current ID is `alex-act-illustrator-plugin@alex-mall`; legacy `flint-chart-plugin@alex-mall` installations do not migrate automatically. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md).
 
 ## What this repo is
 
-An Alex ACT constellation plugin for visual authoring. Ships **four feature areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), and Shell (browsable / gallery / catalog surface). Currently:
+An Alex ACT constellation plugin for visual authoring. Ships **five visual-authoring areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), Shell (browsable / gallery / catalog surface), and Banner (deterministic SVG brand assets). Currently:
 
-- **Eight skills** — `chart-big-idea` (framing preflight: Big Idea + Step 0.5 earn-a-figure gate + Step 4.5 focus discipline, shared across all features), `chart-vocabulary` (7-goal chart catalog + CSAR evaluation loop + 5-visual rule, absorbed from Alex_ACT_Visual_Storytelling v1.2.0 on 2026-07-30), `flint-chart` (chart-family router §0.2 + `ChartAssemblyInput` spec authoring + publication config preset, forked from [microsoft/flint-chart](https://github.com/microsoft/flint-chart)), `render-verify` (failure catalogs + Prose-coupling check + host-capability table, shared across all features), `print-svg-style-guide` (canvas + typography grammar + print-legibility floor math + Tailwind 6-role semantic palette + four composition idioms), `figure-generator` (`.mjs` generator + `data/<slug>.json` + `data-sha256` audit hash + contract tests + dataset inversion + fix-in-generator rule), `replicate-imagery` (thin routing over Replicate's own primitives + brand alignment + cost awareness), and `docs-shell` (single-page HTML shell with two-line topnav, sticky page header, sidebar TOC, HTML-source docs bypass; canonical source-of-truth, adopted by CX-Vitals + QuestionnaireFlow + airs-enterprise)
-- **One slash-command prompt** — `/render-chart` (Flint feature workflow: chart-big-idea → chart-vocabulary / flint-chart → render → render-verify)
+- **Ten skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `render-verify`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `docs-shell`, `svg-banner`, and `install-visual-companions`
+- **Three slash-command prompts** — `/alex-act-illustrator-plugin render-chart`, `/alex-act-illustrator-plugin banner`, and `/alex-act-illustrator-plugin install-visual-companions`
 - **Three MCP sidecars** in `.vscode/mcp.json` — exact `flint-chart-mcp@0.3.0` (required), exact `replicate-mcp@0.9.0` (optional; needs `REPLICATE_API_TOKEN`), and exact `@playwright/mcp@0.0.78` (optional browser sidecar). Every invocation is cache-first (`--prefer-offline`) and resolves only through npm's configured registry; never probe or override the public registry.
 
-This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors a specific version at `plugins/data-analytics/flint-chart-plugin/` (Mall directory retained under the old name; will rename with the Copilot plugin ID at the first illustrator-scoped release).
+This repo is the **source of truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors released tags at `plugins/data-analytics/alex-act-illustrator-plugin/`.
 
 ## Repo layout
 
@@ -28,7 +28,9 @@ This repo is the **source-of-truth**. The [Alex ACT Plugin Mall](https://github.
 | `.github/skills/figure-generator/`       | Installable skill (deterministic figure production, Print figures feature)  |
 | `.github/skills/replicate-imagery/`      | Installable skill (AI image routing, Replicate feature)                     |
 | `.github/skills/docs-shell/`             | Installable skill (single-page HTML shell, Shell feature) + `starter/` kit  |
-| `.github/prompts/`                       | Installable prompt (`/render-chart`)                                        |
+| `.github/skills/svg-banner/`             | Installable skill (deterministic SVG banners, Banner feature)               |
+| `.github/skills/install-visual-companions/` | Installable skill (consent-gated companion-plugin composition)           |
+| `.github/prompts/`                       | Three installable namespaced prompts                                        |
 | `.vscode/mcp.json`                       | MCP server sidecars — `flint` (required), `replicate` + `playwright` (optional) |
 | `.vscode/settings.json`                  | Registers the `local/` skill + prompt discovery roots                       |
 | `manifest.json`                          | Plugin manifest — enumerates all shipping assets                            |
@@ -116,7 +118,7 @@ Each skill and prompt carries a _Would Revise If_ section naming specific condit
 
 See **[`docs/publishing-to-mall.md`](../docs/publishing-to-mall.md)** for the step-by-step runbook.
 
-Short version: vendor the current asset files into `Alex_ACT_Plugin_Mall/plugins/data-analytics/flint-chart-plugin/`, write a plugin-mall-shaped `plugin.json`, append a curation-log entry, rebase on the Mall's `main` (weekly automated catalog-refresh cron often lands during editing), commit with a severity tag, and push.
+Short version: vendor the released source tag into `Alex_ACT_Plugin_Mall/plugins/data-analytics/alex-act-illustrator-plugin/` through the Mall-owned packaging workflow, validate the generated catalog and marketplace, append the Steward curation record, commit with a severity tag, and push.
 
 ## What NOT to do
 
