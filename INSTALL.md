@@ -6,11 +6,11 @@ the other plugins are selected according to the work you do.
 
 ## Published Versions
 
-Last verified: 2026-08-02.
+Last verified: 2026-08-03.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Core | `0.6.6` | `alex-act-core@alex-mall` |
+| Core | `0.6.7` | `alex-act-core@alex-mall` |
 | Illustrator | `0.6.5` | `alex-act-illustrator-plugin@alex-mall` |
 | Enterprise | `0.1.5` | `alex-act-enterprise@alex-mall` |
 | MSFT | `0.1.4` | Private direct install, tenant-gated |
