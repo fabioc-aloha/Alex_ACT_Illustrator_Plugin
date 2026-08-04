@@ -6,7 +6,7 @@
 
 # The docs-shell pattern
 
-Technical reference for the single-page HTML wrapper that renders a repository's markdown as browsable documentation. Authored 2026-07-26 in [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward), unified into a single-root shell 2026-07-28, and moved to this plugin (`Alex_ACT_Illustrator_Plugin`) as the canonical source-of-truth on 2026-07-29.
+Technical reference for the single-page HTML wrapper that renders a repository's markdown as browsable documentation. Authored 2026-07-26 in [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core), unified into a single-root shell 2026-07-28, and moved to this plugin (`Alex_ACT_Illustrator_Plugin`) as the canonical source-of-truth on 2026-07-29.
 
 ## Overview
 
@@ -21,7 +21,7 @@ The shell reads `manifest.json`, resolves which area + doc is active from the UR
 
 ## Current state (2026-08-01)
 
-The pattern is **one shell at repo root** — `index.html` and `manifest.json` at the top of a repo. The [Alex ACT Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward) repo is the reference implementation; adopters include [CX-Vitals](https://github.com/fabioc-aloha/CX-Vitals) and [QuestionnaireFlow](https://github.com/fabioc-aloha/QuestionnaireFlow). Before 2026-07-28, an earlier iteration used three per-folder shells with a build script; that pattern was retired in favor of the single-root pattern. The starter at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) ships the single-root pattern for adopters.
+The pattern is **one shell at repo root** — `index.html` and `manifest.json` at the top of a repo. The [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core) repo is the reference implementation; adopters include [CX-Vitals](https://github.com/fabioc-aloha/CX-Vitals) and [QuestionnaireFlow](https://github.com/fabioc-aloha/QuestionnaireFlow). Before 2026-07-28, an earlier iteration used three per-folder shells with a build script; that pattern was retired in favor of the single-root pattern. The starter at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) ships the single-root pattern for adopters.
 
 ## Reading-surface policy
 
@@ -30,26 +30,26 @@ The shell intentionally does not render raw Markdown controls. The `.md` files r
 ## Responsive and accessible behavior
 
 - At widths up to 700px, area and document nav rows stay on one line and scroll horizontally. This keeps the sticky navigation compact without truncating labels.
-- At widths up to 1100px, the TOC becomes static above the article and starts collapsed unless `localStorage` contains an explicit reader preference. An expanded narrow TOC is capped at 360px with internal scrolling, so it cannot stick over the article. The toggle and `[` shortcut still work.
-- A keyboard-visible skip link moves focus to the rendered article. Active area and document links carry `aria-current="page"`; empty verification metadata is hidden.
-- Copy buttons remain visible on keyboard focus and touch-first devices. `prefers-reduced-motion` disables the pulse, smooth scrolling, and transitions.
+- At widths up to 1100px, the TOC becomes static above the article and starts collapsed unless `localStorage` contains an explicit reader preference. An expanded narrow TOC is capped at 360px with internal scrolling, so it cannot stick over the article. The toggle and ` shortcut still work.
+- A keyboard-visible skip link moves focus to the rendered article. Active area and document links carry aria-current="page"; empty verification metadata is hidden.
+- Copy buttons remain visible on keyboard focus and touch-first devices. prefers-reduced-motion disables the pulse, smooth scrolling, and transitions.
 - Hero sizes use fixed responsive breakpoints rather than viewport-scaled type, and letter spacing remains zero.
 - Long inline code and content can wrap without widening the page; fenced code blocks retain horizontal scrolling.
 
 ## URL scheme
 
-The shell reads `?area=<id>&doc=<slug>` from the query string with cascading fallbacks:
+The shell reads ?area=<id>&doc=<slug> from the query string with cascading fallbacks:
 
 | URL shape | Resolves to |
 |---|---|
-| `?area=plan&doc=mall` | Explicit area + doc |
-| `?area=plan` | Area's `defaultDoc` |
-| `?doc=mall` | Searches all areas for a doc with that id (back-compat with pre-unification URLs) |
-| No parameters | Manifest's `defaultArea` → that area's `defaultDoc` |
+| ?area=plan&doc=mall | Explicit area + doc |
+| ?area=plan | Area's defaultDoc |
+| ?doc=mall | Searches all areas for a doc with that id (back-compat with pre-unification URLs) |
+| No parameters | Manifest's defaultArea → that area's defaultDoc |
 
 ## Manifest schema
 
-Complete field-by-field walkthrough. Examples come from live implementations of the pattern (primarily [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward)'s `manifest.json`).
+Complete field-by-field walkthrough. Examples come from live implementations of the pattern (primarily [Alex_ACT_Steward (private governance record)'s `manifest.json`).
 
 ### Top-level
 
@@ -74,7 +74,7 @@ Complete field-by-field walkthrough. Examples come from live implementations of 
 
 ### Areas
 
-Each area becomes a button on line 1 of the topnav. Areas group related documents (for example, [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward) has three: `plan`, `docs`, `operations`).
+Each area becomes a button on line 1 of the topnav. Areas group related documents (for example, [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core) has three: `plan`, `docs`, `operations`).
 
 ```json
 {
@@ -147,7 +147,7 @@ A working demo ships in the starter kit at `.github/skills/docs-shell/starter/ex
 
 ### Hero
 
-The hero block sits between the sticky page-title header and the body content. It carries the doc's Big Idea, a one-sentence thesis authored via Steward's [big-idea skill](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/skills/big-idea/SKILL.md).
+The hero block sits between the sticky page-title header and the body content. It carries the doc's Big Idea, a one-sentence thesis authored via Steward's [big-idea skill](https://github.com/fabioc-aloha/Alex_ACT_Core).
 
 ```json
 {
@@ -221,7 +221,7 @@ The `html { scroll-padding-top: calc(var(--nav-height, 78px) + 60px); }` rule us
 
 `manifest.theme.light` and `manifest.theme.dark` are optional maps of CSS custom properties. `applyManifestTheme()` reads them and injects a `<style id="manifest-theme">` block at the end of `<head>` so it overrides the hardcoded defaults earlier in the file.
 
-Adopters bring their own palette. For example, Alex_ACT_Steward uses the Alex product identity (emerald on deep slate) per its [BRAND-KIT.md](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/docs/branding/BRAND-KIT.md); the full override map lives in the root manifest:
+Adopters bring their own palette. For example, Alex_ACT_Steward uses the Alex product identity (emerald on deep slate) per its [BRAND-KIT.md](https://github.com/fabioc-aloha/Alex_ACT_Core); the full override map lives in the root manifest:
 
 ```json
 "theme": {
@@ -451,9 +451,9 @@ Deep-link to a specific doc by appending `?area=<id>&doc=<slug>`.
 
 - [`../../.github/skills/docs-shell/SKILL.md`](../../.github/skills/docs-shell/SKILL.md) — concise skill body invoked by the parent agent
 - [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) — the three-file starter kit adopters copy
-- Example brand kit: [Alex_ACT_Steward BRAND-KIT.md](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/docs/branding/BRAND-KIT.md) — the Alex product palette (emerald on deep slate) that the reference implementation uses
-- Related skill (in Alex_ACT_Steward baseline): [big-idea](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/skills/big-idea/SKILL.md) — how to author `hero.subtitle` copy
-- Historical unification notes: [Alex_ACT_Steward curation-log](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/operations/ledgers/curation-log.md) — 2026-07-27 folder-shell unification, 2026-07-28 hero-description retirement
+- Example brand kit: Alex_ACT_Steward BRAND-KIT.md (private governance record) — the Alex product palette (emerald on deep slate) that the reference implementation uses
+- Related skill (in Alex_ACT_Steward baseline): [big-idea](https://github.com/fabioc-aloha/Alex_ACT_Core) — how to author `hero.subtitle` copy
+- Historical unification notes: Alex_ACT_Steward curation-log (private governance record) — 2026-07-27 folder-shell unification, 2026-07-28 hero-description retirement
 
 <!-- nav-strip -->
 **Illustrator Plugin · docs-shell reference** · [▲ Docs index](../README.md) · [Skill body](../../.github/skills/docs-shell/SKILL.md) · [Starter kit](../../.github/skills/docs-shell/starter/)

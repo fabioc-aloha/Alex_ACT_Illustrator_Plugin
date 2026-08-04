@@ -2,7 +2,7 @@
   "plugin": "alex-act-illustrator-plugin",
   "version": "0.6.5",
   "shape": "ten-skill + three-prompt + three-mcp-sidecars + vscode-settings",
-  "description": "Visual-authoring bundle for AI agents. Ten skills across five authoring areas plus install composition: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in The Defensible Decision), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports), Banner (1200×320 SVG brand banners with pluggable brand config), and install-visual-companions (consent-gated installation of nine independently maintained visual-workflow plugins). Shared framing and verification apply across the authoring areas. Alex ACT constellation plugin, maintained by Alex_ACT_Steward.",
+  "description": "Visual-authoring bundle for AI agents. Ten skills across five authoring areas plus install composition: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in The Defensible Decision), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports), Banner (1200×320 SVG brand banners with pluggable brand config), and install-visual-companions (consent-gated installation of nine independently maintained visual-workflow plugins). Shared framing and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
   "authors": [
@@ -275,7 +275,7 @@
     "replicate_api_token": "Optional — only required if using the replicate-imagery skill. Get one at https://replicate.com/account/api-tokens and set REPLICATE_API_TOKEN in your shell environment. The plugin's mcp.json references ${env:REPLICATE_API_TOKEN} so the token stays out of source control."
   },
   "upstream": {
-    "alex_act_steward": "https://github.com/fabioc-aloha/Alex_ACT_Steward",
+    "alex_act_core": "https://github.com/fabioc-aloha/Alex_ACT_Core",
     "alex_act_edition": "https://github.com/fabioc-aloha/Alex_ACT_Edition",
     "flint_chart": "https://github.com/microsoft/flint-chart",
     "flint_chart_mcp_npm": "https://www.npmjs.com/package/flint-chart-mcp"

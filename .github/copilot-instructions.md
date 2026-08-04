@@ -2,9 +2,9 @@
 
 Context for AI agents (and humans) working in this repo. Loaded automatically by GitHub Copilot Chat when the repo is open.
 
-This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) plugin, maintained by [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward). The full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring, memory triggers) is _not_ loaded here. This file gives agents the essentials for working on the plugin itself.
+This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Core) plugin, maintained by [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core). The full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring, memory triggers) is _not_ loaded here. This file gives agents the essentials for working on the plugin itself.
 
-> **Renamed 2026-07-29** from `flint-chart-plugin`. Charting is now the first workload in a broader visual-authoring bundle. The current ID is `alex-act-illustrator-plugin@alex-mall`; legacy `flint-chart-plugin@alex-mall` installations do not migrate automatically. See the [Steward Illustrator Plan](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md).
+> **Renamed 2026-07-29** from `flint-chart-plugin`. Charting is now the first workload in a broader visual-authoring bundle. The current ID is `alex-act-illustrator-plugin@alex-mall`; legacy `flint-chart-plugin@alex-mall` installations do not migrate automatically. See the Steward Illustrator Plan (private governance record).
 
 ## What this repo is
 
@@ -138,7 +138,7 @@ Short version: vendor the released source tag into `Alex_ACT_Plugin_Mall/plugins
 
 | Resource                        | URL                                                                |
 | ------------------------------- | ------------------------------------------------------------------ |
-| Alex ACT Steward (lineage host) | <https://github.com/fabioc-aloha/Alex_ACT_Steward>                 |
+| Alex ACT Steward (lineage host) | <https://github.com/fabioc-aloha/Alex_ACT_Core>                 |
 | Alex ACT Edition (v4.1.0 compat) | <https://github.com/fabioc-aloha/Alex_ACT_Edition>                |
 | Alex ACT Plugin Mall (distro)   | <https://github.com/fabioc-aloha/Alex_Skill_Mall>                  |
 | Upstream flint-chart            | <https://github.com/microsoft/flint-chart>                         |
