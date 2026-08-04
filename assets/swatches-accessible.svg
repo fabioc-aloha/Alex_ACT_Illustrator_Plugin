@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 96" width="600" height="96" role="img" aria-labelledby="title desc">
+  <title id="title">Accessible categorical palette candidate</title>
+  <desc id="desc">Five labeled Okabe-Ito colors with redundant symbols: sky blue circle, bluish green triangle, yellow square, vermilion diamond, and reddish purple cross.</desc>
+  <rect width="600" height="96" rx="6" fill="#ffffff"/>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" fill="#24292f">
+    <g transform="translate(6 4)"><rect width="108" height="52" rx="5" fill="#56B4E9" stroke="#24292f"/><circle cx="54" cy="26" r="10" fill="none" stroke="#000000" stroke-width="3"/><text x="54" y="73">SKY · CIRCLE</text><text x="54" y="89">#56B4E9</text></g>
+    <g transform="translate(126 4)"><rect width="108" height="52" rx="5" fill="#009E73" stroke="#24292f"/><path d="M54 13 L66 39 L42 39 Z" fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="round"/><text x="54" y="73">GREEN · TRIANGLE</text><text x="54" y="89">#009E73</text></g>
+    <g transform="translate(246 4)"><rect width="108" height="52" rx="5" fill="#F0E442" stroke="#24292f"/><rect x="43" y="15" width="22" height="22" fill="none" stroke="#000000" stroke-width="3"/><text x="54" y="73">YELLOW · SQUARE</text><text x="54" y="89">#F0E442</text></g>
+    <g transform="translate(366 4)"><rect width="108" height="52" rx="5" fill="#D55E00" stroke="#24292f"/><path d="M54 13 L67 26 L54 39 L41 26 Z" fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="round"/><text x="54" y="73">VERMILION · DIAMOND</text><text x="54" y="89">#D55E00</text></g>
+    <g transform="translate(486 4)"><rect width="108" height="52" rx="5" fill="#CC79A7" stroke="#24292f"/><path d="M43 15 L65 37 M65 15 L43 37" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round"/><text x="54" y="73">PURPLE · CROSS</text><text x="54" y="89">#CC79A7</text></g>
+  </g>
+</svg>
