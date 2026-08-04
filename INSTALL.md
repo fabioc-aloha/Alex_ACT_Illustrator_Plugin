@@ -7,7 +7,7 @@ other plugins are selected according to the work you do.
 
 ## Published Versions
 
-Last verified: 2026-08-03.
+Last verified: 2026-08-04.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
@@ -15,7 +15,7 @@ Last verified: 2026-08-03.
 | Core | `0.7.2` | `alex-act-core@alex-mall` |
 | Illustrator | `0.6.5` | `alex-act-illustrator-plugin@alex-mall` |
 | Enterprise | `0.1.5` | `alex-act-enterprise@alex-mall` |
-| MSFT | `0.1.5` | Private direct install, tenant-gated |
+| MSFT | `0.2.0` | Private direct install, tenant-gated |
 
 ## Prerequisites
 
