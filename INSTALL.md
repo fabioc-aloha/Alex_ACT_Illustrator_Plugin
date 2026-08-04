@@ -1,8 +1,9 @@
 # Install the Alex ACT Constellation
 
 This guide installs Alex ACT for an end user, activates Core's instruction
-layer, and verifies the complete constellation. Core is the required baseline;
-the other plugins are selected according to the work you do.
+layer, and verifies the complete constellation. Manager is the preferred
+lifecycle owner; Core remains the compatible baseline and command surface. The
+other plugins are selected according to the work you do.
 
 ## Published Versions
 
@@ -57,8 +58,13 @@ If it does not, refresh `alex-mall` and investigate before continuing.
 Reload your host, start a new Copilot Chat conversation, and invoke:
 
 ```text
-/alex-act-core install-constellation
+/alex-act-manager install-constellation
 ```
+
+`/alex-act-core install-constellation` remains the compatible alternative.
+The Manager flow treats four planes as separate consent decisions: plugin
+enablement, portable VS Code user baseline, 17-file instruction bootstrap, and
+current-workspace bootstrap.
 
 The guided flow offers these components:
 
@@ -72,11 +78,35 @@ The guided flow offers these components:
 MSFT is private. The setup flow must confirm both Microsoft employment and
 corporate-network access before offering its direct GitHub installation.
 
-## 4. Activate Core's Instruction Layer
+## 4. Review User Settings
+
+The Manager flow can preview a portable VS Code user baseline from
+`plugin-management/resources/welcome-baseline.json`. Core keeps the compatible
+copy at `.github/config/welcome-baseline.json`. Apply it only after separate
+consent.
+
+- Object-valued location maps are deep-merged. Unrelated settings keys remain
+  unchanged.
+- Absolute local user-scope `markdown.styles` paths are reported, not removed
+  without separate consent. They are not supported generic guidance.
+- Comment-rich JSONC fails closed for automatic apply. Manually merge the
+  reported keys in VS Code to preserve comments.
+
+## 5. Set Up the Current Workspace
+
+The workspace bootstrap is separately consented. It copies
+`.vscode/markdown-light.css`, sets a relative `markdown.styles` value only
+when absent, and narrows a broad `.vscode` ignore rule when needed.
+
+Existing CSS and custom workspace settings are preserved by default. To replace
+a differing CSS file, first preview with `--refresh-css`, then explicitly apply
+with `--apply`.
+
+## 6. Activate Core's Instruction Layer
 
 Plugin installation makes Core's skills and namespaced commands available, but
 Copilot plugins do not load instruction files directly. During
-`/alex-act-core install-constellation`, separately review and approve the
+`/alex-act-manager install-constellation`, separately review and approve the
 17-file user-scope instruction bootstrap.
 
 Before approving:
@@ -88,12 +118,12 @@ Before approving:
 
 Reload the host after installing new plugins or instruction files.
 
-## 5. Verify the Four Activation Planes
+## 7. Verify the Six Activation Planes
 
 Start a new conversation and invoke:
 
 ```text
-/alex-act-core plugin-status
+/alex-act-manager plugin-status
 ```
 
 Confirm each plane independently:
@@ -104,12 +134,14 @@ Confirm each plane independently:
 | `enabled` | The exact plugin key is enabled at the intended scope. |
 | `instruction-loaded` | The Core receipt owns 17 files whose versions and hashes match. |
 | `skill-invokable` | The namespaced command runs, or reports `host-limited` with a healthy installed-file fallback. |
+| `user-settings` | The consented user baseline merge is verified, or a manual JSONC merge remains pending. |
+| `workspace` | The workspace bootstrap preserves local settings and reports CSS parity. |
 
 If plugin files are current but the instruction receipt or hashes drifted,
-invoke `/alex-act-core install-constellation` again and take the compact
+invoke `/alex-act-manager install-constellation` again and take the compact
 bootstrap-only repair path.
 
-## 6. Configure Optional Workloads
+## 8. Configure Optional Workloads
 
 Use the installed namespaced commands for the workloads you selected:
 
@@ -131,17 +163,37 @@ Use the installed namespaced commands for the workloads you selected:
   `installed-unconfigured`, and each configured profile still needs a harmless
   MCP/auth smoke check.
 
-## 7. Keep the Constellation Current
+## 9. Keep the Constellation Current
 
-Use Core's guided update flow:
+Use Manager's preferred guided update flow:
 
 ```text
-/alex-act-core update-plugins
+/alex-act-manager update-plugins
 ```
 
 Review each changelog and consent separately to breaking updates. After a Core
-update, invoke `/alex-act-core install-constellation` again so the user-scope
-instruction receipt and hashes are checked against the newly installed Core.
+update, invoke `/alex-act-manager install-constellation` again so the
+user-scope instruction receipt and hashes are checked against the newly
+installed Core. Core's `/alex-act-core update-plugins` and
+`/alex-act-core install-constellation` remain available as compatibility
+commands.
+
+## VS Code 1.131 Skill Resolver Workaround
+
+VS Code 1.131 advertises plugin skills that its generic resolver cannot load.
+Preserve Agent Skills while disabling only that broken resolver in user
+settings:
+
+```jsonc
+{
+  "chat.useAgentSkills": true,
+  "github.copilot.chat.skillTool.enabled": false
+}
+```
+
+This is a temporary workaround for [microsoft/vscode#314772](https://github.com/microsoft/vscode/issues/314772).
+Reload VS Code or start a new Agent chat after changing the setting. Namespaced
+commands remain the fallback when a generic skill call is unavailable.
 
 ## Troubleshooting
 
@@ -149,7 +201,9 @@ instruction receipt and hashes are checked against the newly installed Core.
 | --- | --- |
 | `os error 5` or `os error 32` during a plugin write | Close all VS Code windows and retry from a standalone terminal. |
 | A public plugin version is stale | Run `copilot plugin marketplace update alex-mall`, then retry the targeted install or update. |
-| Core skills exist but ACT instructions do not fire | Invoke `/alex-act-core install-constellation` and approve the separate instruction bootstrap. |
+| Core skills exist but ACT instructions do not fire | Invoke `/alex-act-manager install-constellation` and approve the separate instruction bootstrap. |
+| Automatic user-settings apply stops on JSONC | Manually merge the reported keys in VS Code; comments are preserved. |
+| Workspace CSS differs from the bundled stylesheet | Preview `--refresh-css`, then use `--apply` only if replacement is intended. |
 | A generic skill call fails while the namespaced command exists | Use the namespaced command; report the generic bridge as `host-limited`, not missing. |
 | MSFT installs but internal tools fail | Confirm Microsoft corporate identity and network access, then run `/alex-act-msft setup-msft` in audit mode. |
 
@@ -159,5 +213,8 @@ instruction receipt and hashes are checked against the newly installed Core.
 - [ ] Selected specialization plugins are installed and enabled.
 - [ ] The 17-file Core instruction bootstrap is verified or explicitly
   declined.
-- [ ] All four activation planes are reported separately.
+- [ ] User settings are merged only with consent, or a JSONC-safe manual merge
+  is reported.
+- [ ] The current workspace preserves its settings and reports CSS parity.
+- [ ] All six activation planes are reported separately.
 - [ ] Optional workload configuration is limited to the projects that need it.

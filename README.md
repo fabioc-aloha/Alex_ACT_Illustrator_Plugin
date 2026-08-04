@@ -4,7 +4,14 @@
 
 An [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) plugin for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Maintained by [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward) and distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Renamed and released.** The repository was renamed from `flint-chart-plugin` on 2026-07-29; v0.6.0 ships under `alex-act-illustrator-plugin@alex-mall`. A legacy install remains pinned under its old ID and does not migrate automatically: install the current ID, verify it, then remove the old entry.
+> **Current release: v0.6.5.** The repository was renamed from
+> `flint-chart-plugin` on 2026-07-29; v0.6.0 was the first release under
+> `alex-act-illustrator-plugin@alex-mall`. A legacy install remains pinned
+> under its old ID and does not migrate automatically: install the current ID,
+> verify it, then remove the old entry.
+
+**Current compatibility:** Core `v0.6.7` provides the baseline runtime, and
+Manager `v0.1.1` provides the preferred lifecycle commands.
 
 ## What it does
 
