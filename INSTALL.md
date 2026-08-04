@@ -11,18 +11,19 @@ Last verified: 2026-08-03.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Manager | `0.2.1` | `alex-act-manager@alex-mall` |
-| Core | `0.7.1` | `alex-act-core@alex-mall` |
+| Manager | `0.2.2` | `alex-act-manager@alex-mall` |
+| Core | `0.7.2` | `alex-act-core@alex-mall` |
 | Illustrator | `0.6.5` | `alex-act-illustrator-plugin@alex-mall` |
 | Enterprise | `0.1.5` | `alex-act-enterprise@alex-mall` |
-| MSFT | `0.1.4` | Private direct install, tenant-gated |
+| MSFT | `0.1.5` | Private direct install, tenant-gated |
 
 ## Prerequisites
 
 - Copilot CLI `1.0.75` or newer.
 - Git available on `PATH`.
 - VS Code with GitHub Copilot Chat, or another Copilot CLI host.
-- GitHub authentication through `gh auth` only when installing private MSFT.
+- A Microsoft enterprise-managed GitHub identity with explicit access to
+  `fabioc_microsoft/alex-act-msft` when installing private MSFT.
 - Microsoft corporate identity and network access when installing MSFT.
 
 Check the tools:
@@ -76,8 +77,10 @@ The guided flow offers these components:
 | Enterprise | Your projects use the public Azure, Fabric, Power BI, or Microsoft 365 plugin ecosystem. |
 | MSFT | You are a Microsoft employee on the corporate network and need internal Agency, WorkIQ, or organization-reporting capability. |
 
-MSFT is private. The setup flow must confirm both Microsoft employment and
-corporate-network access before offering its direct GitHub installation.
+MSFT is private. The setup flow must confirm Microsoft employment,
+corporate-network access, and an active Microsoft-managed GitHub account that
+can read `fabioc_microsoft/alex-act-msft` before direct installation. External
+personal accounts cannot access the managed repository.
 
 ## 4. Review User Settings
 
