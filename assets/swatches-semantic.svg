@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 76" width="720" height="76" role="img" aria-labelledby="title desc">
+  <title id="title">Alex ACT semantic role swatches</title>
+  <desc id="desc">Blue input, green output, purple processing, gold decision, red error, and neutral context.</desc>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle">
+    <g transform="translate(6 4)"><rect width="108" height="44" rx="5" fill="#ddf4ff" stroke="#80ccff"/><text x="54" y="27" fill="#0550ae">INPUT</text><text x="54" y="64" fill="#57606a">blue</text></g>
+    <g transform="translate(126 4)"><rect width="108" height="44" rx="5" fill="#d3f5db" stroke="#6fdd8b"/><text x="54" y="27" fill="#1a7f37">OUTPUT</text><text x="54" y="64" fill="#57606a">green</text></g>
+    <g transform="translate(246 4)"><rect width="108" height="44" rx="5" fill="#d8b9ff" stroke="#bf8aff"/><text x="54" y="27" fill="#6639ba">PROCESS</text><text x="54" y="64" fill="#57606a">purple</text></g>
+    <g transform="translate(366 4)"><rect width="108" height="44" rx="5" fill="#fff8c5" stroke="#d4a72c"/><text x="54" y="27" fill="#9a6700">DECISION</text><text x="54" y="64" fill="#57606a">gold</text></g>
+    <g transform="translate(486 4)"><rect width="108" height="44" rx="5" fill="#ffebe9" stroke="#f5a3a3"/><text x="54" y="27" fill="#cf222e">ERROR</text><text x="54" y="64" fill="#57606a">red</text></g>
+    <g transform="translate(606 4)"><rect width="108" height="44" rx="5" fill="#eaeef2" stroke="#d0d7de"/><text x="54" y="27" fill="#24292f">CONTEXT</text><text x="54" y="64" fill="#57606a">neutral</text></g>
+  </g>
+</svg>

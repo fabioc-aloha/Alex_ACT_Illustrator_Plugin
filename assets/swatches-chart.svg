@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 76" width="600" height="76" role="img" aria-labelledby="title desc">
+  <title id="title">Alex ACT chart categorical swatches</title>
+  <desc id="desc">Emerald, sky blue, amber, violet, and red categorical chart colors.</desc>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle">
+    <g transform="translate(6 4)"><rect width="108" height="44" rx="5" fill="#10b981"/><text x="54" y="64" fill="#57606a">#10b981</text></g>
+    <g transform="translate(126 4)"><rect width="108" height="44" rx="5" fill="#0ea5e9"/><text x="54" y="64" fill="#57606a">#0ea5e9</text></g>
+    <g transform="translate(246 4)"><rect width="108" height="44" rx="5" fill="#f59e0b"/><text x="54" y="64" fill="#57606a">#f59e0b</text></g>
+    <g transform="translate(366 4)"><rect width="108" height="44" rx="5" fill="#8b5cf6"/><text x="54" y="64" fill="#57606a">#8b5cf6</text></g>
+    <g transform="translate(486 4)"><rect width="108" height="44" rx="5" fill="#ef4444"/><text x="54" y="64" fill="#57606a">#ef4444</text></g>
+  </g>
+</svg>
