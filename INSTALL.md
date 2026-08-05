@@ -11,8 +11,8 @@ Last verified: 2026-08-04.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Manager | `0.2.2` | `alex-act-manager@alex-mall` |
-| Core | `0.7.2` | `alex-act-core@alex-mall` |
+| Manager | `0.3.0` | `alex-act-manager@alex-mall` |
+| Core | `0.8.0` | `alex-act-core@alex-mall` |
 | Illustrator | `0.6.5` | `alex-act-illustrator-plugin@alex-mall` |
 | Enterprise | `0.1.5` | `alex-act-enterprise@alex-mall` |
 | MSFT | `0.2.0` | Private direct install, tenant-gated |
@@ -43,17 +43,18 @@ copilot plugin marketplace add fabioc-aloha/Alex_Skill_Mall
 copilot plugin marketplace update alex-mall
 ```
 
-## 2. Install Core
+## 2. Install the Brain Spine
 
-Install the required baseline plugin:
+Install Manager and Core. Neither is optional at workspace scope:
 
 ```powershell
+copilot plugin install alex-act-manager@alex-mall
 copilot plugin install alex-act-core@alex-mall
 copilot plugin list
 ```
 
-The list must show `alex-act-core@alex-mall` at the published version above.
-If it does not, refresh `alex-mall` and investigate before continuing.
+The list must show both plugins at their published versions. If either is
+absent, refresh `alex-mall` and investigate before continuing.
 
 ## 3. Complete Constellation Setup
 
@@ -63,10 +64,20 @@ Reload your host, start a new Copilot Chat conversation, and invoke:
 /alex-act-manager install-constellation
 ```
 
-`/alex-act-core install-constellation` remains the compatible alternative.
-The Manager flow treats four planes as separate consent decisions: plugin
-enablement, portable VS Code user baseline, 17-file instruction bootstrap, and
-current-workspace bootstrap.
+The Core command remains a compatibility redirect to Manager. The Manager flow
+treats user settings, the 17-file instruction bootstrap, current-workspace
+files, optional workspace capabilities, and private identifiers as separate
+consent decisions.
+
+After the bootstrap is healthy, configure the current repository with:
+
+```text
+/alex-act-manager configure-workspace-capabilities
+```
+
+Preview is the default. Manager pins Manager and Core to `true`, deep-merges
+only explicit optional selections, and reports remaining VS Code plugin/MCP
+workspace reconciliation.
 
 The guided flow offers these components:
 
