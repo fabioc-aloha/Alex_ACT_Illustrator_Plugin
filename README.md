@@ -403,7 +403,7 @@ first one that fails tells you where the fault is.
 
   Installed from the Alex Mall instead? The Mall payload does not include this
   repository's verification script. Either clone this repo to run the
-  checker, or ask your agent to probe `npx -y --prefer-offline flint-chart-mcp@0.3.0` over stdio with
+  checker, or ask your agent to probe `npx -y --prefer-offline flint-chart-mcp@0.4.1` over stdio with
    an `initialize` handshake followed by `tools/list`; a `serverInfo` block plus
    a `tools` array means the same thing.
 2. **Client.** Ask the agent whether it can see `render_chart`, `compile_chart`,
@@ -413,11 +413,11 @@ first one that fails tells you where the fault is.
   appear under `alex-act-illustrator-plugin`; describe a chart, print figure,
   image, shell, or banner task to verify skill discovery. If MCP tools work but
   plugin prompts and skills do not, the plugin or discovery roots are missing.
-4. **Render.** Ask for any chart. `list_chart_types` should return 34 Vega-Lite
+4. **Render.** Ask for any chart. `list_chart_types` should return 35 Vega-Lite
    chart types, and a render should produce an image.
 
 This repo runs the same four checks against its own [`.vscode/`](.vscode/) config —
-last verified 2026-08-02 against `flint-chart-mcp` 0.3.0 (MCP protocol
+last verified 2026-08-05 against `flint-chart-mcp` 0.4.1 (MCP protocol
 `2024-11-05`).
 
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).
@@ -527,7 +527,7 @@ The bundled `mcp.json` fragment is minimal:
   "servers": {
     "flint": {
       "command": "npx",
-      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.3.0"],
+      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1"],
     },
   },
 }
@@ -542,7 +542,7 @@ The bundled `mcp.json` fragment is minimal:
   "servers": {
     "flint": {
       "command": "npx",
-      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.3.0", "--disable-file-reference"],
+      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1", "--disable-file-reference"],
     },
   },
 }
@@ -558,7 +558,7 @@ The bundled `mcp.json` fragment is minimal:
       "args": [
         "-y",
         "--prefer-offline",
-        "flint-chart-mcp@0.3.0",
+        "flint-chart-mcp@0.4.1",
         "--backends",
         "vegalite,echarts",
       ],
@@ -570,7 +570,7 @@ The bundled `mcp.json` fragment is minimal:
 **Air-gapped / corporate npm firewall** — install once when online, then run without npx download:
 
 ```bash
-npm install -g flint-chart-mcp@0.3.0
+npm install -g flint-chart-mcp@0.4.1
 ```
 
 Then update the fragment:
@@ -579,7 +579,7 @@ Then update the fragment:
 { "servers": { "flint": { "command": "flint-chart-mcp", "args": [] } } }
 ```
 
-**Registry and version policy** — the plugin pins `flint-chart-mcp@0.3.0`, `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` exactly. `--prefer-offline` uses cached packages first. Missing packages resolve only through npm's configured registry; there is no public-registry fallback and no automatic version-discovery request. Version changes are explicit release decisions backed by the compatibility verifier.
+**Registry and version policy** — the plugin pins `flint-chart-mcp@0.4.1`, `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` exactly. `--prefer-offline` uses cached packages first. Missing packages resolve only through npm's configured registry; there is no public-registry fallback and no automatic version-discovery request. Version changes are explicit release decisions backed by the compatibility verifier. If npm reports `ETARGET` for a pinned version the registry does carry, `--prefer-offline` served a stale packument — re-run the same command once without that flag to refresh metadata rather than adding `--registry`.
 
 **Naming conflict** — if you already have a `flint` server registered, rename this one to `flint-chart` in your merged config. The skill and prompt reference the server by tool inventory, not by name.
 

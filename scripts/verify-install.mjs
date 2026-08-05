@@ -48,7 +48,7 @@ import { fileURLToPath } from 'node:url';
 // `.vscode/mcp.json` means bumping the pin in one place cannot leave this
 // checker silently validating a different version than the host will launch.
 const ROOT_PATH = join(dirname(fileURLToPath(import.meta.url)), '..');
-const FALLBACK_PACKAGE = 'flint-chart-mcp@0.3.0';
+const FALLBACK_PACKAGE = 'flint-chart-mcp@0.4.1';
 const CONFIG_PATH = join(ROOT_PATH, '.vscode', 'mcp.json');
 
 function registryPolicyFail(reason) {
@@ -163,9 +163,20 @@ const COMPAT_SPECS = [
     },
   },
   {
-    name: 'Donut = Pie + innerRadius (0.3.0 dropped it on Rose)',
+    name: 'Pie + innerRadius (legacy donut idiom, valid on all backends)',
     chart_spec: {
       chartType: 'Pie Chart',
+      encodings: { size: { field: 'qty' }, color: { field: 'cat' } },
+      chartProperties: { innerRadius: 60 },
+    },
+  },
+  {
+    // First-class type added in 0.4.1, Vega-Lite only. Guards against a
+    // future version dropping it and silently reverting the skill's guidance
+    // back to the Pie + innerRadius workaround.
+    name: 'Donut Chart (0.4.1 added it as a first-class Vega-Lite type)',
+    chart_spec: {
+      chartType: 'Donut Chart',
       encodings: { size: { field: 'qty' }, color: { field: 'cat' } },
       chartProperties: { innerRadius: 60 },
     },
@@ -314,6 +325,21 @@ function parseMessages(text) {
 
 function fail(reason, hints = []) {
   console.error(`FAIL  ${reason}`);
+  // A pin bump plus `--prefer-offline` can serve a cached packument that
+  // predates the pinned version, so npm reports ETARGET for a version the
+  // registry does carry. Without this hint the failure reads as "package does
+  // not exist" and invites an unapproved --registry workaround.
+  if (/ETARGET|No matching version found/i.test(stderr)) {
+    console.error(
+      '      Looks like a stale cached packument, not a missing package.',
+    );
+    console.error(
+      `      Refresh metadata once: npx -y ${PACKAGE} --help   (omit --prefer-offline)`,
+    );
+    console.error(
+      '      Then re-run this check. Do not pass --registry or edit .npmrc.',
+    );
+  }
   for (const hint of hints) console.error(`      ${hint}`);
   if (stderr.trim()) console.error(`\nserver stderr:\n${stderr.trim()}`);
   process.exit(1);
@@ -325,7 +351,7 @@ function report() {
   const initialize = messages.find((m) => m.result?.serverInfo);
   if (!initialize) {
     fail('no initialize response — the server never completed a handshake', [
-      'Run `npx -y --prefer-offline flint-chart-mcp@0.3.0` by hand to see what it prints.',
+      `Run \`npx -y --prefer-offline ${PACKAGE}\` by hand to see what it prints.`,
     ]);
   }
 

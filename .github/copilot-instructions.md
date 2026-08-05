@@ -12,7 +12,7 @@ An Alex ACT constellation plugin for visual authoring. Ships **five visual-autho
 
 - **Ten skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `render-verify`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `docs-shell`, `svg-banner`, and `install-visual-companions`
 - **Three slash-command prompts** — `/alex-act-illustrator-plugin render-chart`, `/alex-act-illustrator-plugin banner`, and `/alex-act-illustrator-plugin install-visual-companions`
-- **Three MCP sidecars** in `.vscode/mcp.json` — exact `flint-chart-mcp@0.3.0` (required), exact `replicate-mcp@0.9.0` (optional; needs `REPLICATE_API_TOKEN`), and exact `@playwright/mcp@0.0.78` (optional browser sidecar). Every invocation is cache-first (`--prefer-offline`) and resolves only through npm's configured registry; never probe or override the public registry.
+- **Three MCP sidecars** in `.vscode/mcp.json` — exact `flint-chart-mcp@0.4.1` (required), exact `replicate-mcp@0.9.0` (optional; needs `REPLICATE_API_TOKEN`), and exact `@playwright/mcp@0.0.78` (optional browser sidecar). Every invocation is cache-first (`--prefer-offline`) and resolves only through npm's configured registry; never probe or override the public registry.
 
 This repo is the **source of truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors released tags at `plugins/data-analytics/alex-act-illustrator-plugin/`.
 
