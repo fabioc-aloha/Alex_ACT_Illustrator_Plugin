@@ -11,7 +11,7 @@ Last verified: 2026-08-04.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Manager | `0.3.2` | `alex-act-manager@alex-mall` |
+| Manager | `0.3.3` | `alex-act-manager@alex-mall` |
 | Core | `0.8.1` | `alex-act-core@alex-mall` |
 | Illustrator | `0.6.5` | `alex-act-illustrator-plugin@alex-mall` |
 | Enterprise | `0.1.5` | `alex-act-enterprise@alex-mall` |
