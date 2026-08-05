@@ -11,8 +11,8 @@ Last verified: 2026-08-04.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Manager | `0.3.0` | `alex-act-manager@alex-mall` |
-| Core | `0.8.0` | `alex-act-core@alex-mall` |
+| Manager | `0.3.1` | `alex-act-manager@alex-mall` |
+| Core | `0.8.1` | `alex-act-core@alex-mall` |
 | Illustrator | `0.6.5` | `alex-act-illustrator-plugin@alex-mall` |
 | Enterprise | `0.1.5` | `alex-act-enterprise@alex-mall` |
 | MSFT | `0.2.0` | Private direct install, tenant-gated |
