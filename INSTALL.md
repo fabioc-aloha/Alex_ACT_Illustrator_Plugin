@@ -11,8 +11,8 @@ Last verified: 2026-08-04.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Manager | `0.3.3` | `alex-act-manager@alex-mall` |
-| Core | `0.8.1` | `alex-act-core@alex-mall` |
+| Manager | `0.4.0` | `alex-act-manager@alex-mall` |
+| Core | `0.9.0` | `alex-act-core@alex-mall` |
 | Illustrator | `0.6.5` | `alex-act-illustrator-plugin@alex-mall` |
 | Enterprise | `0.1.5` | `alex-act-enterprise@alex-mall` |
 | MSFT | `0.2.0` | Private direct install, tenant-gated |
@@ -66,18 +66,8 @@ Reload your host, start a new Copilot Chat conversation, and invoke:
 
 The Core command remains a compatibility redirect to Manager. The Manager flow
 treats user settings, the 17-file instruction bootstrap, current-workspace
-files, optional workspace capabilities, and private identifiers as separate
+files, and private plugin installation as separate
 consent decisions.
-
-After the bootstrap is healthy, configure the current repository with:
-
-```text
-/alex-act-manager configure-workspace-capabilities
-```
-
-Preview is the default. Manager pins Manager and Core to `true`, deep-merges
-only explicit optional selections, and reports remaining VS Code plugin/MCP
-workspace reconciliation.
 
 The guided flow offers these components:
 
