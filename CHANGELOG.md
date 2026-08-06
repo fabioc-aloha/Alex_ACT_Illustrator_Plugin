@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `render-verify`: **When `file://` is not enough** decision table. The integrated
+  browser [documents `http`/`https`/`file` support](https://code.visualstudio.com/docs/debugtest/integrated-browser),
+  so opening an artifact directly is the default. Five escalation cases are named
+  instead: page needs your login (share the tab, since agent-opened tabs use
+  isolated ephemeral sessions while shared tabs carry your cookies), proving what
+  a human sees in a normal browser, remote workspaces (`file://` is not proxied),
+  real routing / service workers / remote APIs, and enterprise network filtering.
+- `render-verify`: **Agent-browser-only pass** row in the general failure catalog,
+  plus a warning. The agent browser permits `fetch()` over `file://`; normal
+  Chromium treats each `file://` document as an opaque origin and blocks it, so a
+  shell that fetches its own markdown can verify green for the agent and render
+  blank for the reader.
+- `render-verify`: two anti-patterns (reporting a `file://` pass for an artifact
+  that fetches its own content; standing up a server before trying `file://`) and
+  two falsifiers covering the browser's `file://` posture and agent-tab sessions.
+- `install-visual-companions`: note that `chromium-control-canvas`'s `file://`
+  limitation belongs to its own bundled Chromium, not to the host, so the plugin
+  is not needed merely to view a local file.
+
 ## [0.6.6] - 2026-08-05
 
 ### Changed

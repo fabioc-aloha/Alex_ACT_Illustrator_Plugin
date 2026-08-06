@@ -85,6 +85,7 @@ render without error, and a screenshot alone can look plausible.
 | **SVG XML invalid**                      | Chart title shows, chart body missing; screenshot looks like a fragment | An SVG injected as inline HTML during a PDF build parses lenient; `<img src>` is strict and drops the document at the first parser error. Two common causes: `--` inside an XML comment (prose punctuation habit — `(kept in AFTER -- helps read data)`) and a bare `&` outside a comment. **Fix in the generator, never in the SVG** — regen clobbers manual SVG patches |
 | **Prose contradicts figure**             | Numbers in the surrounding paragraph do not match the chart's data     | The dataset moved forward, the prose did not. Five surfaces drift: Big Idea sentence, caption / alt text, anchoring paragraph, numeric claims, and figure text that belongs in prose. See "Prose-coupling check" below |
 | **Lazy-load blindness**                  | Coverage page reports "62 figures" but only 7 fetched                  | `<img loading="lazy">` on a proofing or coverage surface. Only images in the viewport fire the request; a screenshot or scroll-through verifies exactly the images that happened to be visible. The rest could all be 404 and no one would know. Fix: strip `loading="lazy"` on any coverage / review page |
+| **Agent-browser-only pass**              | Renders correctly for you; blank or broken for the reader              | The artifact `fetch()`es a sibling file and was verified over `file://`. The agent browser permits that; a normal browser treats each `file://` document as an opaque origin and blocks it. Re-verify over `http://` — see _When `file://` is not enough_ |
 
 ## Prose-coupling check (before shipping a published figure)
 
@@ -163,6 +164,29 @@ they provide. Establish what you have _before_ interpreting what you see.
 > failure catalog. Before diagnosing "empty binding", re-capture at least once
 > and confirm the emptiness is stable. Diagnosing a race as a data bug sends the
 > fix upstream into a spec that was never wrong.
+
+### When `file://` is not enough
+
+Default to opening the artifact directly. The VS Code integrated browser
+[supports `http://`, `https://`, and `file://` URLs](https://code.visualstudio.com/docs/debugtest/integrated-browser), and an
+agent-opened `file://` page needs no server, no flags, and no deploy. Reach for
+something heavier only when one of these holds.
+
+| Situation                                                            | What you actually need                            | Why                                                                                                                                                                                              |
+| -------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **The page needs your login**                                        | **Share the tab** — not a server                  | Agent-opened tabs use isolated ephemeral sessions; shared tabs use your existing session including cookies and login state. Use the browser toolbar's **Share with Agent**, then verify there     |
+| **You must prove what a human sees in a normal browser**             | A local static server, then `http://127.0.0.1:<port>` | A page that `fetch()`es sibling files works in the agent browser and fails in real Edge or Chrome. See the warning below                                                                        |
+| **You are in a remote workspace** (Dev Container, SSH, WSL, Codespace) | Serve over `http`                                 | `file://` URLs are **not proxied** over a remote connection; the tab shows a warning indicator instead                                                                                           |
+| **The artifact needs real routing, a service worker, or a remote API** | A local server, or a deploy                       | These are origin-scoped and are inert or blocked on `file://`                                                                                                                                    |
+| **An enterprise network filter is active**                           | Neither — the domain is blocked                   | `ChatAgentNetworkFilter` can deny domains outright. Report that rather than working around it                                                                                                    |
+
+> [!WARNING]
+> **A pass in the agent browser is not a pass for the human.** The agent browser
+> permits `fetch()` over `file://`; Chromium in a normal browser does not. An
+> artifact that loads its own content — a shell that fetches markdown, a report
+> that pulls a sibling JSON — can verify green for you and be blank for the
+> reader. When the artifact fetches anything, verify over `http://` before
+> calling it done, and state which origin you verified against.
 
 Probe by **doing, not by asking**: attempt the action against the real artifact
 and observe the result. Tool names vary between hosts; outcomes do not.
@@ -312,6 +336,11 @@ path inside that folder. Verified 2026-07-25: a bare filename leaked into
 - **Screenshotting without reading the console.** The console usually names the
   cause — a 404'd image, a failed font, a thrown spec error — while the picture
   only shows the symptom.
+- **Reporting a `file://` pass for an artifact that fetches its own content.**
+  The agent browser is more permissive than the reader's browser. Serve it over
+  `http://` first, or name the origin you actually verified against.
+- **Standing up a server before trying `file://`.** `file://` is documented and
+  usually sufficient. Escalate on evidence, not on habit.
 - **Fixing a data or chart-type problem with a style tweak.** Recoloring a mark
   that is wrong because two scales merged hides the bug instead of fixing it.
 
@@ -337,6 +366,14 @@ Revise this skill by 2026-10-25 (90 days) or sooner if:
   the most load-bearing part of this skill.
 - **`@playwright/mcp` changes its `file://` default.** The security note and the
   flag table both assume navigation is blocked unless the flag is set.
+- **The integrated browser changes its `file://` posture** — either dropping
+  support, or tightening `fetch()` to match a normal browser. The _When
+  `file://` is not enough_ table assumes agent-permissive and reader-strict; if
+  they converge, both the table and the agent-browser-only catalog row collapse
+  to one line.
+- **Agent-opened tabs gain the user's session.** The auth row says to share a
+  tab precisely because agent-opened tabs are ephemeral. If that changes, the
+  row is wrong.
 - **`@playwright/mcp` ships a bundled browser by default.** The troubleshooting
   row about installed-Chrome-by-channel would then be wrong.
 - **A failure mode recurs that is not in either catalog above.** The tables are

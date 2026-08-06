@@ -113,6 +113,11 @@ After the install commands complete, print the heir the caveats for the plugins 
 
 Node Playwright is required.
 
+> This `file://` limitation belongs to `chromium-control-canvas`'s own bundled
+> Chromium, not to the host. VS Code's integrated browser opens `file://`
+> directly. Do not install this plugin merely to view a local file \u2014 see
+> `render-verify` \u00a7 _When `file://` is not enough_.
+
 **`eyeball`** — Needs 2 manual post-install steps:
 
 1. `pip install playwright`
