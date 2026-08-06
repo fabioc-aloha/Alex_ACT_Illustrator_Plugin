@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-08-06
+
+### Stabilized
+
+- Declared the eleven-skill, three-command visual-authoring surface stable under
+  the Alex ACT semantic-versioning contract. Future removals, renames, or
+  ownership moves require a major release.
+
 ### Added
 
 - `docs-shell`: **click any paragraph while reading to jump there.** Playback

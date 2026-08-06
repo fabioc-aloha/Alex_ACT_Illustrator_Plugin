@@ -2,7 +2,7 @@
 
 Context for AI agents (and humans) working in this repo. Loaded automatically by GitHub Copilot Chat when the repo is open.
 
-This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Core) plugin, maintained by [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core). The full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring, memory triggers) is _not_ loaded here. This file gives agents the essentials for working on the plugin itself.
+This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Core) plugin. Alex ACT Steward governs it; Core is the public runtime reference. The full cognitive framework (ACT tenets, epistemic calibration, session-health monitoring) is _not_ loaded here. This file gives agents the essentials for working on the plugin itself.
 
 > **Renamed 2026-07-29** from `flint-chart-plugin`. Charting is now the first workload in a broader visual-authoring bundle. The current ID is `alex-act-illustrator-plugin@alex-mall`; legacy `flint-chart-plugin@alex-mall` installations do not migrate automatically. See the Steward Illustrator Plan (private governance record).
 
@@ -10,11 +10,11 @@ This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constell
 
 An Alex ACT constellation plugin for visual authoring. Ships **five visual-authoring areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), Shell (browsable / gallery / catalog surface), and Banner (deterministic SVG brand assets). Currently:
 
-- **Ten skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `render-verify`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `docs-shell`, `svg-banner`, and `install-visual-companions`
+- **Eleven skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `render-verify`, `corpus-qa-sweep`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `docs-shell`, `svg-banner`, and `install-visual-companions`
 - **Three slash-command prompts** — `/alex-act-illustrator-plugin render-chart`, `/alex-act-illustrator-plugin banner`, and `/alex-act-illustrator-plugin install-visual-companions`
 - **Three MCP sidecars** in `.vscode/mcp.json` — exact `flint-chart-mcp@0.4.1` (required), exact `replicate-mcp@0.9.0` (optional; needs `REPLICATE_API_TOKEN`), and exact `@playwright/mcp@0.0.78` (optional browser sidecar). Every invocation is cache-first (`--prefer-offline`) and resolves only through npm's configured registry; never probe or override the public registry.
 
-This repo is the **source of truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) vendors released tags at `plugins/data-analytics/alex-act-illustrator-plugin/`.
+This repo is the **source of truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) delivers this repository directly from its immutable release tag.
 
 ## Repo layout
 
@@ -118,7 +118,7 @@ Each skill and prompt carries a _Would Revise If_ section naming specific condit
 
 See **[`docs/publishing-to-mall.md`](../docs/publishing-to-mall.md)** for the step-by-step runbook.
 
-Short version: vendor the released source tag into `Alex_ACT_Plugin_Mall/plugins/data-analytics/alex-act-illustrator-plugin/` through the Mall-owned packaging workflow, validate the generated catalog and marketplace, append the Steward curation record, commit with a severity tag, and push.
+Short version: release this source, update the Mall marketplace record to the immutable origin tag, validate the catalog and marketplace, append the Steward curation record, commit with a severity tag, and push.
 
 ## What NOT to do
 
