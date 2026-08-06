@@ -14,6 +14,7 @@ Last verified: 2026-08-04.
 | Manager | `0.4.0` | `alex-act-manager@alex-mall` |
 | Core | `0.9.0` | `alex-act-core@alex-mall` |
 | Illustrator | `0.6.6` | `alex-act-illustrator-plugin@alex-mall` |
+| Document Tools | `0.1.0` | `alex-act-document-tools@alex-mall` |
 | Enterprise | `0.1.5` | `alex-act-enterprise@alex-mall` |
 | MSFT | `0.2.1` | Private direct install, tenant-gated |
 
@@ -65,7 +66,7 @@ Reload your host, start a new Copilot Chat conversation, and invoke:
 ```
 
 The Core command remains a compatibility redirect to Manager. The Manager flow
-treats user settings, the 17-file instruction bootstrap, current-workspace
+treats user settings, the 16-file instruction bootstrap, current-workspace
 files, and private plugin installation as separate
 consent decisions.
 
@@ -75,6 +76,7 @@ The guided flow offers these components:
 | --- | --- |
 | Core | Always. It supplies Alex's baseline identity and ACT discipline. |
 | Illustrator | You author charts, figures, imagery, visual reports, or documentation shells. |
+| Document Tools | You convert Markdown, HTML, Word, email, or plain-text documents. |
 | Enterprise | Your projects use the public Azure, Fabric, Power BI, or Microsoft 365 plugin ecosystem. |
 | MSFT | You are a Microsoft employee on the corporate network and need internal Agency, WorkIQ, or organization-reporting capability. |
 
@@ -86,9 +88,8 @@ personal accounts cannot access the managed repository.
 ## 4. Review User Settings
 
 The Manager flow can preview a portable VS Code user baseline from
-`plugin-management/resources/welcome-baseline.json`. Core keeps the compatible
-copy at `.github/config/welcome-baseline.json`. Apply it only after separate
-consent.
+`plugin-management/resources/welcome-baseline.json`. Manager is its sole source
+owner. Apply it only after separate consent.
 
 - Object-valued location maps are deep-merged. Unrelated settings keys remain
   unchanged.
@@ -112,7 +113,7 @@ with `--apply`.
 Plugin installation makes Core's skills and namespaced commands available, but
 Copilot plugins do not load instruction files directly. During
 `/alex-act-manager install-constellation`, separately review and approve the
-17-file user-scope instruction bootstrap.
+16-file user-scope instruction bootstrap.
 
 Before approving:
 
@@ -137,7 +138,7 @@ Confirm each plane independently:
 | --- | --- |
 | `installed` | Plugin files and `plugin.json` report the published version. |
 | `enabled` | The exact plugin key is enabled at the intended scope. |
-| `instruction-loaded` | The Core receipt owns 17 files whose versions and hashes match. |
+| `instruction-loaded` | The Core receipt owns 16 files whose versions and hashes match. |
 | `skill-invokable` | The namespaced command runs, or reports `host-limited` with a healthy installed-file fallback. |
 | `user-settings` | The consented user baseline merge is verified, or a manual JSONC merge remains pending. |
 | `workspace` | The workspace bootstrap preserves local settings and reports CSS parity. |
@@ -151,14 +152,16 @@ bootstrap-only repair path.
 Use the installed namespaced commands for the workloads you selected:
 
 ```text
-/alex-act-core bootstrap-workspace
+/alex-act-manager bootstrap-workspace
+/alex-act-document-tools convert
 /alex-act-illustrator-plugin install-visual-companions
 /alex-act-enterprise setup-enterprise
 /alex-act-msft setup-msft
 ```
 
-- `bootstrap-workspace` previews repository-scoped Markdown and workspace
+- Manager's `bootstrap-workspace` previews repository-scoped Markdown and workspace
   settings before asking to apply them.
+- Document Tools owns format detection, conversion execution, and output validation.
 - Illustrator companions are optional and individually consented.
 - Enterprise defaults its downstream Microsoft plugins to repository scope.
 - MSFT setup is user-scoped and must fail closed off Microsoft's corporate
@@ -216,7 +219,7 @@ commands remain the fallback when a generic skill call is unavailable.
 
 - [ ] Core is installed from `alex-mall` at the published version.
 - [ ] Selected specialization plugins are installed and enabled.
-- [ ] The 17-file Core instruction bootstrap is verified or explicitly
+- [ ] The 16-file Core instruction bootstrap is verified or explicitly
   declined.
 - [ ] User settings are merged only with consent, or a JSONC-safe manual merge
   is reported.

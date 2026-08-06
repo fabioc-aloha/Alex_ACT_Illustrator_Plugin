@@ -146,7 +146,7 @@ The script takes whatever subtitle you pass — quality is your job. Good subtit
 
 If you're not sure the subtitle is right, show two options to the user before generating.
 
-The [`big-idea`](../big-idea/SKILL.md) skill's Big Idea distillation is a strong upstream for subtitle authoring: the Big Idea of the doc IS the subtitle of its banner.
+The `big-idea` skill (Alex ACT Core) distills a Big Idea that is a strong upstream for subtitle authoring: the Big Idea of the doc IS the subtitle of its banner.
 
 ## Validation Checklist
 
