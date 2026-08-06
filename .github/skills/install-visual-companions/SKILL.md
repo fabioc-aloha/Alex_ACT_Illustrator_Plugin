@@ -13,7 +13,7 @@ Nine marketplace plugins compose to deliver visual-authoring workflows around Il
 ## When to fire
 
 - Heir asks: "install visual companions" / "add screenshot tooling" / "enable chart-rendering plugins" / "install eyeball" / "install the vision loop"
-- Heir invokes `/install-visual-companions`
+- Heir invokes `/alex-act-illustrator-plugin install-visual-companions`
 - Heir's declared workload involves any of:
   - Chart authoring, data storytelling, or dashboard rendering
   - Report / document generation that needs visual verification
@@ -159,7 +159,7 @@ Print a summary:
 
 This skill is decorative if by 2026-11-01 (90 days):
 
-- Heirs never invoke `/install-visual-companions` and always install companions ad-hoc
+- Heirs never invoke `/alex-act-illustrator-plugin install-visual-companions` and always install companions ad-hoc
 - The 9-plugin catalog goes stale (a plugin is retired or moved to a different marketplace) and is not refreshed
 - The vision-loop composition pattern proves brittle in practice (Round 4 verified it on 2026-07-31, but sustained use may surface issues)
 - The move from Core Step 7 to Illustrator produces reader confusion about where the install offer lives — heirs keep asking Core to install visual companions

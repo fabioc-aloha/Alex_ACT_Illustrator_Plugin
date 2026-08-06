@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Replaced Windows `cmd.exe` MCP launches with shell-free argument-array
+  execution through Node's resolved `npx-cli.js` entry point. Optional MCP
+  launches use the same boundary.
+- Made explicitly requested `--catalog` and `--compat` checks fail the verifier
+  on missing, malformed, or invalid results.
+- Added manifest integrity checks for declared paths, starter dependencies, and
+  copied skill/prompt discovery metadata; synchronized the docs-shell demo,
+  Flint `0.4.1` note, and current skill descriptions.
+- Namespaced all three user-facing prompt headings and companion-install
+  guidance under `/alex-act-illustrator-plugin`.
+- Made the heart-with-axes demo square and responsive with separated mobile
+  labels. Browser verification passes at 1280px and 390px with no horizontal
+  overflow or console errors.
+- Repaired the live docs-shell reference's Markdown syntax, starter links,
+  four-file inventory, and Core-owned skill links.
+
 ## [1.0.0] - 2026-08-06
 
 ### Stabilized

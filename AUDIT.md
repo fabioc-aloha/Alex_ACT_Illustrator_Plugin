@@ -1,6 +1,18 @@
 # Project Audit
 
 Audit date: 2026-08-06
+Remediation update: 2026-08-06; all reported source findings are resolved locally.
+
+## Remediation Status
+
+| Finding | Status | Evidence |
+| --- | --- | --- |
+| Windows verifier shell injection | Resolved | Shell-free `npx-cli.js` launch; metacharacter argv regression; real Flint handshake passes |
+| Incomplete/stale manifest metadata | Resolved | Real verifier checks 22 paths, starter dependencies, and copied frontmatter |
+| Catalog/compat checks fail open | Resolved | Requested missing, malformed, or invalid results exit nonzero |
+| Mobile demo overflow | Resolved | 1280px and 390px measurements show no overflow; mobile screenshot is square and label-separated |
+| Shell reference Markdown/links | Resolved | Editor diagnostics clean; starter and public Core links resolve |
+| Bare prompt forms | Resolved | Three prompt headings and skill guidance use `/alex-act-illustrator-plugin` |
 
 ## Executive Summary
 

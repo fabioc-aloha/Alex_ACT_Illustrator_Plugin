@@ -3,7 +3,7 @@ description: "Offer to install nine marketplace plugins that compose visual-auth
 lastReviewed: 2026-08-01
 ---
 
-# /install-visual-companions
+# /alex-act-illustrator-plugin install-visual-companions
 
 Invokes the [install-visual-companions](../skills/install-visual-companions/SKILL.md) skill to offer the 9 visual-workflow companion plugins for consent-gated per-plugin install.
 

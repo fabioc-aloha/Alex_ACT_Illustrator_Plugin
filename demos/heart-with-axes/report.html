@@ -55,11 +55,22 @@
       .chart-wrapper {
         display: flex;
         justify-content: center;
+        min-width: 0;
+        overflow: hidden;
         margin: 2rem 0;
         padding: 1rem;
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      }
+      #chart {
+        width: min(100%, 480px);
+        aspect-ratio: 1;
+        min-width: 0;
+      }
+      #chart svg {
+        max-width: 100%;
+        height: auto;
       }
       code {
         background: #eee;
@@ -222,8 +233,9 @@
 
       const spec = {
         $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        width: 480,
-        height: 480,
+        width: "container",
+        height: "container",
+        autosize: { type: "fit", contains: "padding" },
         padding: 20,
         background: "#ffffff",
         config: {
@@ -283,17 +295,17 @@
           {
             data: {
               values: [
-                { x: 0.15, y: 0.9, label: "INFATUATION" },
-                { x: 0.85, y: 0.9, label: "CONSUMMATE LOVE" },
-                { x: 0.15, y: 0.1, label: "INDIFFERENCE" },
-                { x: 0.85, y: 0.1, label: "FRIENDSHIP" },
+                { x: 0.18, y: 0.98, label: "INFATUATION" },
+                { x: 0.82, y: 0.98, label: "CONSUMMATE LOVE" },
+                { x: 0.18, y: 0.02, label: "INDIFFERENCE" },
+                { x: 0.82, y: 0.02, label: "FRIENDSHIP" },
               ],
             },
             mark: {
               type: "text",
-              fontSize: 10,
+              fontSize: 8,
               fontWeight: 500,
-              opacity: 0.45,
+              opacity: 0.35,
               color: "#7a5842",
               font: "Georgia",
             },
@@ -474,7 +486,7 @@
             data: { values: [{ x: 0.75, y: 0.85, name: "Consummate" }] },
             mark: {
               type: "text",
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: 600,
               color: "#7a2828",
               dy: -14,
@@ -490,7 +502,7 @@
             data: { values: [{ x: 0.25, y: 0.85, name: "Infatuation" }] },
             mark: {
               type: "text",
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: 600,
               color: "#333",
               dy: -14,
@@ -506,7 +518,7 @@
             data: { values: [{ x: 0.72, y: 0.25, name: "Companionate" }] },
             mark: {
               type: "text",
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: 600,
               color: "#333",
               dy: 18,
@@ -522,7 +534,7 @@
             data: { values: [{ x: 0.28, y: 0.25, name: "Indifference" }] },
             mark: {
               type: "text",
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: 600,
               color: "#333",
               dy: 18,

@@ -14,8 +14,8 @@ The shell is a two-file pattern at repo root:
 
 | File | Role |
 |---|---|
-| [`../../index.html`](../../index.html) | The shell itself. Single HTML file (~50 KB) with inline CSS and JS. Loads marked, DOMPurify, Mermaid, and highlight.js from pinned CDN assets with SHA-384 integrity checks. **Note**: this plugin repo doesn't ship a live root shell; adopters install the starter and get `index.html` + `manifest.json` at their repo root. |
-| [`../../manifest.json`](../../manifest.json) | The hand-edited source of truth. Declares brand, theme, areas, docs, sources. Zero build step. **Note**: same caveat — the reference lives in adopter repos, not here. |
+| [`starter/index.html`](../../.github/skills/docs-shell/starter/index.html) | The shell itself. Single HTML file with inline CSS and JS. Loads marked, DOMPurify, Mermaid, and highlight.js from pinned CDN assets with SHA-384 integrity checks. Adopters copy it to their repo root. |
+| [`starter/manifest.json`](../../.github/skills/docs-shell/starter/manifest.json) | The hand-edited source of truth. Declares brand, theme, areas, docs, and sources. Zero build step. |
 
 The shell reads `manifest.json`, resolves which area + doc is active from the URL, fetches every source `.md` file that doc declares, strips per-file boilerplate, concatenates with a blank line between, runs marked with a small set of custom decorators, and renders under a sticky two-line topnav plus sidebar table of contents. Markdown stays authoritative. GitHub renders the same source files independently.
 
@@ -38,7 +38,7 @@ The shell intentionally does not render raw Markdown controls. The `.md` files r
 
 ## URL scheme
 
-The shell reads ?area=<id>&doc=<slug> from the query string with cascading fallbacks:
+The shell reads `?area=<id>&doc=<slug>` from the query string with cascading fallbacks:
 
 | URL shape | Resolves to |
 |---|---|
@@ -49,7 +49,7 @@ The shell reads ?area=<id>&doc=<slug> from the query string with cascading fallb
 
 ## Manifest schema
 
-Complete field-by-field walkthrough. Examples come from live implementations of the pattern (primarily [Alex_ACT_Steward (private governance record)'s `manifest.json`).
+Complete field-by-field walkthrough. Examples come from live implementations of the pattern, including the private Alex ACT Steward governance shell.
 
 ### Top-level
 
@@ -147,7 +147,7 @@ A working demo ships in the starter kit at `.github/skills/docs-shell/starter/ex
 
 ### Hero
 
-The hero block sits between the sticky page-title header and the body content. It carries the doc's Big Idea, a one-sentence thesis authored via Steward's [big-idea skill](https://github.com/fabioc-aloha/Alex_ACT_Core).
+The hero block sits between the sticky page-title header and the body content. It carries the doc's Big Idea, a one-sentence thesis authored via Core's [big-idea skill](https://github.com/fabioc-aloha/Alex_ACT_Core/tree/main/.github/skills/big-idea).
 
 ```json
 {
@@ -401,12 +401,13 @@ The starter kit at [`../../.github/skills/docs-shell/starter/`](../../.github/sk
 starter/
 ├── index.html      Full working shell (equivalent to a reference implementation like Alex_ACT_Steward's root shell).
 ├── manifest.json   Minimal single-area, single-doc example with copious $comment fields.
-└── about.md        Working demo content with alerts, mermaid, and code samples.
+├── about.md        Working demo content with alerts, mermaid, and code samples.
+└── example-report.html  Standalone report used by the HTML-source route.
 ```
 
 **To adopt**:
 
-1. Copy the three files into your project's docs folder (or repo root for a top-level shell).
+1. Copy the four files into your project's docs folder (or repo root for a top-level shell).
 2. Edit `manifest.json`:
     - Change `brand.label` to your project name.
     - Optionally add or remove theme overrides.
@@ -421,7 +422,7 @@ The `$comment` fields in the starter manifest walk through every non-obvious cho
 
 Three ways to view the shell locally, in order of least ceremony:
 
-1. **Ask Copilot to open it in the internal browser.** `open_browser_page` launches a Playwright-driven Chromium with `file://` fetches permitted, so the shell renders directly from disk with no server. Documented in [`../../.github/skills/browser-tools/SKILL.md`](../../.github/skills/browser-tools/SKILL.md).
+1. **Ask Copilot to open it in the internal browser.** `open_browser_page` launches a Playwright-driven Chromium with `file://` fetches permitted, so the shell renders directly from disk with no server. Documented in Core's [browser-tools skill](https://github.com/fabioc-aloha/Alex_ACT_Core/tree/main/.github/skills/browser-tools).
 2. **VS Code Simple Browser.** Also allows `file://` fetches. Command palette → `Simple Browser: Show` → paste the `file:///c:/...` URL.
 3. **Local HTTP server.** Required for any external browser (Chrome, Firefox, Edge, Safari) since those block `file://` cross-file fetches for security. Also required for realistic HTTP status codes or service worker behavior.
 

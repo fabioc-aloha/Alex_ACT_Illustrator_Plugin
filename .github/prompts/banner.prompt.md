@@ -3,7 +3,7 @@ description: "Generate a 1200×320 SVG banner using the active brand config (def
 lastReviewed: 2026-07-29
 ---
 
-# Banner
+# /alex-act-illustrator-plugin banner
 
 Generate an SVG banner for the top of a markdown document. Wraps the `generate-banner.cjs` script and the `svg-banner` skill.
 

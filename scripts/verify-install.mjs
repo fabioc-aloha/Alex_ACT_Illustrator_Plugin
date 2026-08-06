@@ -39,10 +39,12 @@
 // No dependencies. Speaks newline-delimited JSON-RPC over stdio, which is what
 // all three MCP servers expect.
 
-import { spawn } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { spawnCommand } from './process-launch.mjs';
+import { evaluateCompatibility, parseCatalogEntries } from './verify-contract.mjs';
 
 // Verify the spec the workspace actually asks for, not a copy of it. Reading
 // `.vscode/mcp.json` means bumping the pin in one place cannot leave this
@@ -54,6 +56,49 @@ const CONFIG_PATH = join(ROOT_PATH, '.vscode', 'mcp.json');
 function registryPolicyFail(reason) {
   console.error(`FAIL  npm registry policy: ${reason}`);
   process.exit(1);
+}
+
+function frontmatterDescription(file) {
+  const match = readFileSync(file, 'utf8').match(/^description:\s*"([^"]+)"/m);
+  if (!match) throw new Error(`missing one-line description: ${file}`);
+  return match[1];
+}
+
+function assertManifestIntegrity() {
+  const manifest = JSON.parse(readFileSync(join(ROOT_PATH, 'manifest.json'), 'utf8'));
+  const declared = [];
+  for (const skill of manifest.assets.skills) {
+    declared.push(skill.path);
+    for (const resource of skill.bundled_resources ?? []) declared.push(resource.path);
+    const source = join(ROOT_PATH, skill.path);
+    if (skill.frontmatter?.description !== frontmatterDescription(source)) {
+      throw new Error(`manifest description drift: ${skill.name}`);
+    }
+  }
+  for (const prompt of manifest.assets.prompts) {
+    declared.push(prompt.path);
+    const source = join(ROOT_PATH, prompt.path);
+    if (prompt.frontmatter?.description !== frontmatterDescription(source)) {
+      throw new Error(`manifest description drift: ${prompt.name}`);
+    }
+  }
+  declared.push(manifest.assets.mcp.path, manifest.assets.settings.path);
+  for (const relativePath of declared) {
+    if (!existsSync(join(ROOT_PATH, relativePath))) {
+      throw new Error(`manifest path does not exist: ${relativePath}`);
+    }
+  }
+
+  const docsShell = manifest.assets.skills.find((skill) => skill.name === 'docs-shell');
+  const bundled = new Set((docsShell?.bundled_resources ?? []).map((resource) => resource.path));
+  const starter = JSON.parse(readFileSync(
+    join(ROOT_PATH, '.github', 'skills', 'docs-shell', 'starter', 'manifest.json'), 'utf8'));
+  const sources = starter.areas.flatMap((area) => area.docs.flatMap((doc) => doc.sources ?? []));
+  for (const source of sources) {
+    const declaredPath = `.github/skills/docs-shell/starter/${source}`;
+    if (!bundled.has(declaredPath)) throw new Error(`starter dependency is not bundled: ${source}`);
+  }
+  console.log(`OK    manifest integrity: ${declared.length} paths and copied metadata verified`);
 }
 
 function assertRegistryPolicy() {
@@ -101,6 +146,11 @@ function assertRegistryPolicy() {
 }
 
 assertRegistryPolicy();
+try {
+  assertManifestIntegrity();
+} catch (error) {
+  registryPolicyFail(error.message);
+}
 
 function resolvePackage() {
   try {
@@ -257,18 +307,11 @@ const REQUESTS = [
   })),
 ];
 
-// Windows ships `npx` as a .cmd shim, and since the CVE-2024-27980 fix Node
-// refuses to spawn one without a shell (EINVAL). There is no injection surface
-// here: the command is a hard-coded constant with no interpolation. The package
-// spec stays double-quoted so cmd.exe does not treat the `^` in the version
-// range as an escape character. On POSIX we spawn without a shell.
-const isWindows = process.platform === 'win32';
-
 console.log(`      spec: ${PACKAGE}  (from ${PACKAGE_SOURCE})`);
 
-const child = isWindows
-  ? spawn(`npx -y --prefer-offline "${PACKAGE}"`, { stdio: ['pipe', 'pipe', 'pipe'], shell: true })
-  : spawn('npx', ['-y', '--prefer-offline', PACKAGE], { stdio: ['pipe', 'pipe', 'pipe'], shell: false });
+const child = spawnCommand('npx', ['-y', '--prefer-offline', PACKAGE], {
+  stdio: ['pipe', 'pipe', 'pipe'],
+});
 
 let stdout = '';
 let stderr = '';
@@ -392,56 +435,29 @@ function report() {
 
 function reportCompat(messages) {
   console.log(`\n      spec-pattern compatibility (validate_chart, vegalite):`);
-  let bad = 0;
-
-  COMPAT_SPECS.forEach((s, i) => {
-    const reply = messages.find((m) => m.id === COMPAT_BASE_ID + i);
-    const text = reply?.result?.content?.find((c) => c.type === 'text')?.text;
-
-    let verdict = 'NO REPLY';
-    let detail = '';
-    if (text) {
-      try {
-        const r = JSON.parse(text);
-        verdict = r.valid ? 'valid' : 'INVALID';
-        const notes = [...(r.errors ?? []), ...(r.warnings ?? [])];
-        if (notes.length) detail = `  — ${notes.join('; ')}`;
-      } catch {
-        verdict = text.slice(0, 60);
-      }
-    }
-    if (verdict !== 'valid') bad += 1;
-    console.log(`        ${verdict.padEnd(8)} ${s.name}${detail}`);
-  });
+  const result = evaluateCompatibility(messages, COMPAT_SPECS, COMPAT_BASE_ID);
+  for (const row of result.rows) {
+    console.log(`        ${row.verdict.padEnd(8)} ${row.name}${row.detail}`);
+  }
 
   console.log(
-    bad === 0
+    result.bad === 0
       ? '        → all documented patterns validate on this version'
-      : `        → ${bad} pattern(s) need attention before a dual-range pin`,
+      : `        → ${result.bad} pattern(s) need attention before a dual-range pin`,
   );
+  if (result.bad > 0) fail(`--compat: ${result.bad} documented pattern(s) failed validation`);
 }
 
 function reportCatalog(messages) {
-  const call = messages.find((m) => m.id === 3 && m.result?.content);
-  const text = call?.result.content.find((c) => c.type === 'text')?.text;
-  if (!text) {
-    console.log('WARN  --catalog: list_chart_types returned no text content');
-    return;
-  }
-
-  let catalog;
   try {
-    catalog = JSON.parse(text);
-  } catch {
-    console.log('WARN  --catalog: could not parse list_chart_types output');
-    return;
-  }
-
-  const entries = Array.isArray(catalog) ? catalog : [catalog];
-  console.log(`OK    backends (${entries.length}):`);
-  for (const entry of entries) {
-    const count = entry.count ?? entry.chartTypes?.length ?? '?';
-    console.log(`        ${String(entry.backend).padEnd(10)} ${count} chart types`);
+    const entries = parseCatalogEntries(messages);
+    console.log(`OK    backends (${entries.length}):`);
+    for (const entry of entries) {
+      const count = entry.count ?? entry.chartTypes?.length ?? '?';
+      console.log(`        ${String(entry.backend).padEnd(10)} ${count} chart types`);
+    }
+  } catch (error) {
+    fail(`--catalog: ${error.message}`);
   }
 }
 
@@ -461,12 +477,7 @@ function verifyOptionalMcp(config) {
   console.log(`\n      optional ${label} MCP: handshaking (${command} ${args.join(' ')})`);
 
   return new Promise((resolve) => {
-    const proc = isWindows
-      ? spawn(`${command} ${args.map((a) => (/\s/.test(a) ? `"${a}"` : a)).join(' ')}`, {
-          stdio: ['pipe', 'pipe', 'pipe'],
-          shell: true,
-        })
-      : spawn(command, args, { stdio: ['pipe', 'pipe', 'pipe'], shell: false });
+    const proc = spawnCommand(command, args, { stdio: ['pipe', 'pipe', 'pipe'] });
 
     let out = '';
     let err = '';

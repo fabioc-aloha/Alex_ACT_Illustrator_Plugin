@@ -3,7 +3,7 @@ description: "Pick the right chart for the user's data + question, then author, 
 lastReviewed: 2026-07-25
 ---
 
-# /render-chart
+# /alex-act-illustrator-plugin render-chart
 
 Follow these steps in order. Skip any step that the user's request has already answered.
 
