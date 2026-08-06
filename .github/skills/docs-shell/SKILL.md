@@ -103,35 +103,61 @@ quality varies by host and the shell does not try to hide that.
 | Piece | Where |
 | --- | --- |
 | Controls | `#topnav-listen` in the second nav row: play/pause `#listen-toggle`, settings gear `#listen-settings`. Two buttons, not three — see below |
-| Settings popover | `#listen-panel` — voice `<select>`, speed `<input type="range">` (0.6–1.6), and a `#listen-hint` line naming what the host actually offers |
+| Settings popover | `#listen-panel` — voice `<select>`, speed `<input type="range">` (0.6–1.6), a `#listen-markers` checkbox for skip announcements, and a `#listen-hint` line naming what the host actually offers |
 | Announcements | `#listen-status`, an `.sr-only` `role="status"` live region |
 | Logic | `setupReadAloud()`, called from the bootstrap sequence |
 
 Behavior worth knowing before you change it:
 
-- **Chunked playback.** Chromium stalls silently on long utterances, so the page
-  is split per block and advanced one piece at a time. Each chunk carries a
+- **Chunked playback on a duration budget.** Every utterance boundary costs an
+  audible gap — measured near 80 ms, and pre-queueing the next utterance does
+  not close it, so the only way to reduce the pauses is to produce fewer seams.
+  The cap is therefore a duration budget rather than a fixed character count:
+  `CHUNK_SECONDS × CHARS_PER_SECOND × rate`, clamped to `CHUNK_MIN`/`CHUNK_MAX`,
+  so a faster rate earns longer chunks. A ceiling still exists because Chromium
+  can cut an utterance that runs far past fifteen seconds. Each chunk carries a
   length-derived timeout as a backstop, because Chromium can drop an utterance
   without ever firing `onend`. A period only ends a sentence when a space
   follows it and the preceding word is not a known abbreviation, so `0.9.0`,
-  `README.md`, and "vs." are not read as three sentences. A sentence with no
-  internal boundary is word-wrapped rather than sent long.
+  `README.md`, and "vs." are not read as three sentences. A single long sentence
+  is allowed to overrun the budget and is only word-wrapped past a hard ceiling,
+  because a break mid-sentence is the worst-sounding seam of all.
+- **A keep-alive pump guards the long chunks.** Chromium can stop speaking
+  partway through a long utterance unless the queue is nudged, so a timer pauses
+  and resumes while speaking. Measured as a no-op where the fault is absent
+  (identical duration with and without), which makes it cheap insurance rather
+  than a workaround with a cost.
 - **Skips what does not survive being read.** Tables, code blocks, Mermaid
-  diagrams, and inline SVG are announced (`Table with 6 rows, skipped.`) rather
-  than spoken, because a table read cell by cell is noise and a code block is
-  worse. Nav strips are dropped silently as chrome. Bare URLs become "link".
-  Inline code becomes "code" only when it is both longer than
-  `INLINE_CODE_MAX` and punctuation-dense: a CSS selector collapses, a long
-  path or identifier does not, because the path carries more than the word
-  "code" does. Every chunk is then checked after splitting, so a stray table
-  pipe or a fragment that is nothing but a placeholder never reaches the voice.
-  Set `SPEAK_SKIP_MARKERS = false` for silent skipping instead of announced.
+  diagrams, and inline SVG are announced (`Table skipped.`) rather than spoken,
+  because a table read cell by cell is noise and a code block is worse. The
+  announcement is deliberately terse and a run of adjacent skips says it once:
+  a doc-heavy corpus can carry over a thousand of these, and the announcement
+  is interruption, not content. The `#listen-markers` checkbox turns them off
+  entirely and persists that choice. Nav strips are dropped silently as chrome.
+  Bare URLs become "link". Inline code becomes "code" only when it is both
+  longer than `INLINE_CODE_MAX` and punctuation-dense: a CSS selector collapses,
+  a long path or identifier does not, because the path carries more than the
+  word "code" does. Every chunk is then checked after splitting, so a stray
+  table pipe or a fragment that is nothing but a placeholder never reaches the
+  voice.
+- **Nav strips are detected by residue, not density.** The test is what survives
+  once the links and separators are removed. An earlier link-density ratio plus
+  a "contains a middot anywhere" clause silently swallowed ordinary sentences
+  that happened to carry two links, which is a worse failure than reading a
+  breadcrumb: dropped prose is invisible, a spoken breadcrumb is merely noise.
+- **Click to seek.** Clicking any block while a session is live jumps playback
+  there, forward or back. It stays inert until the reader has actually started,
+  and ignores clicks on links and controls, modified clicks, and clicks that
+  ended a text selection, so ordinary reading and copying are untouched.
+  `#content` carries `.is-seekable` during a session to earn the pointer cursor.
 - **Voice ranking.** `populateVoices()` prefers whatever neural voice the host
   exposes (on Windows the `Microsoft … Natural` set) and demotes basic system
   voices, which are markedly worse for long-form prose.
-- **The reader's choice persists.** Voice and speed are saved to
-  `localStorage` under `alexact.readaloud`. Changing either while playing
-  restarts the current chunk rather than the whole page.
+- **The reader's choice persists.** Voice, speed, and the skip-announcement
+  setting are saved to `localStorage` under `alexact.readaloud`. Changing voice
+  or speed while playing restarts the current chunk rather than the whole page;
+  toggling announcements rebuilds the chunk list and resumes from the same
+  block, because a rebuild renumbers every index after it.
 - **Graceful absence.** A host with no voices disables the control and says so
   in `#listen-hint` instead of failing silently.
 - **Speech outlives the document.** `pagehide` and `beforeunload` both cancel,
@@ -240,6 +266,9 @@ Full rationale + design notes: `docs/shell/README.md` § HTML-source docs.
 | Verifying a show/hide change by asserting `element.hidden` | The property flips even when an author `display` rule keeps the element painted. Assert `getComputedStyle(el).display` or the bounding box instead, on a freshly loaded page. |
 | Reading a table aloud cell by cell | Row text joined with commas is not prose. Skip the table and announce it so the listener knows to look at the screen. |
 | Collapsing inline code on length alone | A long path still reads better than the word "code", and an element whose whole text is one code span collapses to a chunk that says nothing. Gate on punctuation density, then drop placeholder-only fragments. |
+| Capping utterances at a fixed character count | The cap exists to dodge a duration limit, so express it as a duration. A fixed count makes a fast reader sit through seams they never needed, and each seam is an audible gap that pre-queueing cannot close. |
+| Judging chrome by link density | Ordinary sentences carry links. Test what is left once the links and separators are removed; dropped prose is a silent failure, while a spoken breadcrumb is merely noise. |
+| Making click-to-seek always live | Chunks only exist once a session has started. Seeking on every click would hijack link clicks, copying, and text selection on a page nobody asked to have read aloud. |
 
 ## Optional features (CSS ready, opt-in)
 
@@ -283,7 +312,9 @@ Revise this skill by **2026-10-29** (90 days) or sooner if any of the following 
 - A restyle of `.listen-panel` or `.topnav-listen` drops the explicit `[hidden] { display: none; }` rule and the popover renders while the script reports it closed.
 - Removing the stop button costs a reader a reachable way out of playback (`Escape`, page finish, doc switch, and unload should cover it).
 - The skip list swallows content that was worth hearing, or the announced markers become noise on a table-dense page (either direction means the skip model is mistuned).
-- The nav-strip heuristic drops a real paragraph, or a chunk exceeds `MAX_CHARS` and Chromium stalls on it.
+- The nav-strip heuristic drops a real paragraph, or leaves a breadcrumb row being read aloud on most pages.
+- A chunk sized by the duration budget is cut off mid-sentence on a real host despite the keep-alive pump, or the pump itself introduces an audible artifact (drop `CHUNK_SECONDS` and re-measure rather than reverting to a fixed count).
+- Click-to-seek fires on a click the reader meant as a link, a copy, or a selection, or a listener cannot find how to jump because the pointer cursor is the only affordance.
 - A corpus sweep over the shell's own docs reports a spoken chunk with no letters or digits, a chunk that is only a placeholder word, or a skip-marker count that disagrees with the number of skippable elements in the page.
 
 ## Origin

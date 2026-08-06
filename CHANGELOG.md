@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `docs-shell`: **click any paragraph while reading to jump there.** Playback
+  seeks to the clicked block, forward or back, so a listener can re-hear a
+  paragraph or skip ahead without restarting. Inert until a reading session has
+  actually started, and ignores clicks on links and controls, modified clicks,
+  and clicks that ended a text selection, so ordinary reading and copying are
+  untouched. `#content` carries `.is-seekable` during a session to earn the
+  pointer cursor.
+- `docs-shell`: **skip announcements can be turned off.** A `#listen-markers`
+  checkbox in the settings popover silences the `Table skipped.` style
+  announcements and persists that choice with voice and speed. Toggling it while
+  playing rebuilds the chunk list and resumes from the same block rather than a
+  stale index.
+
 - **New skill `corpus-qa-sweep`.** Generalizes the corpus-scale QA method used
   to validate the `docs-shell` reader: instrument the real output boundary,
   assert machine-checkable invariants, sweep every enumerated item, then triage
@@ -30,6 +43,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dismissal model; plus two anti-patterns and three falsifiers.
 
 ### Changed
+
+- `docs-shell`: **the reader skipped too much and paused too often.** Fixed by
+  measurement rather than by inspection, sweeping all 67 documents of the
+  Steward corpus with per-element attribution for every drop:
+  - **Nav-strip detection rewrote from link density to residue.** The old test
+    combined a linked-character ratio with a "contains a middot anywhere"
+    clause, and 7 of its 10 fires across the corpus were ordinary prose
+    sentences that happened to carry two links. The new test removes the links
+    and separators and asks what is left, plus an arrow-labeled breadcrumb
+    clause. Corpus fires drop from 10 to 2, and both survivors are genuine
+    chrome. Dropped prose is a silent failure; a spoken breadcrumb is only
+    noise, so the heuristic now errs toward reading.
+  - **Chunk length is now a duration budget, not a fixed character count.**
+    `MAX_CHARS = 180` existed to dodge Chromium's long-utterance cutoff, but it
+    split 3,219 corpus blocks into multiple utterances, and each seam is an
+    audible gap. Measured at roughly 80 ms per seam, and pre-queueing the next
+    utterance did not close it (82 ms versus 81 ms), so fewer seams was the only
+    lever. The budget is now `CHUNK_SECONDS x CHARS_PER_SECOND x rate`, clamped,
+    so a faster reading rate earns longer chunks. Multi-utterance blocks fall
+    from 3,219 to 1,716 and total chunks from 23,298 to 20,584. A single long
+    sentence is now allowed to overrun the budget and is only word-wrapped past
+    a hard ceiling, because a mid-sentence break is the worst seam of all.
+  - **Added a keep-alive pump** for the longer chunks, since Chromium can stop
+    partway through a long utterance unless the queue is nudged. Verified on a
+    Windows SAPI voice that a 289-character utterance completes in 18.1s with
+    and without the pump, identically, so the pump is insurance with no measured
+    cost rather than a workaround that trades one artifact for another.
+  - **Skip announcements are terser and collapse runs.** `Table with 12 rows,
+    skipped.` became `Table skipped.`, and consecutive skips of the same kind
+    announce once. The corpus carries 1,048 tables, so the announcement was
+    interruption at scale rather than information.
 
 - `docs-shell`: the read-aloud settings popover no longer lingers over the page
   it is reading. It closes immediately when playback starts or resumes, and
@@ -60,7 +104,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (24,583 chunks, 1,269 skips): skip-marker counts match the skippable
   elements in each page exactly, zero chunks over `MAX_CHARS`, zero raw URLs,
   zero broken versions or extensions, zero contentless chunks, and no prose
-  paragraph dropped by the nav-strip heuristic.
+  paragraph reported as dropped by the nav-strip heuristic. That last claim was
+  wrong and a later sweep with per-element attribution caught it: the harness
+  compared spoken output against itself rather than against the DOM blocks, so a
+  silently dropped paragraph was invisible to it. See the nav-strip entry below.
 - `docs-shell`: **fixed the popover rendering permanently open.** The dismissal
   logic above was correct but had no visible effect, because
   `nav.topnav .listen-panel` sets `display: grid` and an author `display` rule

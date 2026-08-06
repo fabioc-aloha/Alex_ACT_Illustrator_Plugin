@@ -1065,6 +1065,19 @@
       color: #9198a1;
       line-height: 1.45;
     }
+    nav.topnav .listen-check {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.35rem;
+      font-size: 0.72rem;
+      color: #9198a1;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    nav.topnav .listen-check input { margin: 0; }
+    /* While a reading session is live, blocks are click-to-seek targets. */
+    #content.is-seekable :is(p, li, h1, h2, h3, h4, h5, h6, blockquote, dt, dd) { cursor: pointer; }
     #content .is-speaking {
       background: color-mix(in srgb, var(--accent) 14%, transparent);
       box-shadow: 0 0 0 0.35rem color-mix(in srgb, var(--accent) 14%, transparent);
@@ -1110,7 +1123,12 @@
           <select id="listen-voice"></select>
           <label for="listen-rate">Speed <span id="listen-rate-value">1&#xD7;</span></label>
           <input type="range" id="listen-rate" min="0.6" max="1.6" step="0.05" value="1" />
+          <label class="listen-check" for="listen-markers">
+            <input type="checkbox" id="listen-markers" />
+            Announce skipped tables, code, and diagrams
+          </label>
           <p class="listen-hint" id="listen-hint"></p>
+          <p class="listen-hint">Click any paragraph while reading to jump there.</p>
         </div>
       </div>
     </div>
@@ -1727,6 +1745,7 @@
       const voiceSel = document.getElementById('listen-voice');
       const rateInput = document.getElementById('listen-rate');
       const rateValue = document.getElementById('listen-rate-value');
+      const markersInput = document.getElementById('listen-markers');
       const hint = document.getElementById('listen-hint');
       const status = document.getElementById('listen-status');
       const iconEl = document.getElementById('listen-icon');
@@ -1742,9 +1761,10 @@
       }
 
       const PREF_KEY = 'alexact.readaloud';
-      const prefs = { voiceURI: '', rate: 1 };
+      const prefs = { voiceURI: '', rate: 1, markers: true };
       try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || '{}')); } catch (_) {}
       prefs.rate = Math.min(1.6, Math.max(0.6, parseFloat(prefs.rate) || 1));
+      prefs.markers = prefs.markers !== false;
       const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (_) {} };
       const fmtRate = r => (Math.round(r * 100) / 100) + '\u00D7';
 
@@ -1796,10 +1816,21 @@
       // Structures that carry meaning visually but not aloud. A table read
       // cell by cell is noise, so these are announced instead of spoken.
       const SKIP_SEL = 'pre, table, .mermaid, svg';
-      const SPEAK_SKIP_MARKERS = true;
-      const MAX_CHARS = 180;
+      // Every utterance boundary costs an audible gap (measured near 80 ms, and
+      // pre-queueing the next utterance does not close it), so the cap is a
+      // duration budget rather than a fixed character count: a faster rate earns
+      // longer chunks and fewer seams. The ceiling exists because Chromium can
+      // cut an utterance that runs far past fifteen seconds.
+      const CHARS_PER_SECOND = 16;
+      const CHUNK_SECONDS = 16;
+      const CHUNK_MIN = 200;
+      const CHUNK_MAX = 480;
       const INLINE_CODE_MAX = 40;
       let chunks = [];
+      let chunkStart = new Map();
+
+      const chunkBudget = () =>
+        Math.round(Math.min(CHUNK_MAX, Math.max(CHUNK_MIN, CHUNK_SECONDS * CHARS_PER_SECOND * prefs.rate)));
 
       const clean = s => String(s || '')
         .replace(/https?:\/\/\S+/g, 'link')
@@ -1825,46 +1856,50 @@
         return symbols / t.length > 0.22;
       }
 
-      // Nav strips are chrome: several links joined by separators, no prose.
+      // Nav strips are chrome: a row of links held together by separators. The
+      // test is what survives once the links and separators are removed, because
+      // link density alone misread ordinary sentences that happen to carry two
+      // links, and a stray middot anywhere in a paragraph silenced it outright.
+      const NAV_GLYPH = /[\u25B2\u25C4\u25BA\u2190\u2192\u2191\u2193]/;
       function isNavStrip(el) {
         if (el.tagName !== 'P') return false;
         const links = [...el.querySelectorAll('a')];
         if (links.length < 2) return false;
-        const text = clean(el.textContent);
-        if (!text) return false;
-        const linked = links.reduce((n, a) => n + clean(a.textContent).length, 0);
-        return linked / text.length > 0.6 || /[\u00B7\u25B2\u25C4\u25BA]/.test(text);
+        const clone = el.cloneNode(true);
+        clone.querySelectorAll('a').forEach(a => a.remove());
+        const residue = clean(clone.textContent)
+          .replace(/[\u00B7\u2022|/,\-\u2013\u2014\s]+/g, '');
+        // Nothing but links and separators, or a breadcrumb whose labels are arrows.
+        return residue.length <= 3 || links.some(a => NAV_GLYPH.test(a.textContent));
       }
 
       function skipMarker(el) {
-        if (el.tagName === 'TABLE') {
-          const rows = el.querySelectorAll('tr').length;
-          if (!rows) return 'Table skipped.';
-          return 'Table with ' + rows + (rows === 1 ? ' row' : ' rows') + ', skipped.';
-        }
+        if (el.tagName === 'TABLE') return 'Table skipped.';
         if (el.tagName === 'PRE') return 'Code block skipped.';
         return 'Diagram skipped.';
       }
 
-      // Long text is split on sentence boundaries and regrouped under MAX_CHARS.
+      // Long text is split on sentence boundaries and regrouped under the budget.
       // A period only ends a sentence when a space follows it and the word is
       // not a known abbreviation, so 0.9.0, README.md, and "vs." stay intact.
       const DOT = '\u0001';
-      // A sentence with no internal boundary still has to fit: Chromium stalls
-      // on long utterances, so wrap on words as a last resort.
-      function hardWrap(s) {
-        if (s.length <= MAX_CHARS) return [s];
+      // Breaking mid-sentence is the worst-sounding seam of all, so a single long
+      // sentence is allowed to overrun the budget and is only wrapped on words
+      // once it passes the hard ceiling.
+      function hardWrap(s, max) {
+        if (s.length <= max) return [s];
         const out = [];
         let buf = '';
         for (const w of s.split(/\s+/)) {
-          if (buf && (buf.length + 1 + w.length) > MAX_CHARS) { out.push(buf); buf = w; }
+          if (buf && (buf.length + 1 + w.length) > max) { out.push(buf); buf = w; }
           else buf = buf ? buf + ' ' + w : w;
         }
         if (buf) out.push(buf);
         return out;
       }
-      function split(text) {
-        if (text.length <= MAX_CHARS) return [text];
+      function split(text, max) {
+        if (text.length <= max) return [text];
+        const hardMax = Math.round(max * 1.6);
         const guarded = text
           .replace(/\.(?=\S)/g, DOT)
           .replace(/\b(vs|etc|cf|al|approx|fig|no|mr|ms|dr|st|jr|sr)\.(?=\s)/gi, '$1' + DOT);
@@ -1874,12 +1909,12 @@
         for (const raw of sentences) {
           const s = raw.trim();
           if (!s) continue;
-          if (s.length > MAX_CHARS) {
+          if (s.length > max) {
             if (buf) { out.push(buf); buf = ''; }
-            for (const piece of hardWrap(s)) out.push(piece);
+            for (const piece of hardWrap(s, hardMax)) out.push(piece);
             continue;
           }
-          if (buf && (buf.length + 1 + s.length) > MAX_CHARS) { out.push(buf); buf = s; }
+          if (buf && (buf.length + 1 + s.length) > max) { out.push(buf); buf = s; }
           else buf = buf ? buf + ' ' + s : s;
         }
         if (buf) out.push(buf);
@@ -1888,12 +1923,24 @@
 
       function build() {
         chunks = [];
+        chunkStart = new Map();
         const root = document.getElementById('content');
         if (!root) return;
+        const max = chunkBudget();
+        let lastMarker = '';
+        const push = (el, text) => {
+          if (!chunkStart.has(el)) chunkStart.set(el, chunks.length);
+          chunks.push({ el, text });
+        };
         for (const el of root.querySelectorAll(BLOCK_SEL + ',' + SKIP_SEL)) {
           if (el.parentElement && el.parentElement.closest(SKIP_SEL)) continue;
           if (el.matches(SKIP_SEL)) {
-            if (SPEAK_SKIP_MARKERS) chunks.push({ el, text: skipMarker(el) });
+            // Announcements are opt-out, and a run of adjacent skips says it once.
+            if (!prefs.markers) continue;
+            const marker = skipMarker(el);
+            if (marker === lastMarker) continue;
+            lastMarker = marker;
+            push(el, marker);
             continue;
           }
           // Skip nested blocks so a <p> inside <li> is not read twice.
@@ -1902,12 +1949,13 @@
           let t = clean(textOf(el));
           if (!t) continue;
           if (/^H[1-6]$/.test(el.tagName) && !/[.!?:]$/.test(t)) t += '.';
-          for (const piece of split(t)) {
+          for (const piece of split(t, max)) {
             // Guard after splitting too: a stray table pipe, or a fragment that
             // is nothing but a placeholder, carries no speakable content.
             if (!/[A-Za-z0-9]/.test(piece)) continue;
             if (/^(code|link)[\s.,;:]*$/i.test(piece)) continue;
-            chunks.push({ el, text: piece });
+            lastMarker = '';
+            push(el, piece);
           }
         }
       }
@@ -1919,6 +1967,8 @@
 
       function setUi(state) {
         toggleBtn.classList.toggle('is-active', state !== 'idle');
+        const article = document.getElementById('content');
+        if (article) article.classList.toggle('is-seekable', state !== 'idle');
         iconEl.textContent = state === 'playing' ? '\u275A\u275A' : '\u25B6';
         labelEl.textContent = state === 'playing' ? 'Pause' : state === 'paused' ? 'Resume' : 'Listen';
         toggleBtn.setAttribute('aria-label', labelEl.textContent + ' page audio');
@@ -1942,11 +1992,29 @@
         token++;
         playing = false;
         clearTimeout(timer);
+        stopPump();
         try { synth.cancel(); } catch (_) {}
         clearHighlight();
         setUi('idle');
         schedulePanelClose();
         if (message) status.textContent = message;
+      }
+
+      // Chromium can stop speaking partway through a long utterance unless the
+      // queue is nudged. The nudge measured as a no-op where the fault is absent,
+      // so it is cheap insurance now that chunks are allowed to run longer.
+      let pumpTimer = null;
+      function startPump() {
+        stopPump();
+        pumpTimer = setInterval(() => {
+          if (!playing || !synth.speaking || synth.paused) return;
+          try { synth.pause(); synth.resume(); } catch (_) {}
+        }, 5000);
+      }
+      function stopPump() {
+        if (!pumpTimer) return;
+        clearInterval(pumpTimer);
+        pumpTimer = null;
       }
 
       function speakAt(i) {
@@ -1988,8 +2056,35 @@
         token++;
         setUi('playing');
         schedulePanelClose();
+        startPump();
         setTimeout(() => speakAt(i), 60);
       }
+
+      // Click-to-seek. Chunks only exist once a reading session has started, so
+      // ordinary clicks, links, and text selection are untouched until then.
+      function chunkIndexFor(target) {
+        let el = target instanceof Element ? target : (target && target.parentElement);
+        while (el && el.id !== 'content') {
+          if (chunkStart.has(el)) return chunkStart.get(el);
+          el = el.parentElement;
+        }
+        return -1;
+      }
+
+      document.addEventListener('click', e => {
+        if (!playing || !chunks.length) return;
+        const article = document.getElementById('content');
+        if (!article || !article.contains(e.target)) return;
+        if (e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+        if (e.target.closest && e.target.closest('a, button, input, select, textarea, summary, label')) return;
+        // A drag that selected text is a read, not a seek.
+        const sel = window.getSelection();
+        if (sel && !sel.isCollapsed) return;
+        const i = chunkIndexFor(e.target);
+        if (i < 0) return;
+        restartAt(i);
+        status.textContent = 'Jumped to the paragraph you clicked.';
+      });
 
       // The popover overlaps the page, so it must not linger. It closes on an
       // idle timer that is much shorter while speaking, and closes outright the
@@ -2064,6 +2159,19 @@
         savePrefs();
       });
       rateInput.addEventListener('change', () => { if (playing) restartAt(idx); });
+
+      markersInput.checked = prefs.markers;
+      markersInput.addEventListener('change', () => {
+        prefs.markers = markersInput.checked;
+        savePrefs();
+        // Rebuilding renumbers the chunks, so restart from the block being read
+        // rather than from a stale index.
+        if (!playing) return;
+        const current = chunks[idx] && chunks[idx].el;
+        build();
+        const resume = current && chunkStart.has(current) ? chunkStart.get(current) : idx;
+        restartAt(Math.min(resume, Math.max(0, chunks.length - 1)));
+      });
 
       document.addEventListener('keydown', e => {
         // Escape backs out one layer at a time: popover first, then playback.
