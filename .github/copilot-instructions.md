@@ -99,7 +99,7 @@ the forms we avoid), and the checker's own dictionary.
 
 Every `SKILL.md` and `.prompt.md` carries:
 
-- `description:` — non-empty single-line description (used by the slash-command picker and by the ACT Edition's agent-discovery)
+- `description:` — non-empty single-line description (used by the slash-command picker and by host skill discovery in Copilot CLI and VS Code)
 - `lastReviewed:` — ISO date. Update when the file's content changes substantively.
 
 Every skill also declares `name:` (matches the folder name).
@@ -122,14 +122,14 @@ Short version: vendor the released source tag into `Alex_ACT_Plugin_Mall/plugins
 
 ## What NOT to do
 
-- **Do not commit Alex ACT Edition heir-local files** into this repo. If any of these appear untracked, add them to `.gitignore` — do not stage them:
+- **Do not commit heir workspace-local files** into this repo. A heir workspace that has this plugin checked out alongside it may drop these in; if any appear untracked, add them to `.gitignore` — do not stage them:
   - `.github/config/` (heir cognitive-config)
   - `.github/scripts/` (heir muscle scripts)
-  - `.github/agents/` (heir worker subagents)
-  - `.github/instructions/` (heir instruction library)
+  - `.github/agents/` (heir worker subagents — this plugin declares none)
+  - `.github/instructions/` (heir instruction library — a plugin install cannot deliver instructions anyway)
   - `.github/copilot-instructions.local.md` (heir custom overrides)
-  - `.github/VERSION` (heir Edition version)
-  - `.github/.act-heir.json` (heir install manifest)
+  - `.github/VERSION` (legacy Edition heir version marker)
+  - `.github/.act-heir.json` (legacy Edition heir install manifest)
 - **Do not upload to `microsoft/flint-chart`** — that's Microsoft's upstream repo. This plugin is a separate first-party project on the `fabioc-aloha` account. Attribution to Microsoft is preserved in the LICENSE and Attribution section of the README.
 - **Do not push demo HTML changes without opening the report in a browser first** — inline Vega-Lite specs can fail silently if syntax is off. Always render + eyeball before committing.
 - **Do not remove the two-copyright header from LICENSE** — the flint-chart skill body is forked from Microsoft (MIT), and their copyright must remain attributed even in dual-copyright form. GitHub's SPDX matcher reports the LICENSE as "Other" because of the dual-copyright preamble — that's expected, not a defect. See LICENSE and README Attribution.
@@ -138,8 +138,8 @@ Short version: vendor the released source tag into `Alex_ACT_Plugin_Mall/plugins
 
 | Resource                        | URL                                                                |
 | ------------------------------- | ------------------------------------------------------------------ |
-| Alex ACT Steward (lineage host) | <https://github.com/fabioc-aloha/Alex_ACT_Core>                 |
-| Alex ACT Edition (v4.1.0 compat) | <https://github.com/fabioc-aloha/Alex_ACT_Edition>                |
+| Alex ACT Core (baseline runtime)  | <https://github.com/fabioc-aloha/Alex_ACT_Core>                 |
+| Alex ACT Edition (frozen at 4.2.0, compatibility only) | <https://github.com/fabioc-aloha/Alex_ACT_Edition>                |
 | Alex ACT Plugin Mall (distro)   | <https://github.com/fabioc-aloha/Alex_Skill_Mall>                  |
 | Upstream flint-chart            | <https://github.com/microsoft/flint-chart>                         |
 | flint-chart-mcp on npm          | <https://www.npmjs.com/package/flint-chart-mcp>                    |

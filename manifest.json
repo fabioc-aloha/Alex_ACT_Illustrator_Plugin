@@ -1,7 +1,7 @@
 {
   "plugin": "alex-act-illustrator-plugin",
   "version": "0.6.6",
-  "shape": "ten-skill + three-prompt + three-mcp-sidecars + vscode-settings",
+  "shape": "eleven-skill + three-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Visual-authoring bundle for AI agents. Ten skills across five authoring areas plus install composition: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in The Defensible Decision), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports), Banner (1200×320 SVG brand banners with pluggable brand config), and install-visual-companions (consent-gated installation of nine independently maintained visual-workflow plugins). Shared framing and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
@@ -51,6 +51,15 @@
         "role": "verification (runs after rendering; closes the loop the flint-chart skill deliberately opens). Not chart-specific — applies to any rendered visual artifact",
         "frontmatter": {
           "description": "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
+        }
+      },
+      {
+        "name": "corpus-qa-sweep",
+        "path": ".github/skills/corpus-qa-sweep/SKILL.md",
+        "install_to": ".github/skills/local/corpus-qa-sweep/SKILL.md",
+        "role": "corpus-scale verification (sweeps every item against machine-checkable invariants, then triages each flag). Pairs with render-verify: this one finds candidates across the corpus, render-verify judges one. Extracted 2026-08-06 from a 67-document sweep in which 4 of 6 first-pass findings were harness defects rather than product defects.",
+        "frontmatter": {
+          "description": "Run a QA sweep across an entire corpus instead of one sample: instrument the real output boundary, assert machine-checkable invariants, sweep every item, then triage every flag before believing it. Works on doc sites, generated pages, chart batches, report sets, prose, and formatting. Use when a change to a renderer, template, generator, or shared component affects many outputs, when someone asks to check all the pages or wants no surprises before a release, or when a single-sample pass feels like thin evidence. For judging one rendered artifact against a failure catalog, use render-verify instead."
         }
       },
       {

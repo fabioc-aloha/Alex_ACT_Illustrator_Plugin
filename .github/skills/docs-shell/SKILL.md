@@ -94,6 +94,82 @@ Content docs may (and often should) keep frontmatter and nav-strips. GitHub hono
 
 Full override list at [`../../../docs/shell/README.md § Every property you can override`](../../../docs/shell/README.md#every-property-you-can-override).
 
+## Read aloud
+
+The shell reads the rendered page using the browser's built-in Web Speech API.
+No network call, no API key, no dependency — the browser owns the voice, so
+quality varies by host and the shell does not try to hide that.
+
+| Piece | Where |
+| --- | --- |
+| Controls | `#topnav-listen` in the second nav row: play/pause `#listen-toggle`, settings gear `#listen-settings`. Two buttons, not three — see below |
+| Settings popover | `#listen-panel` — voice `<select>`, speed `<input type="range">` (0.6–1.6), and a `#listen-hint` line naming what the host actually offers |
+| Announcements | `#listen-status`, an `.sr-only` `role="status"` live region |
+| Logic | `setupReadAloud()`, called from the bootstrap sequence |
+
+Behavior worth knowing before you change it:
+
+- **Chunked playback.** Chromium stalls silently on long utterances, so the page
+  is split per block and advanced one piece at a time. Each chunk carries a
+  length-derived timeout as a backstop, because Chromium can drop an utterance
+  without ever firing `onend`. A period only ends a sentence when a space
+  follows it and the preceding word is not a known abbreviation, so `0.9.0`,
+  `README.md`, and "vs." are not read as three sentences. A sentence with no
+  internal boundary is word-wrapped rather than sent long.
+- **Skips what does not survive being read.** Tables, code blocks, Mermaid
+  diagrams, and inline SVG are announced (`Table with 6 rows, skipped.`) rather
+  than spoken, because a table read cell by cell is noise and a code block is
+  worse. Nav strips are dropped silently as chrome. Bare URLs become "link".
+  Inline code becomes "code" only when it is both longer than
+  `INLINE_CODE_MAX` and punctuation-dense: a CSS selector collapses, a long
+  path or identifier does not, because the path carries more than the word
+  "code" does. Every chunk is then checked after splitting, so a stray table
+  pipe or a fragment that is nothing but a placeholder never reaches the voice.
+  Set `SPEAK_SKIP_MARKERS = false` for silent skipping instead of announced.
+- **Voice ranking.** `populateVoices()` prefers whatever neural voice the host
+  exposes (on Windows the `Microsoft … Natural` set) and demotes basic system
+  voices, which are markedly worse for long-form prose.
+- **The reader's choice persists.** Voice and speed are saved to
+  `localStorage` under `alexact.readaloud`. Changing either while playing
+  restarts the current chunk rather than the whole page.
+- **Graceful absence.** A host with no voices disables the control and says so
+  in `#listen-hint` instead of failing silently.
+- **Speech outlives the document.** `pagehide` and `beforeunload` both cancel,
+  or navigating away leaves the page talking.
+- **No stop button.** Play/pause carries the whole interaction and a third
+  button was not earning its width in the nav. `stopAll()` still exists and
+  still runs on page finish, doc switch, and unload; `Escape` reaches it.
+- **`[hidden]` needs restating.** Both `.topnav-listen` and `.listen-panel`
+  carry an author `display` rule, which outranks the user-agent
+  `[hidden] { display: none }` rule. Without an explicit
+  `.listen-panel[hidden] { display: none; }` the popover renders permanently
+  open while `panel.hidden` reports `true`, so the script looks correct and
+  the page is visibly wrong. Keep that rule if you restyle the panel.
+
+### Settings popover dismissal
+
+The popover overlaps the content, so it is aggressive about getting out of the
+way. Three separate paths close it, and the idle timer is deliberately shorter
+while speaking:
+
+| Trigger | Result |
+| --- | --- |
+| Reader starts or resumes playback | Closes immediately — they are done configuring |
+| Idle while playing | Auto-closes after `PANEL_IDLE_PLAYING_MS` (4s) |
+| Idle while stopped or paused | Auto-closes after `PANEL_IDLE_STOPPED_MS` (12s) |
+| Click outside, gear again, or `Escape` | Closes |
+
+Two guards keep this from being hostile. Any interaction inside the panel
+(`pointermove`, `input`, `change`, `focusin`, and siblings) restarts the idle
+clock, and the auto-close **defers** rather than fires while focus is inside the
+panel, so a keyboard user is never interrupted mid-adjustment. When a close does
+steal focus from inside the panel, focus returns to the gear button rather than
+falling to `<body>`.
+
+Keyboard: `L` toggles play/pause from anywhere outside a form field. `Escape`
+backs out one layer at a time — it closes the popover if the popover is open,
+and otherwise stops playback.
+
 ## Common tasks
 
 ### Add a chapter to an existing doc
@@ -159,6 +235,11 @@ Full rationale + design notes: `docs/shell/README.md` § HTML-source docs.
 | Duplicating the shell's CSS into a `.md` file  | Content docs are semantic markdown. The shell owns the visual layer.                                                                                                         |
 | Rendering hero copy that reads as AI marketing | `hero.subtitle` is the Big Idea. If "important" or "central" substitutes without loss, the subtitle is decorative.                                                           |
 | Adding an emoji icon that reads as decoration  | The `icon` field is optional. Empty or absent collapses cleanly. Use it when the icon reinforces the doc's identity (a shopping cart for Mall Plan).                         |
+| Leaving the read-aloud popover open during playback | It overlaps the content it is reading. Playback start closes it, and the idle timer closes it. Do not remove either path without replacing it. |
+| Shipping a bundled TTS voice or a cloud speech call | The Web Speech API is the whole point: no key, no network, no dependency. Host voice quality is the host's business — report it in `#listen-hint`, do not paper over it. |
+| Verifying a show/hide change by asserting `element.hidden` | The property flips even when an author `display` rule keeps the element painted. Assert `getComputedStyle(el).display` or the bounding box instead, on a freshly loaded page. |
+| Reading a table aloud cell by cell | Row text joined with commas is not prose. Skip the table and announce it so the listener knows to look at the screen. |
+| Collapsing inline code on length alone | A long path still reads better than the word "code", and an element whose whole text is one code span collapses to a chunk that says nothing. Gate on punctuation density, then drop placeholder-only fragments. |
 
 ## Optional features (CSS ready, opt-in)
 
@@ -177,7 +258,7 @@ Three files at [`starter/`](starter/):
 
 ```text
 starter/
-├── index.html      Full working shell with quickJumps rendered by default and the brand-icon <img> left commented out for adopters to enable.
+├── index.html      Full working shell with quickJumps rendered by default, built-in read-aloud, and the brand-icon <img> left commented out for adopters to enable.
 ├── manifest.json   Minimal single-area, single-doc example. Every non-obvious choice has an inline $comment.
 └── about.md        Working demo content with alerts, mermaid, syntax-highlighted code samples, and quickJump examples.
 ```
@@ -196,6 +277,14 @@ Revise this skill by **2026-10-29** (90 days) or sooner if any of the following 
 - A Markdown event-handler payload executes, DOMPurify failure falls back to unsanitized HTML, Mermaid leaves strict mode, or a CDN asset loses its integrity pin.
 - A Mermaid graph renders below 13px on desktop or 11px on mobile without contained scrolling, occupies less than half of its cropped SVG viewport, clips content after fitting, exceeds a 4:1 graph aspect ratio without a clear reason, or causes page-level horizontal overflow.
 - Zero adopters copy the starter in the observation window (skill is decorative for its intended audience).
+- The read-aloud settings popover stays open through playback, or auto-closes while the reader is still adjusting it (either direction means the dismissal model above is mistuned).
+- A host ships Web Speech voices that the ranking in `populateVoices()` orders worse than picking the first available voice.
+- Chunked playback stops needing the per-chunk timeout backstop because Chromium reliably fires `onend` (delete the backstop rather than carry it).
+- A restyle of `.listen-panel` or `.topnav-listen` drops the explicit `[hidden] { display: none; }` rule and the popover renders while the script reports it closed.
+- Removing the stop button costs a reader a reachable way out of playback (`Escape`, page finish, doc switch, and unload should cover it).
+- The skip list swallows content that was worth hearing, or the announced markers become noise on a table-dense page (either direction means the skip model is mistuned).
+- The nav-strip heuristic drops a real paragraph, or a chunk exceeds `MAX_CHARS` and Chromium stalls on it.
+- A corpus sweep over the shell's own docs reports a spoken chunk with no letters or digits, a chunk that is only a placeholder word, or a skip-marker count that disagrees with the number of skippable elements in the page.
 
 ## Origin
 

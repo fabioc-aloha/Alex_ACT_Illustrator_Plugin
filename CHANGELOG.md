@@ -9,6 +9,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **New skill `corpus-qa-sweep`.** Generalizes the corpus-scale QA method used
+  to validate the `docs-shell` reader: instrument the real output boundary,
+  assert machine-checkable invariants, sweep every enumerated item, then triage
+  every flag before believing it. The central teaching is the triage step —
+  in the 67-document sweep this skill was extracted from, 4 of 6 first-pass
+  findings were defects in the harness rather than the product. Applies to doc
+  sites, generated pages, chart batches, report sets, prose, and formatting.
+  Cross-linked both ways with `render-verify`, which judges one artifact where
+  this skill sweeps the corpus. Manifest shape ten-skill to eleven-skill.
+- `docs-shell`: **read-aloud is now part of the starter shell.** Ported the
+  Web Speech API reader from the Steward shell into
+  `starter/index.html` — nav controls, voice/speed popover, `sr-only`
+  `role="status"` live region, chunked playback with a per-chunk timeout
+  backstop for Chromium's dropped `onend`, neural-voice ranking, and
+  `localStorage` persistence. Starter grows 1735 to 2149 lines. Verified in
+  browser: controls initialize, content renders, zero console errors.
+- `docs-shell`: new **Read aloud** section in `SKILL.md` documenting the
+  control ids, the chunking and voice-ranking behavior, and the popover
+  dismissal model; plus two anti-patterns and three falsifiers.
+
+### Changed
+
+- `docs-shell`: the read-aloud settings popover no longer lingers over the page
+  it is reading. It closes immediately when playback starts or resumes, and
+  auto-closes on an idle timer that is 4s while speaking versus 12s when
+  stopped. Interaction inside the panel restarts the idle
+  clock, and the auto-close defers while focus is inside the panel so a
+  keyboard user is not interrupted mid-adjustment; a close that would strand
+  focus returns it to the gear button.
+- `docs-shell`: **the reader now skips what does not survive being read aloud.**
+  Tables were previously spoken cell by cell as comma-joined text, which is
+  noise; they are now announced (`Table with 6 rows, skipped.`) along with code
+  blocks, Mermaid diagrams, and inline SVG, so the listener knows to look at the
+  screen rather than silently missing content. Nav strips are dropped as chrome,
+  bare URLs are read as "link", and inline code collapses to "code" only when it
+  is both long and punctuation-dense, so a CSS selector collapses while a path
+  or identifier still reads. Fragments are re-checked after sentence splitting,
+  so a stray table pipe or a placeholder-only fragment never reaches the voice.
+  `SPEAK_SKIP_MARKERS` switches announced skipping to silent.
+- `docs-shell`: **fixed sentence splitting on periods that do not end a
+  sentence.** `Core 0.9.0` was read as "Core zero. nine. zero",
+  `RESPONSIBLE-AI.md` broke across two utterances, and "user vs. repo" split
+  mid-clause. A period now ends a sentence only when followed by a space and not
+  preceded by a known abbreviation. Because that correctly merges chunks that
+  were previously split, a sentence with no internal boundary is word-wrapped so
+  none exceeds `MAX_CHARS` and risks the Chromium long-utterance stall.
+  Verified by intercepting `speechSynthesis.speak` and inspecting what the
+  reader actually emits, swept across all 67 docs in the Steward shell
+  (24,583 chunks, 1,269 skips): skip-marker counts match the skippable
+  elements in each page exactly, zero chunks over `MAX_CHARS`, zero raw URLs,
+  zero broken versions or extensions, zero contentless chunks, and no prose
+  paragraph dropped by the nav-strip heuristic.
+- `docs-shell`: **fixed the popover rendering permanently open.** The dismissal
+  logic above was correct but had no visible effect, because
+  `nav.topnav .listen-panel` sets `display: grid` and an author `display` rule
+  outranks the user-agent `[hidden] { display: none }` rule. The panel painted
+  on load and never disappeared while `panel.hidden` reported `true`. Added an
+  explicit `.topnav-listen[hidden], .listen-panel[hidden] { display: none; }`.
+  Verified by computed style and bounding box on a freshly loaded page rather
+  than by the `hidden` property: hidden on load, gear opens, playback closes.
+- `docs-shell`: **removed the stop button.** Play/pause carries the interaction
+  and a third control was not earning its width in the nav. `stopAll()` is
+  retained and still runs on page finish, doc switch, and unload. `Escape` now
+  backs out one layer at a time: it closes the popover if open, otherwise it
+  stops playback.
+- `.github/copilot-instructions.md`: corrected the Related table, which labeled
+  a row "Alex ACT Steward (lineage host)" while pointing at the **Core** URL;
+  it now reads "Alex ACT Core (baseline runtime)". Edition row marked frozen at
+  4.2.0, compatibility only. Frontmatter guidance no longer credits
+  "the ACT Edition's agent-discovery" for slash-picker descriptions, and the
+  do-not-commit list is reframed from "Edition heir-local" to "heir
+  workspace-local".
+
 - `render-verify`: **When `file://` is not enough** decision table. The integrated
   browser [documents `http`/`https`/`file` support](https://code.visualstudio.com/docs/debugtest/integrated-browser),
   so opening an artifact directly is the default. Five escalation cases are named
