@@ -254,6 +254,10 @@
     }
     nav.topnav .topnav-areas a[data-nav] { font-weight: 600; }
     nav.topnav .topnav-sub .topnav-docs a[data-nav] { font-size: 0.78125rem; }
+    /* Reserve two rows so areas whose docs fit on one line have the same navbar
+       height as areas that wrap. Prevents view-transition-name:topnav from morphing
+       a height delta between pages. */
+    nav.topnav .topnav-docs { min-height: 2.75rem; align-content: center; }
     nav.topnav a[data-nav] {
       color: #9198a1;
       text-decoration: none;

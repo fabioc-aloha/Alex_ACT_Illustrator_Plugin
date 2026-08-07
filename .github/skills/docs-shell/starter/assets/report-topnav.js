@@ -50,20 +50,25 @@
     }
     nav.report-topnav .topnav-brand:hover { color: #58a6ff; }
     nav.report-topnav .topnav-list {
-      display: flex; gap: 0.15rem; list-style: none;
-      margin: 0; padding: 0; flex-wrap: nowrap;
-      overflow-x: auto; scrollbar-width: none;
+      display: flex; gap: 0.15rem; row-gap: 0.3rem; list-style: none;
+      margin: 0; padding: 0; flex-wrap: wrap;
     }
-    nav.report-topnav .topnav-list::-webkit-scrollbar { display: none; }
     nav.report-topnav .topnav-areas { min-width: 0; }
+    /* Match the shell's docs strip so shell <-> report navigation preserves the same
+       two-row navbar height (see index.html: nav.topnav .topnav-docs { min-height: 2.75rem }). */
+    nav.report-topnav .topnav-docs { width: 100%; min-height: 2.75rem; align-content: center; }
     nav.report-topnav .topnav-sub {
       max-width: 1400px; margin: 0.35rem auto 0;
       padding-top: 0.35rem;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex; align-items: center; gap: 0.5rem; min-width: 0;
+      display: flex; align-items: center; gap: 0.5rem; min-width: 0; flex-wrap: wrap;
     }
-    nav.report-topnav .topnav-docs { width: 100%; }
     nav.report-topnav .topnav-areas a { font-weight: 600; }
+    /* Secondary areas (internal / analyst surfaces) get pushed after primary areas and dimmed —
+       matches the shell's nav.topnav rules for visual consistency across the boundary. */
+    nav.report-topnav .topnav-areas li[data-secondary] { order: 10; }
+    nav.report-topnav .topnav-areas li[data-secondary] a { color: #6b7280; font-weight: 500; }
+    nav.report-topnav .topnav-areas li[data-secondary] a:hover { color: #f0f6fc; }
     nav.report-topnav .topnav-sub .topnav-docs a { font-size: 0.78125rem; }
     nav.report-topnav a[data-nav] {
       color: #9198a1; text-decoration: none;
@@ -118,10 +123,25 @@
     const brandLabel = (manifest.brand && manifest.brand.label) || 'Docs';
     const shellIndex = shellRoot + 'index.html';
 
-    const areasHtml = manifest.areas.map(a => {
+    // Match the shell's area ordering: primary areas first (rank by site.deployedAreas index),
+    // secondary areas last. Keeps the row-1 sequence identical across shell <-> report navigation.
+    const primaryOrder = (manifest.site && Array.isArray(manifest.site.deployedAreas))
+      ? manifest.site.deployedAreas : [];
+    const primaryRank = (id) => {
+      const idx = primaryOrder.indexOf(id);
+      return idx === -1 ? primaryOrder.length : idx;
+    };
+    const orderedAreas = manifest.areas.slice().sort((a, b) => {
+      if (!!a.secondary !== !!b.secondary) return a.secondary ? 1 : -1;
+      if (!a.secondary && !b.secondary) return primaryRank(a.id) - primaryRank(b.id);
+      return 0;
+    });
+
+    const areasHtml = orderedAreas.map(a => {
       const active = a.id === currentArea.id ? ' class="active" aria-current="page"' : '';
       const href = `${shellIndex}?area=${encodeURIComponent(a.id)}`;
-      return `<li><a data-nav${active} href="${escapeHtml(href)}">${escapeHtml(a.label)}</a></li>`;
+      const secondary = a.secondary ? ' data-secondary' : '';
+      return `<li${secondary}><a data-nav${active} href="${escapeHtml(href)}">${escapeHtml(a.label)}</a></li>`;
     }).join('');
 
     const docsHtml = (currentArea.docs || []).map(d => {
