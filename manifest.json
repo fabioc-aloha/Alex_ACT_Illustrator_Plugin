@@ -1,6 +1,6 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "shape": "eleven-skill + three-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Visual-authoring bundle for AI agents. Eleven skills across five authoring areas plus install composition: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in The Defensible Decision), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports), Banner (1200×320 SVG brand banners with pluggable brand config), and install-visual-companions (consent-gated installation of nine independently maintained visual-workflow plugins). Shared framing and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",

@@ -8,14 +8,14 @@ Alex ACT Illustrator turns visual work into one governed workflow: frame the ide
 
 An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Current release: v1.0.1.** This is the current public-surface release
+> **Current release: v1.1.0.** This is the current public-surface release
 > under the Alex ACT semantic-versioning contract. The repository was renamed from
 > `flint-chart-plugin` on 2026-07-29; v0.6.0 was the first release under
 > `alex-act-illustrator-plugin@alex-mall`. A legacy install remains pinned
 > under its old ID and does not migrate automatically: install the current ID,
 > verify it, then remove the old entry.
 
-**Current compatibility:** Core `v1.0.1` provides the baseline runtime, and
+**Current compatibility:** Core `v1.1.0` provides the baseline runtime, and
 Manager `v1.0.1` provides the preferred lifecycle commands.
 
 ## What it does
@@ -90,7 +90,7 @@ Each authoring skill can still run independently when the framing or verificatio
 | `.github/skills/corpus-qa-sweep/SKILL.md`       | Corpus-scale QA sweep — instrument the real output boundary, assert machine-checkable invariants across every item, then triage each flag. Pairs with `render-verify`.           |
 | `.github/skills/print-svg-style-guide/SKILL.md` | Print-quality SVG style guide — canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four structural composition idioms.                    |
 | `.github/skills/figure-generator/SKILL.md`      | Deterministic figure-generator discipline — hand-authored `.mjs` pattern, `data-sha256` audit hash, dataset-first + contract tests, dataset inversion, fix-in-generator rule.    |
-| `.github/skills/docs-shell/SKILL.md`            | Docs viewer with a portable adoption guide, standalone-report navigation, and a read-only capability audit.                                                    |
+| `.github/skills/docs-shell/SKILL.md`            | Docs viewer with a portable adoption guide, standalone-report navigation, and a read-only capability audit.                                                                      |
 | `.github/skills/replicate-imagery/SKILL.md`     | Route AI image generation and editing to Replicate (FLUX, Ideogram, Recraft, imagen) via the bundled `replicate` MCP server. Delegates prompting to Replicate's upstream skills. |
 | `.github/skills/svg-banner/SKILL.md`            | 1200×320 SVG brand banner generator with pluggable brand config (default: Alex ACT). For READMEs, plans, notes, release artifacts. Absorbed from `Alex_ACT_Steward` 2026-07-30.  |
 | `install-visual-companions` skill               | Consent-gated installer for nine independently maintained visual-workflow companion plugins; verifies marketplace identity before offering each install.                         |
