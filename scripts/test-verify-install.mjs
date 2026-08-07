@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 
 import { resolveWindowsCommand, spawnCommand } from './process-launch.mjs';
 import { evaluateCompatibility, parseCatalogEntries } from './verify-contract.mjs';
+import './test-docs-shell-starter.mjs';
+import './test-docs-shell-audit.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -85,7 +87,7 @@ test('catalog parsing fails on missing or malformed requested output', () => {
   ]), [{ backend: 'vegalite', count: 1, chartTypes: ['Bar Chart'] }]);
 });
 
-test('manifest copies current discovery metadata and every starter dependency', () => {
+test('manifest copies current discovery metadata and report dependencies', () => {
   const manifest = JSON.parse(read('manifest.json'));
   const skills = new Map(manifest.assets.skills.map((skill) => [skill.name, skill]));
   for (const name of ['docs-shell', 'svg-banner']) {
@@ -94,6 +96,10 @@ test('manifest copies current discovery metadata and every starter dependency', 
   }
   assert(skills.get('docs-shell').bundled_resources.some((resource) =>
     resource.path === '.github/skills/docs-shell/starter/example-report.html'));
+  assert(skills.get('docs-shell').bundled_resources.some((resource) =>
+    resource.path === '.github/skills/docs-shell/starter/assets/report-topnav.js'));
+  assert.match(read('.github/skills/docs-shell/starter/example-report.html'),
+    /<script src="assets\/report-topnav\.js" defer><\/script>/);
   const flint = manifest.assets.mcp.servers.find((server) => server.server_name === 'flint');
   assert.match(flint.notes, /0\.4\.1/);
   assert.doesNotMatch(flint.notes, /0\.3\.0/);

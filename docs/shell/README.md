@@ -10,18 +10,36 @@ Technical reference for the single-page HTML wrapper that renders a repository's
 
 ## Overview
 
-The shell is a two-file pattern at repo root:
+The shell is a two-file pattern at one stable shell root. Repository root is recommended; a stable subfolder such as `docs/` is supported:
 
 | File | Role |
 |---|---|
-| [`starter/index.html`](../../.github/skills/docs-shell/starter/index.html) | The shell itself. Single HTML file with inline CSS and JS. Loads marked, DOMPurify, Mermaid, and highlight.js from pinned CDN assets with SHA-384 integrity checks. Adopters copy it to their repo root. |
+| [`starter/ADOPTION.md`](../../.github/skills/docs-shell/starter/ADOPTION.md) | Portable fresh-adoption and upgrade guide. Keep it with detached starter copies so origin, path, audit, and rollback pitfalls remain visible. |
+| [`starter/index.html`](../../.github/skills/docs-shell/starter/index.html) | The shell itself. Single HTML file with inline CSS and JS. Loads marked, DOMPurify, Mermaid, and highlight.js from pinned CDN assets with SHA-384 integrity checks. Adopters copy it to their chosen shell root. |
 | [`starter/manifest.json`](../../.github/skills/docs-shell/starter/manifest.json) | The hand-edited source of truth. Declares brand, theme, areas, docs, and sources. Zero build step. |
+| [`starter/about.md`](../../.github/skills/docs-shell/starter/about.md) | Working Markdown content with alerts, Mermaid, code, and navigation examples. |
+| [`starter/example-report.html`](../../.github/skills/docs-shell/starter/example-report.html) | Standalone report demonstrating the direct-link HTML route. |
+| [`starter/assets/report-topnav.js`](../../.github/skills/docs-shell/starter/assets/report-topnav.js) | Optional persistent shell navigation for standalone reports. It derives the root from its own URL, preserves report spacing, tracks resize, and disappears with its spacer in print. |
 
 The shell reads `manifest.json`, resolves which area + doc is active from the URL, fetches every source `.md` file that doc declares, strips per-file boilerplate, concatenates with a blank line between, runs marked with a small set of custom decorators, and renders under a sticky two-line topnav plus sidebar table of contents. Markdown stays authoritative. GitHub renders the same source files independently.
 
-## Current state (2026-08-01)
+## Current state (2026-08-07)
 
-The pattern is **one shell at repo root** — `index.html` and `manifest.json` at the top of a repo. The [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core) repo is the reference implementation; adopters include [CX-Vitals](https://github.com/fabioc-aloha/CX-Vitals) and [QuestionnaireFlow](https://github.com/fabioc-aloha/QuestionnaireFlow). Before 2026-07-28, an earlier iteration used three per-folder shells with a build script; that pattern was retired in favor of the single-root pattern. The starter at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) ships the single-root pattern for adopters.
+The pattern is **one stable shell root** with adjacent `index.html` and `manifest.json`. Repository root is recommended because links and deployment are simplest there. A deliberate subfolder such as `docs/` is also supported: source and report paths remain relative to that manifest. Before 2026-07-28, an earlier iteration generated multiple folder shells and manifests from one repository; that multi-root pattern was retired. The starter at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) is location-neutral.
+
+## Audit an adopter before upgrade
+
+Use the bundled read-only audit to compare capabilities rather than bytes. The command discovers the adjacent manifest, validates required security, responsive, source, and local-resource invariants, reports optional capabilities, and lists unknown manifest fields as local extensions. It never replaces the shell or rewrites the manifest.
+
+```powershell
+# Repository-root shell
+node .github/skills/docs-shell/scripts/audit-docs-shell.mjs --shell index.html --project-root .
+
+# Stable docs/ shell, structured output
+node .github/skills/docs-shell/scripts/audit-docs-shell.mjs --shell docs/index.html --project-root . --json
+```
+
+Exit `0` means current required capabilities. Exit `2` means one or more required invariants failed. Exit `1` means invalid input. Optional capability differences and extension fields do not change the exit code. After audit, classify extensions, preview the canonical replacement, reapply only needed local behavior, and sweep every manifest route over the origins readers actually use.
 
 ## Reading-surface policy
 
@@ -34,7 +52,7 @@ The shell intentionally does not render raw Markdown controls. The `.md` files r
 - A keyboard-visible skip link moves focus to the rendered article. Active area and document links carry aria-current="page"; empty verification metadata is hidden.
 - Copy buttons remain visible on keyboard focus and touch-first devices. prefers-reduced-motion disables the pulse, smooth scrolling, and transitions.
 - Hero sizes use fixed responsive breakpoints rather than viewport-scaled type, and letter spacing remains zero.
-- Long inline code and content can wrap without widening the page; fenced code blocks retain horizontal scrolling.
+- Long inline code and content can wrap without widening the page. The parent article clips wide descendants at the page boundary while tables, fenced code, and Mermaid frames retain their own horizontal scrollers.
 
 ## URL scheme
 
@@ -143,7 +161,7 @@ When every entry in a doc's `sources[]` array ends in `.html` (case-insensitive)
 - The topnav still shows the doc's `label` and applies active-state styling on the currently loaded doc; only `href` and the bootstrap flow change.
 - Optional doc fields (`icon`, `title`, `verified`, `hero`) survive in the manifest but are not rendered by the shell (the standalone HTML owns its own hero). Keep them for consistency and for future indexing or search use.
 
-A working demo ships in the starter kit at `.github/skills/docs-shell/starter/example-report.html`. Absorbed into the canonical starter on 2026-07-29.
+A working demo ships in the starter kit at `.github/skills/docs-shell/starter/example-report.html`. It loads `assets/report-topnav.js` so the shell's manifest-ordered navigation remains available without wrapping the report body. The fixed navigator uses an in-flow measured spacer, preserving the report's own top padding; both navigator and spacer disappear in print. On narrow screens its area and document rows use the same horizontal-scroll policy as the shell.
 
 ### Hero
 
@@ -391,30 +409,24 @@ Four features have CSS in place but no default renderer. Adopters can enable eac
 | Hero description | (already styled) | `hero.description` | Uncomment the description-render line in `renderHero()` and restore the `<p id="hero-subtitle">` element in `<section class="hero">`. |
 | QuickJumps in topnav | `.topnav-jumps a[data-nav]` | `quickJumps[]` (per-area or root) | Uncomment the `topnav-jumps` render block in `renderTopnav()` and add a `<ul id="topnav-jumps">` element under `.topnav-inner`. |
 
-The starter kit renders quickJumps by default (its topnav is single-line with a jumps slot on the right). Adopters who don't want quickJumps can leave the array empty.
+QuickJumps are opt-in. The starter keeps example data, CSS, and anchor wiring, but does not render a quickJump row by default. Enable the reserved slot only when the shortcuts earn extra navigation chrome.
 
 ## Adopting the shell in another project
 
-The starter kit at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) is a ready-to-adopt four-file bundle:
+The starter kit at [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) is a ready-to-adopt bundle:
 
 ```text
 starter/
-├── index.html      Full working shell (equivalent to a reference implementation like Alex_ACT_Steward's root shell).
-├── manifest.json   Minimal single-area, single-doc example with copious $comment fields.
-├── about.md        Working demo content with alerts, mermaid, and code samples.
-└── example-report.html  Standalone report used by the HTML-source route.
+├── ADOPTION.md             Portable fresh-adoption and upgrade safety guide.
+├── index.html              Full working shell (equivalent to a reference implementation like Alex_ACT_Steward's root shell).
+├── manifest.json           Minimal single-area example with copious $comment fields.
+├── about.md                Working demo content with alerts, mermaid, and code samples.
+├── example-report.html     Standalone report used by the HTML-source route.
+└── assets/
+    └── report-topnav.js    Optional persistent shell navigation for standalone reports.
 ```
 
-**To adopt**:
-
-1. Copy the four files into your project's docs folder (or repo root for a top-level shell).
-2. Edit `manifest.json`:
-    - Change `brand.label` to your project name.
-    - Optionally add or remove theme overrides.
-    - Add your own `docs[]` entries with `id`, `label`, `title`, `hero`, `sources`.
-    - Add more `areas[]` entries if you want multi-area two-line-nav.
-3. Optionally drop your own brand icon at `assets/<name>.svg` and update the `<img src="...">` line in `index.html` (or delete the line for text-only brand).
-4. Open `index.html` in Copilot's internal browser, VS Code Simple Browser, or a local HTTP server.
+Start with [`starter/ADOPTION.md`](../../.github/skills/docs-shell/starter/ADOPTION.md). It owns the procedural checklist for fresh adoption and upgrades; this reference owns field and renderer details. Copy the complete starter into one stable shell root, edit `manifest.json`, then validate every route using the origin and viewport sizes readers will actually use.
 
 The `$comment` fields in the starter manifest walk through every non-obvious choice.
 
@@ -451,7 +463,7 @@ Deep-link to a specific doc by appending `?area=<id>&doc=<slug>`.
 ## Cross-links
 
 - [`../../.github/skills/docs-shell/SKILL.md`](../../.github/skills/docs-shell/SKILL.md) — concise skill body invoked by the parent agent
-- [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) — the three-file starter kit adopters copy
+- [`../../.github/skills/docs-shell/starter/`](../../.github/skills/docs-shell/starter/) — the complete starter bundle adopters copy
 - Example brand kit: Alex_ACT_Steward BRAND-KIT.md (private governance record) — the Alex product palette (emerald on deep slate) that the reference implementation uses
 - Related skill (in Alex_ACT_Steward baseline): [big-idea](https://github.com/fabioc-aloha/Alex_ACT_Core) — how to author `hero.subtitle` copy
 - Historical unification notes: Alex_ACT_Steward curation-log (private governance record) — 2026-07-27 folder-shell unification, 2026-07-28 hero-description retirement

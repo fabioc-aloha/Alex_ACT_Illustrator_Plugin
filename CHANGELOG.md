@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a portable docs-shell adoption guide covering fresh copies, extension-preserving upgrades, relative paths, browser-origin differences, standalone reports, security invariants, and validation.
+- Added a read-only docs-shell capability audit for repository-root and stable subfolder adopters. It now validates manifest routing plus relative and root-relative report resources alongside security and responsive invariants, while reporting optional capabilities and local manifest extensions without rewriting files.
+
+### Fixed
+
+- Repaired the docs-shell standalone report navigator so it preserves report spacing, removes navigation offset in print, follows the shell mobile-overflow and manifest-order contracts, and tracks navigation height changes.
+- Declared every starter resource, documented the complete bundle without hardcoded file counts, and added focused plus cross-repository regression coverage.
+- Contained wide rendered descendants at the article boundary while preserving horizontal scrolling on tables, code blocks, and Mermaid frames.
+- Reframed repository root as the recommended shell location while supporting one stable subfolder root with manifest-relative sources.
+- Made the capability audit recognize both HTML attribute quote styles so single-quoted unpinned CDN assets cannot pass unnoticed.
+
 ## [1.0.1] - 2026-08-06
 
 ### Fixed

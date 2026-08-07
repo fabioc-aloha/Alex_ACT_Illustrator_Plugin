@@ -25,7 +25,7 @@ Five authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and
 1. **Flint — statistical chart authoring.** `chart-big-idea` → `chart-vocabulary` (7-goal catalog + CSAR loop) → `flint-chart` (§0 selection router + `ChartAssemblyInput` spec) → render via `flint-chart-mcp` (Vega-Lite / ECharts / Chart.js, local) → `render-verify`. Data never leaves the machine. Entry point: `/alex-act-illustrator-plugin render-chart`.
 2. **Print figures — hand-authored SVG for books and reports.** `chart-big-idea` (Step 0.5 earn-a-figure gate) → `print-svg-style-guide` (canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four composition idioms) → `figure-generator` (`.mjs` generator + `data/<slug>.json` + `data-sha256` audit hash + contract tests + dataset inversion). Book-tested across 53 figures in *The Defensible Decision* (Fabio Correa).
 3. **Replicate — AI image generation.** `chart-big-idea` → `replicate-imagery` (model routing + brand alignment + cost awareness) → upstream `replicate/skills` for prompting → `replicate` MCP calls the Replicate HTTP API. FLUX / Ideogram / Recraft / Imagen + editing / inpaint / upscale / background-removal. Requires `REPLICATE_API_TOKEN`; nothing spins up until you use it.
-4. **Shell — browsable / gallery / catalog surface.** `docs-shell` skill + `starter/` bundle (index.html + manifest.json + about.md) render concatenated markdown as a single-page HTML shell with two-line topnav, sticky page header, and sidebar TOC. HTML-source docs (pre-built Flint reports, exported dashboards) bypass the shell wrapper.
+4. **Shell — browsable / gallery / catalog surface.** `docs-shell` skill + `starter/` bundle render concatenated markdown as a single-page HTML shell with two-line topnav, sticky page header, and sidebar TOC. Repository-root and stable subfolder shells share the same relative-path contract. HTML-source docs can retain manifest-driven navigation, and the bundled read-only audit reports missing capabilities without erasing local extensions.
 5. **Banner — deterministic brand identity.** `svg-banner` reads the active palette and brand structure, then generates a reproducible 1200×320 SVG for READMEs, plans, notes, and release artifacts. Entry point: `/alex-act-illustrator-plugin banner`.
 
 **Install composition** is adjacent rather than a sixth authoring area: `install-visual-companions` offers the visual runtime shelf per plugin, with explicit consent and marketplace verification before installation.
@@ -90,7 +90,7 @@ Each authoring skill can still run independently when the framing or verificatio
 | `.github/skills/corpus-qa-sweep/SKILL.md`       | Corpus-scale QA sweep — instrument the real output boundary, assert machine-checkable invariants across every item, then triage each flag. Pairs with `render-verify`.           |
 | `.github/skills/print-svg-style-guide/SKILL.md` | Print-quality SVG style guide — canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four structural composition idioms.                    |
 | `.github/skills/figure-generator/SKILL.md`      | Deterministic figure-generator discipline — hand-authored `.mjs` pattern, `data-sha256` audit hash, dataset-first + contract tests, dataset inversion, fix-in-generator rule.    |
-| `.github/skills/docs-shell/SKILL.md`            | Single-page HTML shell for browsable documentation, chart galleries, and illustration catalogs. HTML-source docs supported for pre-built reports.                                |
+| `.github/skills/docs-shell/SKILL.md`            | Docs viewer with a portable adoption guide, standalone-report navigation, and a read-only capability audit.                                                    |
 | `.github/skills/replicate-imagery/SKILL.md`     | Route AI image generation and editing to Replicate (FLUX, Ideogram, Recraft, imagen) via the bundled `replicate` MCP server. Delegates prompting to Replicate's upstream skills. |
 | `.github/skills/svg-banner/SKILL.md`            | 1200×320 SVG brand banner generator with pluggable brand config (default: Alex ACT). For READMEs, plans, notes, release artifacts. Absorbed from `Alex_ACT_Steward` 2026-07-30.  |
 | `install-visual-companions` skill               | Consent-gated installer for nine independently maintained visual-workflow companion plugins; verifies marketplace identity before offering each install.                         |
@@ -515,7 +515,7 @@ Agent: [loads chart-big-idea → Step 0.5 (does the chapter earn an illustration
 ```text
 User: Set up a single-page HTML shell to browse all 53 figures in the book with
       per-chapter navigation.
-Agent: [loads docs-shell → copies starter/ bundle (index.html + manifest.json + about.md)
+Agent: [loads docs-shell → copies the complete starter/ bundle
         to workspace root → authors manifest.json declaring areas + docs →
         authors per-chapter markdown source files that reference the figures]
 ```

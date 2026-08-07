@@ -81,4 +81,6 @@ flowchart TD
 
 ## Next steps
 
+Use the bundled [adoption guide](ADOPTION.md) for fresh-copy, upgrade, path, origin, and validation checklists.
+
 Full field-by-field reference for the manifest schema, theme system, path rewriting, optional features, and troubleshooting lives at the [docs-shell reference](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/blob/main/docs/shell/README.md).

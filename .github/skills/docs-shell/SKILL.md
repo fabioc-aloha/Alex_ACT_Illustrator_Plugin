@@ -1,7 +1,7 @@
 ---
 name: docs-shell
-description: "The single-page HTML shell (index.html + manifest.json at repo root) that renders concatenated markdown as browsable, GitHub-styled documentation with a two-line topnav, per-doc emoji icons, sticky page header, and sidebar TOC. Use when the user says 'shell', 'add a doc', 'add a chapter', 'landing page', 'sidebar', 'manifest', 'hero', 'nav-strip', 'shell theme', 'color scheme', 'polish the pages', 'render preview', 'add an area', or when authoring/editing content that appears in the root manifest. Also invoke when the shell misrenders (raw frontmatter visible, links broken across folders, missing hero, doc button not switching content, sticky header overlap)."
-lastReviewed: 2026-08-01
+description: "The single-page HTML shell (index.html + manifest.json at a repository root or stable subfolder) that renders concatenated markdown as browsable, GitHub-styled documentation with a two-line topnav, per-doc emoji icons, sticky page header, and sidebar TOC. Use when the user says 'shell', 'add a doc', 'add a chapter', 'landing page', 'sidebar', 'manifest', 'hero', 'nav-strip', 'shell theme', 'color scheme', 'polish the pages', 'render preview', 'add an area', or when authoring/editing content that appears in the root manifest. Also invoke when the shell misrenders (raw frontmatter visible, links broken across folders, missing hero, doc button not switching content, sticky header overlap)."
+lastReviewed: 2026-08-07
 ---
 
 # docs-shell skill
@@ -27,7 +27,7 @@ Do NOT fire when:
 
 ## The 90% mental model
 
-**One shell at repo root.** `index.html` and `manifest.json` are the two files. An older per-folder pattern (three shells + three manifests + build script) was retired 2026-07-28.
+**One stable shell root.** Repository root is recommended because links and deployment are simplest there. A stable subfolder such as `docs/` is also supported: keep `index.html` and `manifest.json` together and resolve every source from that folder. The retired pattern was multiple generated folder shells, not the use of one intentional subfolder shell.
 
 **Manifest drives everything.** The shell reads `manifest.json` on load and renders whatever it declares. No filesystem discovery. Adding a doc = one JSON entry, no HTML changes.
 
@@ -74,7 +74,7 @@ Per-doc `icon` is an optional single emoji shown in the sticky page-title header
 
 Per-doc `hero.subtitle` is the Big Idea (one-sentence thesis). `hero.description` is optional metadata preserved in the manifest but not rendered by default since 2026-07-28.
 
-Source paths are relative to the manifest (repo root for the root shell).
+Source paths are relative to the manifest, whether that manifest lives at repository root or in a stable subfolder.
 
 Full field-by-field walkthrough (types, required flags, purpose): [`../../../docs/shell/README.md § Manifest schema`](../../../docs/shell/README.md#manifest-schema).
 
@@ -198,6 +198,19 @@ and otherwise stops playback.
 
 ## Common tasks
 
+### Audit an existing adopter before upgrade
+
+Run the bundled capability audit before replacing a customized shell. It reads the shell, adjacent manifest, declared sources, and local HTML dependencies; it never rewrites them. Pass `--project-root` when the shell lives in a stable subfolder so the report labels its location correctly.
+
+```powershell
+node .github/skills/docs-shell/scripts/audit-docs-shell.mjs --shell index.html --project-root .
+node .github/skills/docs-shell/scripts/audit-docs-shell.mjs --shell docs/index.html --project-root . --json
+```
+
+Exit `0` means every required invariant passed. Exit `2` means the shell needs an upgrade and the report names each failed invariant. Exit `1` means the input or adjacent manifest is invalid. Optional capabilities and unknown manifest fields are informational; treat the latter as local extensions to preserve, not defects to erase.
+
+Upgrade in five steps: audit, classify local extensions, preview the replacement, reapply only extensions still needed, then sweep every manifest route at desktop and mobile widths. A byte comparison alone is insufficient because valid adopters extend the manifest and renderer.
+
 ### Add a chapter to an existing doc
 
 1. Create the `.md` file (path relative to repo root).
@@ -245,7 +258,8 @@ For a doc whose `sources[]` are all `.html` files, the shell links the topnav bu
    }
    ```
 
-3. Reload. Clicking the topnav button loads the HTML directly; the browser back button returns to whatever came before (the shell uses `location.replace` when redirecting, so the shell URL doesn't stack in history).
+3. To keep shell navigation visible inside the standalone report, load `assets/report-topnav.js` with `defer`. The script derives the shell root from its own URL, renders manifest-ordered navigation, preserves the report's spacing, and removes its spacer for print.
+4. Reload. Clicking the topnav button loads the HTML directly; the browser back button returns to whatever came before (the shell uses `location.replace` when redirecting, so the shell URL doesn't stack in history).
 
 **Rule**: `sources[]` must be non-empty AND every entry must end in `.html` (case-insensitive) for direct-link behavior to fire. Mixed sources (`.md` + `.html`) fall through to the Markdown render pass, which would try to concat the HTML as text; keep the two shapes in separate doc entries.
 
@@ -257,7 +271,7 @@ Full rationale + design notes: `docs/shell/README.md` § HTML-source docs.
 | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Editing the shell HTML to add a doc            | Docs are declared in `manifest.json`. HTML changes belong in the shell only when adding a new render behavior (chips, actions, brand icon).                                  |
 | Generating a static HTML file for a doc        | The shell IS the renderer. Just add the source `.md` to a `docs[]` entry's `sources[]`.                                                                                      |
-| Copying `manifest.json` into a subfolder       | The root manifest is the single source of truth. Sub-manifests were retired 2026-07-28.                                                                                      |
+| Splitting one shell across multiple roots     | Keep one intentional shell root. Repository root is recommended; a stable subfolder is supported when its `index.html`, manifest, sources, and report assets stay relative to that base.                                                                                      |
 | Duplicating the shell's CSS into a `.md` file  | Content docs are semantic markdown. The shell owns the visual layer.                                                                                                         |
 | Rendering hero copy that reads as AI marketing | `hero.subtitle` is the Big Idea. If "important" or "central" substitutes without loss, the subtitle is decorative.                                                           |
 | Adding an emoji icon that reads as decoration  | The `icon` field is optional. Empty or absent collapses cleanly. Use it when the icon reinforces the doc's identity (a shopping cart for Mall Plan).                         |
@@ -283,16 +297,20 @@ See [`../../../docs/shell/README.md § Optional features`](../../../docs/shell/R
 
 ## Starter kit for adopters
 
-Three files at [`starter/`](starter/):
+The complete adopter bundle lives at [`starter/`](starter/):
 
 ```text
 starter/
-├── index.html      Full working shell with quickJumps rendered by default, built-in read-aloud, and the brand-icon <img> left commented out for adopters to enable.
-├── manifest.json   Minimal single-area, single-doc example. Every non-obvious choice has an inline $comment.
-└── about.md        Working demo content with alerts, mermaid, syntax-highlighted code samples, and quickJump examples.
+├── ADOPTION.md             Portable fresh-adoption and upgrade safety guide.
+├── index.html              Full working shell with quickJump CSS and wiring retained as an opt-in, built-in read-aloud, and the brand-icon <img> left commented out for adopters to enable.
+├── manifest.json           Minimal single-area example. Every non-obvious choice has an inline $comment.
+├── about.md                Working demo content with alerts, mermaid, syntax-highlighted code samples, and quickJump examples.
+├── example-report.html     Standalone HTML report demonstrating the direct-link route.
+└── assets/
+    └── report-topnav.js    Optional persistent shell navigation for standalone reports.
 ```
 
-To adopt: copy the three files into the destination project, edit `manifest.json` (change `brand.label`, add or remove theme overrides, add `docs[]` entries), and open `index.html` in a browser. Full walkthrough at [`../../../docs/shell/README.md § Adopting the shell in another project`](../../../docs/shell/README.md#adopting-the-shell-in-another-project).
+To adopt: start with [`starter/ADOPTION.md`](starter/ADOPTION.md), choose one stable shell root, copy the complete starter bundle there, edit `manifest.json` (change `brand.label`, add or remove theme overrides, add `docs[]` entries), and open `index.html` in a browser. Repository root is recommended; `docs/` is supported when every manifest source is authored relative to it. Full walkthrough at [`../../../docs/shell/README.md § Adopting the shell in another project`](../../../docs/shell/README.md#adopting-the-shell-in-another-project).
 
 ## Falsifiability
 
@@ -316,6 +334,7 @@ Revise this skill by **2026-10-29** (90 days) or sooner if any of the following 
 - A chunk sized by the duration budget is cut off mid-sentence on a real host despite the keep-alive pump, or the pump itself introduces an audible artifact (drop `CHUNK_SECONDS` and re-measure rather than reverting to a fixed count).
 - Click-to-seek fires on a click the reader meant as a link, a copy, or a selection, or a listener cannot find how to jump because the pointer cursor is the only affordance.
 - A corpus sweep over the shell's own docs reports a spoken chunk with no letters or digits, a chunk that is only a placeholder word, or a skip-marker count that disagrees with the number of skippable elements in the page.
+- Two adopter audits classify intentional manifest extensions as required failures, or the audit mutates any file it reads.
 
 ## Origin
 

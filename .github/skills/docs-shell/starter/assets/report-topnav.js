@@ -1,9 +1,9 @@
-// Big Idea report topnav — injects the shell's primary navigation into
+// Docs-shell report topnav — injects the shell's primary navigation into
 // standalone HTML reports so navigation persists across the shell → report boundary.
-// Loaded via <script src="../../assets/report-topnav.js" defer></script> from any
-// report at reports/YYYY-MM-DD-slug/report.html. Manifest URL and shell root are
-// derived from the script's own src, so the same file works from any depth.
-// Fails silently if manifest.json can't be fetched (report still renders standalone).
+// Manifest URL and shell root are derived from the script's own src, so the same
+// asset works from any report depth when its script src points back to this file.
+// Fails soft if manifest.json cannot be fetched: the report still renders and a
+// console warning preserves the diagnosis.
 
 (function () {
   'use strict';
@@ -26,8 +26,8 @@
     nav.report-topnav {
       /* position: fixed + full viewport width so the nav spans the top regardless of
          the adopter report's body constraints (max-width, padding, centered layout).
-         The render function below measures the nav and sets body { padding-top } so
-         content is not overlapped. */
+         The render function below measures the nav and sizes an in-flow spacer so
+         content is not overlapped and the report's own body padding stays intact. */
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       background: #0d1117; color: #f0f6fc;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -64,11 +64,6 @@
       display: flex; align-items: center; gap: 0.5rem; min-width: 0; flex-wrap: wrap;
     }
     nav.report-topnav .topnav-areas a { font-weight: 600; }
-    /* Secondary areas (internal / analyst surfaces) get pushed after primary areas and dimmed —
-       matches the shell's nav.topnav rules for visual consistency across the boundary. */
-    nav.report-topnav .topnav-areas li[data-secondary] { order: 10; }
-    nav.report-topnav .topnav-areas li[data-secondary] a { color: #6b7280; font-weight: 500; }
-    nav.report-topnav .topnav-areas li[data-secondary] a:hover { color: #f0f6fc; }
     nav.report-topnav .topnav-sub .topnav-docs a { font-size: 0.78125rem; }
     nav.report-topnav a[data-nav] {
       color: #9198a1; text-decoration: none;
@@ -87,12 +82,29 @@
     }
     @media (max-width: 700px) {
       nav.report-topnav { padding: 0.4rem 0.75rem; }
-      nav.report-topnav .topnav-inner { gap: 0.5rem; }
+      nav.report-topnav .topnav-inner { gap: 0.5rem; flex-wrap: nowrap; }
       nav.report-topnav .topnav-brand {
         flex: 0 0 auto; margin-right: 0; padding-right: 0.65rem;
       }
+      nav.report-topnav .topnav-areas,
+      nav.report-topnav .topnav-docs {
+        min-width: 0;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      nav.report-topnav .topnav-areas { flex: 1 1 auto; }
+      nav.report-topnav .topnav-docs { width: 100%; }
+      nav.report-topnav .topnav-areas::-webkit-scrollbar,
+      nav.report-topnav .topnav-docs::-webkit-scrollbar { display: none; }
+      nav.report-topnav .topnav-sub { flex-wrap: nowrap; }
     }
-    @media print { nav.report-topnav { display: none; } }
+    @media print {
+      nav.report-topnav,
+      .report-topnav-spacer { display: none; }
+    }
   `;
 
   function escapeHtml(s) {
@@ -123,25 +135,11 @@
     const brandLabel = (manifest.brand && manifest.brand.label) || 'Docs';
     const shellIndex = shellRoot + 'index.html';
 
-    // Match the shell's area ordering: primary areas first (rank by site.deployedAreas index),
-    // secondary areas last. Keeps the row-1 sequence identical across shell <-> report navigation.
-    const primaryOrder = (manifest.site && Array.isArray(manifest.site.deployedAreas))
-      ? manifest.site.deployedAreas : [];
-    const primaryRank = (id) => {
-      const idx = primaryOrder.indexOf(id);
-      return idx === -1 ? primaryOrder.length : idx;
-    };
-    const orderedAreas = manifest.areas.slice().sort((a, b) => {
-      if (!!a.secondary !== !!b.secondary) return a.secondary ? 1 : -1;
-      if (!a.secondary && !b.secondary) return primaryRank(a.id) - primaryRank(b.id);
-      return 0;
-    });
-
-    const areasHtml = orderedAreas.map(a => {
+    // The generic shell renders manifest order. Reports must preserve that exact order.
+    const areasHtml = manifest.areas.map(a => {
       const active = a.id === currentArea.id ? ' class="active" aria-current="page"' : '';
       const href = `${shellIndex}?area=${encodeURIComponent(a.id)}`;
-      const secondary = a.secondary ? ' data-secondary' : '';
-      return `<li${secondary}><a data-nav${active} href="${escapeHtml(href)}">${escapeHtml(a.label)}</a></li>`;
+      return `<li><a data-nav${active} href="${escapeHtml(href)}">${escapeHtml(a.label)}</a></li>`;
     }).join('');
 
     const docsHtml = (currentArea.docs || []).map(d => {
@@ -175,15 +173,23 @@
     style.textContent = CSS;
     document.head.appendChild(style);
     document.body.insertBefore(nav, document.body.firstChild);
+    const spacer = document.createElement('div');
+    spacer.className = 'report-topnav-spacer';
+    spacer.setAttribute('aria-hidden', 'true');
+    nav.insertAdjacentElement('afterend', spacer);
+
+    const updateSpacer = () => {
+      spacer.style.height = `${Math.ceil(nav.getBoundingClientRect().height)}px`;
+    };
     requestAnimationFrame(() => {
-      // Fixed nav is out of flow; push body content down by its measured height so
-      // the adopter report's own top padding survives as breathing room below the nav.
-      const navH = Math.ceil(nav.getBoundingClientRect().height);
-      const existing = parseFloat(getComputedStyle(document.body).paddingTop) || 0;
-      if (navH > existing) document.body.style.paddingTop = navH + 'px';
+      // Fixed nav is out of flow. The spacer preserves the report's own body padding
+      // and is hidden with the nav in print.
+      updateSpacer();
       nav.querySelector('.topnav-areas .active')?.scrollIntoView({ block: 'nearest', inline: 'center' });
       nav.querySelector('.topnav-docs .active')?.scrollIntoView({ block: 'nearest', inline: 'center' });
     });
+    window.addEventListener('resize', updateSpacer);
+    if ('ResizeObserver' in window) new ResizeObserver(updateSpacer).observe(nav);
   }
 
   fetch(manifestUrl)

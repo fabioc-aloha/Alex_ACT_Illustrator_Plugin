@@ -1,5 +1,7 @@
 {
-  "$comment": "Starter manifest for the docs-shell pattern. Every non-obvious choice has an inline $comment field. `$comment` is not consumed by the shell; it exists as a JSON-native way to embed inline docs. Delete these comments once you understand the schema. Full field-by-field reference: docs/shell/README.md § Manifest schema.",
+  "$comment": "Starter manifest for the docs-shell pattern. Start with ADOPTION.md. Every non-obvious choice has an inline $comment field. `$comment` is not consumed by the shell; it exists as a JSON-native way to embed inline docs. Delete these comments once you understand the schema. Full field-by-field reference: docs/shell/README.md § Manifest schema.",
+
+  "$comment_paths": "All sources[] paths are relative to this manifest.json. For a repository-root shell use docs/overview.md; for a shell rooted at docs/ use overview.md. Do not prefix the shell folder twice.",
 
   "brand": {
     "$comment": "Brand slot on line 1 of the two-line topnav. `label` appears as text; `href` is where a click on the brand goes (typically your top-level README or index.html). The starter's index.html also has a commented-out <img class='topnav-brand-icon'> line — uncomment it and drop your own SVG at assets/<name>.svg to add a brand icon alongside the label.",
@@ -91,7 +93,7 @@
 
       "quickJumps": [
         {
-          "$comment": "OPTIONAL PER-AREA QUICKJUMPS — heading-jump shortcuts. The starter's index.html renders these in the topnav-jumps slot on the right of line 1. Some root shell implementations (e.g., Alex_ACT_Steward) do NOT render quickJumps (keeping line 1 minimal); adopters who want them get them by default in the starter. Two shapes below.",
+          "$comment": "OPTIONAL PER-AREA QUICKJUMPS — heading-jump shortcuts. The starter retains the CSS and anchor wiring but does not render a quickJump row by default; line 1 stays areas-only and line 2 stays documents-only. Adopters may enable the reserved topnav-jumps slot when the shortcuts earn the extra chrome. Two shapes below.",
 
           "$comment_shape": "SHAPE 1 — internal heading jump. `label` is the button text. `doc` is the id of an entry in this area's docs[]. `match` is a case-insensitive startsWith prefix that matches any H1/H2/H3 in that doc; the first match wins.",
           "label": "Example section",

@@ -66,11 +66,16 @@
         "name": "docs-shell",
         "path": ".github/skills/docs-shell/SKILL.md",
         "install_to": ".github/skills/local/docs-shell/SKILL.md",
-        "role": "documentation viewer / gallery renderer — the single-page HTML shell (index.html + manifest.json at repo root) that renders concatenated markdown as browsable docs with two-line topnav, per-doc emoji icons, sticky page header, and sidebar TOC. Not chart-specific; serves as a natural preview surface for any authored visual (chart galleries, illustration catalogs, generated report indices). Ported from Alex_ACT_Steward on 2026-07-29; this plugin is now the canonical source-of-truth.",
+        "role": "documentation viewer / gallery renderer — the single-page HTML shell (index.html + manifest.json at one stable shell root) that renders concatenated markdown as browsable docs with two-line topnav, per-doc emoji icons, sticky page header, and sidebar TOC. Not chart-specific; serves as a natural preview surface for any authored visual (chart galleries, illustration catalogs, generated report indices). Ported from Alex_ACT_Steward on 2026-07-29; this plugin is now the canonical source-of-truth.",
         "frontmatter": {
-          "description": "The single-page HTML shell (index.html + manifest.json at repo root) that renders concatenated markdown as browsable, GitHub-styled documentation with a two-line topnav, per-doc emoji icons, sticky page header, and sidebar TOC. Use when the user says 'shell', 'add a doc', 'add a chapter', 'landing page', 'sidebar', 'manifest', 'hero', 'nav-strip', 'shell theme', 'color scheme', 'polish the pages', 'render preview', 'add an area', or when authoring/editing content that appears in the root manifest. Also invoke when the shell misrenders (raw frontmatter visible, links broken across folders, missing hero, doc button not switching content, sticky header overlap)."
+          "description": "The single-page HTML shell (index.html + manifest.json at a repository root or stable subfolder) that renders concatenated markdown as browsable, GitHub-styled documentation with a two-line topnav, per-doc emoji icons, sticky page header, and sidebar TOC. Use when the user says 'shell', 'add a doc', 'add a chapter', 'landing page', 'sidebar', 'manifest', 'hero', 'nav-strip', 'shell theme', 'color scheme', 'polish the pages', 'render preview', 'add an area', or when authoring/editing content that appears in the root manifest. Also invoke when the shell misrenders (raw frontmatter visible, links broken across folders, missing hero, doc button not switching content, sticky header overlap)."
         },
         "bundled_resources": [
+          {
+            "path": ".github/skills/docs-shell/starter/ADOPTION.md",
+            "install_to": ".github/skills/local/docs-shell/starter/ADOPTION.md",
+            "role": "portable fresh-adoption and upgrade safety guide"
+          },
           {
             "path": ".github/skills/docs-shell/starter/index.html",
             "install_to": ".github/skills/local/docs-shell/starter/index.html",
@@ -90,6 +95,16 @@
             "path": ".github/skills/docs-shell/starter/example-report.html",
             "install_to": ".github/skills/local/docs-shell/starter/example-report.html",
             "role": "standalone HTML report used by the starter manifest's direct-link example"
+          },
+          {
+            "path": ".github/skills/docs-shell/starter/assets/report-topnav.js",
+            "install_to": ".github/skills/local/docs-shell/starter/assets/report-topnav.js",
+            "role": "optional persistent shell navigation for standalone HTML reports"
+          },
+          {
+            "path": ".github/skills/docs-shell/scripts/audit-docs-shell.mjs",
+            "install_to": ".github/skills/local/docs-shell/scripts/audit-docs-shell.mjs",
+            "role": "read-only capability audit for existing root or subfolder shell adopters"
           }
         ]
       },
@@ -274,7 +289,7 @@
     ],
     "shell": [
       "user asks to set up a browsable / gallery / catalog surface",
-      "load docs-shell skill → copy starter/ bundle (index.html + manifest.json + about.md) to workspace root or configured docs folder",
+      "load docs-shell skill → copy the complete starter/ bundle to workspace root or configured docs folder",
       "author manifest.json declaring areas + docs",
       "author markdown source files; shell renders concatenated markdown as a single-page HTML shell with two-line topnav, sticky page header, sidebar TOC",
       "HTML-source docs (pre-built Flint reports, exported dashboards) bypass the shell wrapper"
