@@ -76,6 +76,10 @@
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css" integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous">
   <style>
+    @view-transition {
+      navigation: auto;
+    }
+
     :root {
       --fg: #1f2328;
       --fg-muted: #59636e;
@@ -196,6 +200,7 @@
       position: sticky;
       top: 0;
       z-index: 30;
+      view-transition-name: topnav;
       background: #0d1117;
       color: #f0f6fc;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -947,6 +952,11 @@
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
+      ::view-transition-group(*),
+      ::view-transition-old(*),
+      ::view-transition-new(*) {
+        animation: none !important;
+      }
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
@@ -1113,7 +1123,7 @@
     </div>
     <div class="topnav-sub">
       <ul class="topnav-list topnav-docs" id="topnav-docs" aria-label="Documents"></ul>
-      <div class="topnav-listen" id="topnav-listen" hidden>
+      <div class="topnav-listen" id="topnav-listen">
         <button type="button" class="listen-btn" id="listen-toggle" title="Read this page aloud (press L)">
           <span aria-hidden="true" id="listen-icon">&#x25B6;</span><span id="listen-label">Listen</span>
         </button>
@@ -1156,6 +1166,122 @@
       </div>
     </div>
   </section>
+
+  <script>
+    /* Synchronous topnav / page-title / hero pre-hydrate.
+       MPA cross-document view transitions (@view-transition { navigation: auto }) snapshot the
+       incoming document at first paint. The async loader below fetches manifest.json before it
+       can populate the nav, title, and hero, so the incoming snapshot would otherwise show them
+       all empty — producing a disappear/redraw flash on every navigation. This block reads a
+       sessionStorage cache of the manifest (written by loadManifest() after fetch) and paints
+       those regions synchronously, so the view-transition captures populated content that
+       matches the outgoing page and cross-fades cleanly on the active-item / title change.
+       Placed AFTER </section> above so #page-title and #hero-* have been parsed before this
+       script runs. Cold cache (first navigation of a session) still flashes once; every
+       subsequent navigation is smooth. Kept intentionally dependency-free — no reliance on
+       renderTopnav / renderPageHeader / renderHero or their helpers, so adopters can rewrite
+       those without also rewriting this block. */
+    (function preHydrateShell() {
+      try {
+        var raw = sessionStorage.getItem('docsshell.manifest.v1');
+        if (!raw) return;
+        var m = JSON.parse(raw);
+        if (!m || !Array.isArray(m.areas) || !m.areas.length) return;
+
+        var esc = function (s) {
+          return String(s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        };
+
+        var p = new URLSearchParams(location.search);
+        var areaId = p.get('area');
+        var docId = p.get('doc');
+
+        var area = null, doc = null;
+        if (areaId) area = m.areas.find(function (a) { return a.id === areaId; });
+        if (area && docId) doc = area.docs.find(function (d) { return d.id === docId; });
+        if (area && !doc) doc = area.docs.find(function (d) { return d.id === area.defaultDoc; }) || area.docs[0];
+        if (!area && docId) {
+          for (var i = 0; i < m.areas.length; i++) {
+            var d2 = m.areas[i].docs.find(function (x) { return x.id === docId; });
+            if (d2) { area = m.areas[i]; doc = d2; break; }
+          }
+        }
+        if (!area) {
+          area = m.areas.find(function (a) { return a.id === m.defaultArea; }) || m.areas[0];
+          doc = area.docs.find(function (d) { return d.id === area.defaultDoc; }) || area.docs[0];
+        }
+        if (!area || !doc) return;
+
+        var brand = document.getElementById('topnav-brand');
+        if (brand && m.brand) {
+          var label = brand.querySelector('.topnav-brand-label');
+          if (label && m.brand.label) label.textContent = m.brand.label;
+          if (m.brand.href) brand.href = m.brand.href;
+        }
+
+        var areasEl = document.getElementById('topnav-areas');
+        if (areasEl) {
+          areasEl.innerHTML = m.areas.map(function (a) {
+            return '<li><a href="?area=' + encodeURIComponent(a.id) +
+              '" data-nav data-area="' + esc(a.id) + '"' +
+              (a.id === area.id ? ' class="active" aria-current="page"' : '') + '>' +
+              esc(a.label) + '</a></li>';
+          }).join('');
+        }
+
+        var isHtmlDoc = function (d) {
+          return Boolean(d && Array.isArray(d.sources) && d.sources.length &&
+            d.sources.every(function (s) { return s.toLowerCase().endsWith('.html'); }));
+        };
+        var docsEl = document.getElementById('topnav-docs');
+        if (docsEl) {
+          docsEl.innerHTML = area.docs.map(function (d) {
+            var href = isHtmlDoc(d)
+              ? d.sources[0]
+              : '?area=' + encodeURIComponent(area.id) + '&doc=' + encodeURIComponent(d.id);
+            return '<li><a href="' + esc(href) + '" data-nav data-doc="' + esc(d.id) + '"' +
+              (d.id === doc.id ? ' class="active" aria-current="page"' : '') + '>' +
+              esc(d.label) + '</a></li>';
+          }).join('');
+        }
+
+        var titleText = doc.title || doc.label || '';
+        if (titleText) document.title = titleText;
+        var titleLabel = document.querySelector('#page-title .page-title-label');
+        if (titleLabel) titleLabel.textContent = titleText;
+        var titleIcon = document.getElementById('page-title-icon');
+        if (titleIcon) titleIcon.textContent = doc.icon || '';
+        var verified = document.getElementById('page-verified');
+        if (verified) {
+          verified.textContent = doc.verified || '';
+          verified.hidden = !doc.verified;
+          if (verified.parentElement) verified.parentElement.hidden = !doc.verified;
+        }
+
+        var hero = doc.hero;
+        var heroEl = document.getElementById('hero');
+        if (heroEl) {
+          if (!hero) {
+            heroEl.style.display = 'none';
+          } else {
+            heroEl.style.display = '';
+            var eyebrow = document.getElementById('hero-eyebrow');
+            if (eyebrow) eyebrow.textContent = hero.eyebrow || '';
+            var heroTitle = document.getElementById('hero-title');
+            if (heroTitle) {
+              // Matches renderHero's contract: title inline + optional subtitle span.
+              heroTitle.innerHTML = esc(hero.title || '') +
+                (hero.subtitle ? '<span class="hero-title-sub">' + esc(hero.subtitle) + '</span>' : '');
+            }
+          }
+        }
+      } catch (_) {
+        // Cache corrupt or DOM unavailable — the async loader below will render normally.
+      }
+    })();
+  </script>
 
   <div class="layout">
     <nav class="toc" aria-label="Table of contents">
@@ -1520,7 +1646,10 @@
     async function loadManifest() {
       const res = await fetch('manifest.json');
       if (!res.ok) throw new Error(`HTTP ${res.status} loading manifest.json`);
-      return await res.json();
+      const m = await res.json();
+      // Feeds the sync pre-hydrate above <div class="layout"> on the next same-session navigation.
+      try { sessionStorage.setItem('docsshell.manifest.v1', JSON.stringify(m)); } catch (_) {}
+      return m;
     }
 
     function getCurrentContext(manifest) {

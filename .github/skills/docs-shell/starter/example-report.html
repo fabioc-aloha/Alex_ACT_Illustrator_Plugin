@@ -63,6 +63,7 @@
   }
   a { color: var(--accent-emphasis); }
 </style>
+<script src="assets/report-topnav.js" defer></script>
 </head>
 <body>
   <header class="cover">
@@ -72,7 +73,7 @@
   </header>
   <main>
     <h2>Findings</h2>
-    <p>This standalone HTML file owns its own cover, headings, typography, and styling. The docs-shell doesn't wrap it: clicking the topnav button for this doc navigates the browser directly to <code>example-report.html</code>. A rendered Flint chart, an exported dashboard, or a static tabular report would live here in the same shape.</p>
+    <p>This standalone HTML file owns its own cover, headings, typography, and styling. The docs-shell doesn't wrap the report body — it only injects the topnav at the top (via <code>assets/report-topnav.js</code>) so navigation to other docs stays one click away. Clicking the topnav button for this doc navigates the browser directly to <code>example-report.html</code>. A rendered Flint chart, an exported dashboard, or a static tabular report would live here in the same shape.</p>
     <div class="chart-placeholder">
       <strong>Chart lives here.</strong><br>
       In a real report this is where the Flint-rendered SVG or PNG would sit, or an inline &lt;svg&gt; block, or an interactive chart mount point.
