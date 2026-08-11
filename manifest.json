@@ -1,8 +1,8 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "1.1.0",
-  "shape": "eleven-skill + three-prompt + three-mcp-sidecars + vscode-settings",
-  "description": "Visual-authoring bundle for AI agents. Eleven skills across five authoring areas plus install composition: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures in The Defensible Decision), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports), Banner (1200×320 SVG brand banners with pluggable brand config), and install-visual-companions (consent-gated installation of nine independently maintained visual-workflow plugins). Shared framing and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
+  "version": "2.0.0",
+  "shape": "twelve-skill + four-prompt + three-mcp-sidecars + vscode-settings",
+  "description": "Visual-authoring bundle for AI agents. Twelve skills across five authoring areas plus install composition and runtime setup: Flint, Print figures, Replicate, Shell, Banner, install-visual-companions, and setup-illustrator-runtime. Shared framing and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
   "authors": [
@@ -136,6 +136,27 @@
         }
       },
       {
+        "name": "setup-illustrator-runtime",
+        "path": ".github/skills/setup-illustrator-runtime/SKILL.md",
+        "install_to": ".github/skills/local/setup-illustrator-runtime/SKILL.md",
+        "role": "preview-first provisioning of exact MCP packages through npm's configured registry, followed by offline runtime verification",
+        "frontmatter": {
+          "description": "Audit Illustrator's stable Flint, Replicate, and Playwright MCP versions through npm's configured registry, install exact reviewed pins once, and verify direct Node runtime readiness. Use when checking for MCP updates, after installing or updating Illustrator, or when private runtime state is missing."
+        },
+        "bundled_resources": [
+          {
+            "path": ".github/skills/setup-illustrator-runtime/scripts/provision-runtime.mjs",
+            "install_to": ".github/skills/local/setup-illustrator-runtime/scripts/provision-runtime.mjs",
+            "role": "preview-first configured-registry installer; writes only plugin-private runtime state with --apply"
+          },
+          {
+            "path": ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+            "install_to": ".github/skills/local/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+            "role": "bundled direct Node launcher; resolves plugin-private package state and starts no npm or npx process"
+          }
+        ]
+      },
+      {
         "name": "svg-banner",
         "path": ".github/skills/svg-banner/SKILL.md",
         "install_to": ".github/skills/local/svg-banner/SKILL.md",
@@ -193,6 +214,15 @@
         "frontmatter": {
           "description": "Offer to install nine marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval."
         }
+      },
+      {
+        "name": "setup-illustrator-runtime",
+        "path": ".github/prompts/setup-illustrator-runtime.prompt.md",
+        "install_to": ".github/prompts/local/setup-illustrator-runtime.prompt.md",
+        "role": "namespaced preview-and-provision entry point for offline MCP runtime readiness",
+        "frontmatter": {
+          "description": "Audit Illustrator's stable MCP versions, preview and install exact reviewed pins through npm's configured registry, then verify direct Node launches. Use when checking for updates, after installing or updating Illustrator, or when private runtime state is missing."
+        }
       }
     ],
     "mcp": {
@@ -205,17 +235,17 @@
         {
           "server_name": "flint",
           "required": true,
-          "command": "npx",
-          "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1"],
+          "command": "node",
+          "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "flint"],
           "transport": "stdio",
           "role": "renders the ChartAssemblyInput (Vega-Lite / ECharts / Chart.js)",
-          "notes": "Exact 0.4.1 pin from the configured npm registry. --prefer-offline uses the local npm cache first and contacts only the user's configured registry when the package is absent. The plugin performs no public-registry or latest-version probe. Version changes require an explicit compatibility review."
+          "notes": "Exact 0.4.1 package installed once through the configured npm registry into a plugin-private runtime. The direct Node launcher starts no npm or npx process. Version changes require an explicit compatibility review."
         },
         {
           "server_name": "replicate",
           "required": false,
-          "command": "npx",
-          "args": ["-y", "--prefer-offline", "replicate-mcp@0.9.0"],
+          "command": "node",
+          "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "replicate"],
           "transport": "stdio",
           "role": "connects the agent to Replicate's HTTP API for AI image / video generation, model discovery, comparison, and prediction execution",
           "env": {
@@ -223,16 +253,15 @@
           },
           "optional_because": "Only needed when the replicate-imagery skill fires. Users who never generate AI imagery pay no cost and see no failure; the MCP server starts on demand and fails auth only if invoked without REPLICATE_API_TOKEN set.",
           "prereq": "REPLICATE_API_TOKEN environment variable. Get one at https://replicate.com/account/api-tokens. Set in shell env; the plugin's mcp.json references `${env:REPLICATE_API_TOKEN}` so the token never enters source control.",
-          "notes": "Exact 0.9.0 pin from the configured npm registry; no automatic latest-version lookup. Covers models.search, models.list, models.get, predictions.create, predictions.get, and the rest of the HTTP API surface. Complement with Replicate's upstream agent skills for prompting knowledge. Docs: https://replicate.com/docs/reference/mcp."
+          "notes": "Exact 0.9.0 package installed once through the configured npm registry into a plugin-private runtime. The direct Node launcher starts no npm or npx process. Covers models.search, models.list, models.get, predictions.create, predictions.get, and the rest of the HTTP API surface."
         },
         {
           "server_name": "playwright",
           "required": false,
-          "command": "npx",
+          "command": "node",
           "args": [
-            "-y",
-            "--prefer-offline",
-            "@playwright/mcp@0.0.78",
+            ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+            "playwright",
             "--headless",
             "--isolated",
             "--browser",
@@ -301,7 +330,8 @@
     "browser": "Only if using the optional 'playwright' server: an installed Chrome, Edge, Firefox, or WebKit. No browser ships with the package. Not needed on hosts with built-in browser tools (e.g. VS Code Copilot).",
     "alex_host": "Alex_ACT_Steward brain (primary, plugin-native lineage) OR Alex_ACT_Edition >=3.x heir (v4.1.0 compatibility line) with local/ skill+prompt roots registered",
     "vscode_settings": "On a plain VS Code workspace (no Alex ACT Steward brain or Edition heir), the assets.settings keys must be present or the local/ install paths are never discovered.",
-    "replicate_api_token": "Optional — only required if using the replicate-imagery skill. Get one at https://replicate.com/account/api-tokens and set REPLICATE_API_TOKEN in your shell environment. The plugin's mcp.json references ${env:REPLICATE_API_TOKEN} so the token stays out of source control."
+    "replicate_api_token": "Optional — only required if using the replicate-imagery skill. Get one at https://replicate.com/account/api-tokens and set REPLICATE_API_TOKEN in your shell environment. The plugin's mcp.json references ${env:REPLICATE_API_TOKEN} so the token stays out of source control.",
+    "runtime_provisioning": "Run setup-illustrator-runtime --check-updates to audit stable dist-tags, then run setup once after install or update. It uses npm's configured registry and exact reviewed versions; MCP startup uses the direct private launcher."
   },
   "upstream": {
     "alex_act_core": "https://github.com/fabioc-aloha/Alex_ACT_Core",

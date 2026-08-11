@@ -130,19 +130,23 @@ function assertRegistryPolicy() {
       registryPolicyFail(`${source.label} hardcodes the public npm registry`);
     }
     for (const [name, server] of Object.entries(source.servers ?? {})) {
-      if (server.command !== 'npx') continue;
-      const args = server.args ?? [];
-      if (!args.includes('--prefer-offline')) {
-        registryPolicyFail(`${source.label} server ${name} is missing --prefer-offline`);
+      if (server.command !== 'node') {
+        registryPolicyFail(`${source.label} server ${name} must launch through node`);
       }
-      const packageSpec = args.find((arg) => typeof arg === 'string' && !arg.startsWith('-'));
-      if (!packageSpec || !/@\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(packageSpec)) {
-        registryPolicyFail(`${source.label} server ${name} lacks an exact package version`);
+      const args = server.args ?? [];
+      if (args[0] !== '.github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs') {
+        registryPolicyFail(`${source.label} server ${name} does not use the plugin-private launcher`);
+      }
+      if (args[1] !== name) {
+        registryPolicyFail(`${source.label} server ${name} has the wrong launcher route`);
+      }
+      if (/\bnpx\b|--offline|--prefer-offline/.test(JSON.stringify({ command: server.command, args }))) {
+        registryPolicyFail(`${source.label} server ${name} still invokes npm runtime resolution`);
       }
     }
   }
 
-  console.log('OK    npm registry policy: exact pins, cache-first, configured registry only');
+  console.log('OK    npm registry policy: exact private install, direct Node runtime');
 }
 
 assertRegistryPolicy();
@@ -152,21 +156,20 @@ try {
   registryPolicyFail(error.message);
 }
 
-function resolvePackage() {
-  try {
-    const config = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
-    const args = config?.servers?.flint?.args;
-    const spec = Array.isArray(args)
-      ? args.find((a) => typeof a === 'string' && a.startsWith('flint-chart-mcp'))
-      : undefined;
-    if (spec) return { spec, source: '.vscode/mcp.json' };
-  } catch {
-    // Missing or unparseable config is not fatal — fall back to the known pin.
+function resolveServer(name) {
+  const config = JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
+  const server = config?.servers?.[name];
+  if (!server) throw new Error(`missing ${name} server in ${CONFIG_PATH}`);
+  const expectedLauncher = '.github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs';
+  const args = [...(server.args ?? [])];
+  if (args[0] !== expectedLauncher) {
+    throw new Error(`${name} server does not use the expected launcher template`);
   }
-  return { spec: FALLBACK_PACKAGE, source: 'built-in default' };
+  return { ...server, args, cwd: ROOT_PATH };
 }
 
-const { spec: PACKAGE, source: PACKAGE_SOURCE } = resolvePackage();
+const PACKAGE = FALLBACK_PACKAGE;
+const PACKAGE_SOURCE = '.vscode/mcp.json via plugin-private runtime';
 const WANT_CATALOG = process.argv.includes('--catalog');
 const WANT_COMPAT = process.argv.includes('--compat');
 const WANT_ALL_MCPS = process.argv.includes('--all-mcps');
@@ -179,16 +182,14 @@ const WANT_PLAYWRIGHT = WANT_ALL_MCPS || process.argv.includes('--playwright');
 const OPTIONAL_MCPS = {
   replicate: {
     label: 'replicate',
-    command: 'npx',
-    args: ['-y', '--prefer-offline', 'replicate-mcp@0.9.0'],
+    ...resolveServer('replicate'),
     envRequired: 'REPLICATE_API_TOKEN',
     expectedToolPrefixes: ['predictions', 'models'],
     role: 'AI image generation (Replicate feature)',
   },
   playwright: {
     label: 'playwright',
-    command: 'npx',
-    args: ['-y', '--prefer-offline', '@playwright/mcp@0.0.78', '--headless', '--isolated'],
+    ...resolveServer('playwright'),
     envRequired: null,
     expectedToolPrefixes: ['browser'],
     role: 'browser sidecar for render-verify (Copilot CLI hosts)',
@@ -280,7 +281,7 @@ const REQUESTS = [
     params: {
       protocolVersion: '2024-11-05',
       capabilities: {},
-      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '1.1.0' },
+      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.0.0' },
     },
   },
   { jsonrpc: '2.0', method: 'notifications/initialized' },
@@ -309,7 +310,9 @@ const REQUESTS = [
 
 console.log(`      spec: ${PACKAGE}  (from ${PACKAGE_SOURCE})`);
 
-const child = spawnCommand('npx', ['-y', '--prefer-offline', PACKAGE], {
+const flintServer = resolveServer('flint');
+const child = spawnCommand(flintServer.command, flintServer.args, {
+  cwd: flintServer.cwd,
   stdio: ['pipe', 'pipe', 'pipe'],
 });
 
@@ -332,8 +335,9 @@ const timer = setTimeout(() => {
 
 child.on('error', (err) => {
   clearTimeout(timer);
-  fail(`could not launch npx: ${err.message}`, [
+  fail(`could not launch Illustrator runtime: ${err.message}`, [
     'Is Node 22+ installed and on PATH?',
+    'Did you run /alex-act-illustrator-plugin setup-illustrator-runtime?',
   ]);
 });
 
@@ -368,20 +372,9 @@ function parseMessages(text) {
 
 function fail(reason, hints = []) {
   console.error(`FAIL  ${reason}`);
-  // A pin bump plus `--prefer-offline` can serve a cached packument that
-  // predates the pinned version, so npm reports ETARGET for a version the
-  // registry does carry. Without this hint the failure reads as "package does
-  // not exist" and invites an unapproved --registry workaround.
-  if (/ETARGET|No matching version found/i.test(stderr)) {
-    console.error(
-      '      Looks like a stale cached packument, not a missing package.',
-    );
-    console.error(
-      `      Refresh metadata once: npx -y ${PACKAGE} --help   (omit --prefer-offline)`,
-    );
-    console.error(
-      '      Then re-run this check. Do not pass --registry or edit .npmrc.',
-    );
+  if (/not provisioned|ENOENT|Cannot find module/i.test(stderr)) {
+    console.error('      The plugin-private runtime is missing or incomplete.');
+    console.error('      Run setup-illustrator-runtime, review its preview, then approve --apply.');
   }
   for (const hint of hints) console.error(`      ${hint}`);
   if (stderr.trim()) console.error(`\nserver stderr:\n${stderr.trim()}`);
@@ -394,7 +387,7 @@ function report() {
   const initialize = messages.find((m) => m.result?.serverInfo);
   if (!initialize) {
     fail('no initialize response — the server never completed a handshake', [
-      `Run \`npx -y --prefer-offline ${PACKAGE}\` by hand to see what it prints.`,
+      'Run `node ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs" flint` by hand to see what it prints.',
     ]);
   }
 
@@ -477,7 +470,10 @@ function verifyOptionalMcp(config) {
   console.log(`\n      optional ${label} MCP: handshaking (${command} ${args.join(' ')})`);
 
   return new Promise((resolve) => {
-    const proc = spawnCommand(command, args, { stdio: ['pipe', 'pipe', 'pipe'] });
+    const proc = spawnCommand(command, args, {
+      cwd: config.cwd,
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
 
     let out = '';
     let err = '';
@@ -552,7 +548,7 @@ function verifyOptionalMcp(config) {
       params: {
         protocolVersion: '2024-11-05',
         capabilities: {},
-        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '1.1.0' },
+        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.0.0' },
       },
     };
     const listReq = { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} };

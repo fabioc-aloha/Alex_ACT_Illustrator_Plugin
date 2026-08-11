@@ -29,11 +29,16 @@ export function spawnCommand(command, args, options = {}, {
 } = {}) {
   const resolved = resolveWindowsCommand(command, { platform, locate });
   if (platform === 'win32' && /\.cmd$/i.test(resolved)) {
-    if (command.toLowerCase() !== 'npx') {
+    const npmEntrypoints = {
+      npm: 'npm-cli.js',
+      npx: 'npx-cli.js',
+    };
+    const entrypoint = npmEntrypoints[command.toLowerCase()];
+    if (!entrypoint) {
       throw new Error(`refusing shell execution for unsupported command shim: ${resolved}`);
     }
-    const cli = join(dirname(resolved), 'node_modules', 'npm', 'bin', 'npx-cli.js');
-    if (!fileExists(cli)) throw new Error(`npx CLI entry point not found beside shim: ${cli}`);
+    const cli = join(dirname(resolved), 'node_modules', 'npm', 'bin', entrypoint);
+    if (!fileExists(cli)) throw new Error(`${command} CLI entry point not found beside shim: ${cli}`);
     return launch(process.execPath, [cli, ...args], { ...options, shell: false });
   }
   return launch(resolved, args, { ...options, shell: false });

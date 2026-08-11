@@ -8,7 +8,7 @@ Alex ACT Illustrator turns visual work into one governed workflow: frame the ide
 
 An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Current release: v1.1.0.** This is the current public-surface release
+> **Current release: v2.0.0.** This is the current public-surface release
 > under the Alex ACT semantic-versioning contract. The repository was renamed from
 > `flint-chart-plugin` on 2026-07-29; v0.6.0 was the first release under
 > `alex-act-illustrator-plugin@alex-mall`. A legacy install remains pinned
@@ -16,7 +16,7 @@ An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization
 > verify it, then remove the old entry.
 
 **Current compatibility:** Core `v1.1.0` provides the baseline runtime, and
-Manager `v1.0.1` provides the preferred lifecycle commands.
+Manager `v1.1.0` provides the preferred lifecycle commands.
 
 ## What it does
 
@@ -183,7 +183,7 @@ The swatch has an opaque white backing so its captions remain readable in light 
 ## Prerequisites
 
 - **Node.js ≥ 22** on your machine (required for the pinned MCP sidecars)
-- **An approved npm registry configured in npm**. Illustrator never overrides the configured registry, probes the public registry, or checks for newer package versions. Its MCP sidecars use exact versions with `--prefer-offline`.
+- **An approved npm registry configured in npm**. Illustrator never overrides the configured registry, probes the public registry, or checks for newer package versions. Install exact packages once, then its MCP sidecars use a plugin-private Node launcher.
 - **MCP-capable host.** Actively supported and verified: **VS Code Copilot**
   (1.118+), **GitHub Copilot CLI**, and the **GitHub Copilot app**. Other MCP
   stdio clients (Claude Desktop, Cursor, …) should work and their config paths
@@ -288,8 +288,10 @@ almost certainly holds other servers you'd destroy.
 | Cursor                       | `.cursor/mcp.json`                | `servers`     |
 | GitHub Copilot CLI           | `~/.copilot/mcp-config.json`      | `mcpServers`  |
 
-Then reload VS Code. Each server uses the local npm cache first and contacts only
-the configured npm registry when its exact package version is absent.
+Before registering the servers, invoke
+`/alex-act-illustrator-plugin setup-illustrator-runtime`. Review the effective
+registry and exact package set, approve the one-time install, then reload VS
+Code. Missing private runtime state fails closed without starting npm.
 
 #### The optional `playwright` server — omit it on VS Code
 
@@ -403,15 +405,15 @@ first one that fails tells you where the fault is.
    Replicate SKIPs if `REPLICATE_API_TOKEN` is unset; Playwright reports FAIL
    (non-fatal) if the browser can't launch. Only the flint check gates exit code.
 
-  Installed from the Alex Mall instead? The Mall payload does not include this
-  repository's verification script. Either clone this repo to run the
-  checker, or ask your agent to probe `npx -y --prefer-offline flint-chart-mcp@0.4.1` over stdio with
-   an `initialize` handshake followed by `tools/list`; a `serverInfo` block plus
-   a `tools` array means the same thing.
+  Installed from the Alex Mall instead? Origin delivery includes this
+  repository's verification script. Resolve the installed plugin root and run
+  the same command, or probe `node ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs" flint` over stdio
+  with an `initialize` handshake followed by `tools/list`; a `serverInfo` block
+  plus a `tools` array means the same thing.
 2. **Client.** Ask the agent whether it can see `render_chart`, `compile_chart`,
    `validate_chart`, `list_chart_types`, and `create_chart_view`. All five, or
    your host isn't reading the config you edited.
-3. **Skills and prompts.** Type `/` in chat. The three namespaced prompts should
+3. **Skills and prompts.** Type `/` in chat. The four namespaced prompts should
   appear under `alex-act-illustrator-plugin`; describe a chart, print figure,
   image, shell, or banner task to verify skill discovery. If MCP tools work but
   plugin prompts and skills do not, the plugin or discovery roots are missing.
@@ -528,8 +530,8 @@ The bundled `mcp.json` fragment is minimal:
 {
   "servers": {
     "flint": {
-      "command": "npx",
-      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1"],
+      "command": "node",
+      "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "flint"],
     },
   },
 }
@@ -543,8 +545,8 @@ The bundled `mcp.json` fragment is minimal:
 {
   "servers": {
     "flint": {
-      "command": "npx",
-      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1", "--disable-file-reference"],
+      "command": "node",
+      "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "flint", "--disable-file-reference"],
     },
   },
 }
@@ -556,11 +558,10 @@ The bundled `mcp.json` fragment is minimal:
 {
   "servers": {
     "flint": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "--prefer-offline",
-        "flint-chart-mcp@0.4.1",
+        ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+        "flint",
         "--backends",
         "vegalite,echarts",
       ],
@@ -569,19 +570,19 @@ The bundled `mcp.json` fragment is minimal:
 }
 ```
 
-**Air-gapped / corporate npm firewall** — install once when online, then run without npx download:
+**Air-gapped / corporate npm firewall** — run `setup-illustrator-runtime`
+while the approved registry is reachable. The setup preview shows the effective
+registry and exact pins before applying. Afterward, the direct Node launcher
+uses the plugin-private runtime without invoking npm.
 
-```bash
-npm install -g flint-chart-mcp@0.4.1
-```
-
-Then update the fragment:
-
-```jsonc
-{ "servers": { "flint": { "command": "flint-chart-mcp", "args": [] } } }
-```
-
-**Registry and version policy** — the plugin pins `flint-chart-mcp@0.4.1`, `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` exactly. `--prefer-offline` uses cached packages first. Missing packages resolve only through npm's configured registry; there is no public-registry fallback and no automatic version-discovery request. Version changes are explicit release decisions backed by the compatibility verifier. If npm reports `ETARGET` for a pinned version the registry does carry, `--prefer-offline` served a stale packument — re-run the same command once without that flag to refresh metadata rather than adding `--registry`.
+**Registry and version policy** — the plugin pins `flint-chart-mcp@0.4.1`,
+`replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` exactly. Provisioning uses
+npm's configured registry once; runtime uses the plugin-private launcher. There is no
+public-registry fallback or automatic version-discovery request. Version changes
+are explicit release decisions backed by the compatibility verifier. Invoke
+`/alex-act-illustrator-plugin setup-illustrator-runtime` and request an update
+audit to compare all three pins with their stable npm dist-tags without changing
+runtime state.
 
 **Naming conflict** — if you already have a `flint` server registered, rename this one to `flint-chart` in your merged config. The skill and prompt reference the server by tool inventory, not by name.
 
@@ -592,7 +593,7 @@ Then update the fragment:
 - Author or render charts outside Flint's supported chart types (Beeswarm, Chord Diagram, Waffle Chart, Word Cloud, SPC charts, AI-Powered analytics — see the skill's §0.4 Flint coverage table for substitutions)
 - Transform / aggregate / filter data — do that with your data tool first, then hand Flint the prepared rows
 - Handle Power BI, Tableau, or other BI tools — Flint targets Vega-Lite, ECharts, and Chart.js only
-- Ship the MCP server code — it downloads from npm on demand (bundling would be 80-120 MB per plugin across 6 OS/arch native-binary variants)
+- Ship the MCP server code — setup installs exact packages into plugin-private runtime state through the configured registry, and direct launch starts no npm process (bundling would be 80-120 MB per plugin across 6 OS/arch native-binary variants)
 
 **Print figures feature** —
 

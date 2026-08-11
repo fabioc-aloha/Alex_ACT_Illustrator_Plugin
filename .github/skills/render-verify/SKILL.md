@@ -1,7 +1,7 @@
 ---
 name: render-verify
 description: "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
-lastReviewed: 2026-07-25
+lastReviewed: 2026-08-10
 ---
 
 # render-verify: look at what you rendered
@@ -246,15 +246,20 @@ verified.
 first; if it can open the artifact and return a screenshot to you, you do not
 need this server. Measured against `@playwright/mcp@0.0.78`:
 
+Run `setup-illustrator-runtime` once after installing or updating Illustrator.
+Its `--check-updates` mode compares the reviewed Playwright pin with the stable
+dist-tag; a newer version still requires a browser-compatibility pass before the
+source pin changes.
+
 ```json
 {
   "servers": {
     "playwright": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@playwright/mcp@0.0.78",
+        ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+        "playwright",
         "--headless",
         "--isolated",
         "--browser",

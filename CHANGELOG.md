@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-08-10
+
+### Added
+
+- Added `setup-illustrator-runtime` and its namespaced prompt. The preview-first
+  flow displays npm's configured registry and exact package set, then provisions
+  only after separate consent.
+- Added `--check-updates` to compare every bundled MCP pin with its stable npm
+  dist-tag through the configured registry without changing runtime state.
+
+### Changed
+
+- Changed Flint, Replicate, and Playwright MCP startup from network-capable
+  `npx` resolution to a plugin-private Node launcher after one configured-registry
+  install. Microsoft-configured npm uses its internal proxy; external users
+  retain their own approved registry.
+- Extended shell-free Windows command execution to npm's `npm-cli.js` entry
+  point so provisioning does not require `cmd.exe`.
+- Updated Replicate and Playwright skill guidance to route setup, update audits,
+  and compatibility-gated pin changes through `setup-illustrator-runtime`.
+
+### Migration
+
+- After upgrading, run `/alex-act-illustrator-plugin setup-illustrator-runtime`
+  once and approve the reviewed package set. MCP tools then launch directly from
+  the plugin-private runtime instead of resolving packages during each session.
+
 ## [1.1.0] - 2026-08-07
 
 ### Added

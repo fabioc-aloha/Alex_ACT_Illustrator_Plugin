@@ -5,8 +5,9 @@ Last updated: 2026-08-01
 ## Current State
 
 - Illustrator pins `flint-chart-mcp@0.4.1`, adopted 2026-08-05 after the compatibility suite passed against it.
+- The 2026-08-10 configured-registry audit confirms `flint-chart-mcp@0.4.1`, `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` all match their stable npm dist-tags.
 - MCP package specs are exact: Flint `0.4.1`, Replicate MCP `0.9.0`, Playwright MCP `0.0.78`.
-- Every MCP invocation uses `--prefer-offline`: cache first, then npm's configured registry only.
+- MCP packages install once through npm's configured registry; every runtime invocation uses the plugin-private Node launcher and fails closed on missing runtime state.
 - `scripts/verify-install.mjs` rejects loose package versions and any hardcoded `registry.npmjs.org` reference in `.vscode/mcp.json`, `plugin.json`, or `manifest.json`.
 
 ## Registry Boundary
@@ -28,7 +29,7 @@ node scripts/verify-install.mjs --catalog --compat
 Expected first line:
 
 ```text
-OK    npm registry policy: exact pins, cache-first, configured registry only
+OK    npm registry policy: exact pins, provisioned cache, offline runtime
 ```
 
 The verifier must then report Flint `0.4.1`, five tools, three backends, and valid documented spec patterns.

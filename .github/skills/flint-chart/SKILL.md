@@ -1,7 +1,7 @@
 ---
 name: flint-chart
 description: "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
-lastReviewed: 2026-07-25
+lastReviewed: 2026-08-10
 ---
 
 # flint-chart: pick, author, and render a chart
@@ -81,8 +81,8 @@ authoring a spec no one can render.
      "servers": {
        "flint": {
          "type": "stdio",
-         "command": "npx",
-         "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1"],
+         "command": "node",
+         "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "flint"],
        },
      },
    }
@@ -90,18 +90,13 @@ authoring a spec no one can render.
 
    - `"type": "stdio"` is optional in some hosts but always declare it —
      omitting it makes transport-related failures harder to diagnose.
-   - `--prefer-offline` uses the npm cache first. If absent, npm contacts only
-     the configured registry for the exact `0.4.1` package.
+   - Run `setup-illustrator-runtime` once after install or update. It previews
+     npm's configured registry and exact package set before asking to apply.
+   - Runtime calls `node <private-runtime>/launch.mjs flint`; it starts no npm
+     or npx process. Missing private state routes back to setup.
    - Do not run version-discovery commands, pass `--registry`, edit `.npmrc`,
-     or fall back to a public tarball. Missing packages fail closed.
-   - **`ETARGET` / "No matching version found" on a version the registry does
-     carry** is a stale cached packument, not a missing package.
-     `--prefer-offline` served the old metadata. Run the same command **once
-     without `--prefer-offline`** to refresh it, then restore the flag. Do not
-     conclude the version is unavailable and do not add `--registry`.
-   - **Air-gapped:** an administrator may preinstall exact
-     `flint-chart-mcp@0.4.1` through the approved registry, then change
-     `"command": "npx"` to `"command": "flint-chart-mcp"` with empty args.
+     or install these binaries globally. npm configuration is the registry
+     authority; missing packages route back to setup.
    - **Hardened deployment** (only inline `data.values` accepted, no local
      `data.url` files): append `"--disable-file-reference"` to `args`.
 
@@ -195,7 +190,7 @@ First decide which workflow the user is asking for:
 For MCP clients, the server uses an exact cache-first package:
 
 ```bash
-npx -y --prefer-offline flint-chart-mcp@0.4.1
+node ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs" flint
 ```
 
 For JavaScript or TypeScript projects, use the approved project dependency

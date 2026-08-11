@@ -49,5 +49,5 @@ deliberately left uncorrected so the decision trail survives.
 
 - **License** — MIT dual-copyright (Fabio Correa + Microsoft Corporation). See [`LICENSE`](../LICENSE).
 - **Versioning** — SemVer 2.0. Current version tracked in [`manifest.json`](../manifest.json) and [`CHANGELOG.md`](../CHANGELOG.md).
-- **Registry policy** — executable npm packages are exactly pinned, use `--prefer-offline`, and resolve only through npm's configured registry. No plugin script probes or overrides the public npm registry.
+- **Registry policy** — executable npm packages are exactly pinned, installed once through npm's configured registry, and launched directly from plugin-private runtime state. No plugin script probes or overrides the public npm registry.
 - **Falsifiability** — Each skill and prompt carries a `lastReviewed` frontmatter date and a _Would Revise If_ section naming specific conditions that would trigger a review. See the individual `.md` files in [`.github/skills/`](../.github/skills/) and [`.github/prompts/`](../.github/prompts/).

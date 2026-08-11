@@ -2,24 +2,23 @@
   "servers": {
     "flint": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1"]
+      "command": "node",
+      "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "flint"]
     },
     "replicate": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "--prefer-offline", "replicate-mcp@0.9.0"],
+      "command": "node",
+      "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "replicate"],
       "env": {
         "REPLICATE_API_TOKEN": "${env:REPLICATE_API_TOKEN}"
       }
     },
     "playwright": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "--prefer-offline",
-        "@playwright/mcp@0.0.78",
+        ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+        "playwright",
         "--headless",
         "--isolated",
         "--browser",

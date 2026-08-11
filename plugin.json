@@ -1,7 +1,7 @@
 {
   "name": "alex-act-illustrator-plugin",
-  "version": "1.1.0",
-  "description": "Visual-authoring bundle for AI agents. Eleven skills across five feature areas plus install composition: Flint (statistical chart authoring via the local-first flint-chart-mcp server from microsoft/flint-chart), Print figures (hand-authored print-quality SVG for books and reports, book-tested across 53 figures), Replicate (AI image generation over Replicate's HTTP API, opt-in via REPLICATE_API_TOKEN), Shell (browsable single-page HTML surface for galleries, catalogs, and generated reports), Banner (1200×320 SVG brand banners with pluggable brand config), and the install-visual-companions skill that owns the offer for 9 marketplace companion plugins forming the vision loop (storytelling-requirements → visual-artifact-qa → chart-interpretation → eyeball). Shared framing gate (chart-big-idea Step 0.5) and verification pass (render-verify Prose-coupling) apply across all authoring features. Alex ACT constellation plugin governed by Alex ACT Steward.",
+  "version": "2.0.0",
+  "description": "Visual-authoring bundle for AI agents. Twelve skills across five feature areas plus install composition and runtime setup: Flint, Print figures, Replicate, Shell, Banner, install-visual-companions, and setup-illustrator-runtime. Shared framing and verification apply across all authoring features. Alex ACT constellation plugin governed by Alex ACT Steward.",
   "keywords": [
     "chart",
     "visualization",
@@ -56,24 +56,23 @@
   "mcpServers": {
     "flint": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1"]
+      "command": "node",
+      "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "flint"]
     },
     "replicate": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "--prefer-offline", "replicate-mcp@0.9.0"],
+      "command": "node",
+      "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "replicate"],
       "env": {
         "REPLICATE_API_TOKEN": "${env:REPLICATE_API_TOKEN}"
       }
     },
     "playwright": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "--prefer-offline",
-        "@playwright/mcp@0.0.78",
+        ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+        "playwright",
         "--headless",
         "--isolated",
         "--browser",

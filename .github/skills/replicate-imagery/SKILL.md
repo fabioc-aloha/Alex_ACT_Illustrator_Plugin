@@ -1,7 +1,7 @@
 ---
 name: "replicate-imagery"
 description: "Route AI image generation and editing requests to Replicate (FLUX, Ideogram, Recraft, SDXL, imagen) via the bundled `replicate` MCP server. Use when a document, book, or report needs an illustration, hero image, character/concept art, photorealistic scene, or style-transferred image that neither Flint (data charts), Mermaid (technical diagrams), nor svg-banner (brand banners) can produce. Composes with Replicate's upstream agent skills (prompt-images, find-models, run-models, compare-models, prompt-videos) installable via `npx skills add replicate/skills`. Requires `REPLICATE_API_TOKEN`."
-lastReviewed: 2026-07-30
+lastReviewed: 2026-08-10
 ---
 
 # Replicate Imagery
@@ -48,7 +48,7 @@ Fires when the goal is one of:
 
    Do NOT commit the token to any config file. The plugin's shipped `.vscode/mcp.json` references it via `${env:REPLICATE_API_TOKEN}` so it stays out of source control.
 
-2. **The `replicate` MCP server** — ships in this plugin's `.vscode/mcp.json`. Starts automatically on first `replicate` tool invocation. Package: [`replicate-mcp`](https://www.npmjs.com/package/replicate-mcp).
+2. **The `replicate` MCP server** — run `setup-illustrator-runtime` once after installing or updating the plugin. It installs the reviewed `replicate-mcp@0.9.0` pin through npm's configured registry; the bundled Node launcher starts it on the first Replicate tool invocation. Use setup's `--check-updates` mode to compare the pin with the stable dist-tag before a release.
 
 3. **Upstream Replicate skills (recommended, one-shot)** — install once per project:
 
@@ -136,7 +136,7 @@ Set a spending cap at [replicate.com/account/billing](https://replicate.com/acco
 
 ## Boundaries
 
-- Does not itself run predictions — dispatches to the `replicate` MCP server which invokes the Replicate HTTP API. Requires the MCP server to be running (starts on demand once configured; verify with the plugin install verifier).
+- Does not itself run predictions — dispatches to the `replicate` MCP server which invokes the Replicate HTTP API. Requires `setup-illustrator-runtime` to have installed the reviewed runtime; verify with the plugin install verifier.
 - Does not manage the API token — user brings their own via `REPLICATE_API_TOKEN` env var. If the var is unset, the MCP server fails on first invocation, not at config load.
 - Does not cache or dedupe predictions — same prompt run twice = two paid predictions. Save outputs you want to keep.
 - Does not select the model automatically — the agent chooses based on the prompt + this skill's recommendations. Model choice matters for both cost and quality.
