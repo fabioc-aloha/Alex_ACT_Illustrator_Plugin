@@ -7,12 +7,12 @@ other plugins are selected according to the work you do.
 
 ## Published Versions
 
-Last verified: 2026-08-07.
+Last verified: 2026-08-14.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Manager | `1.1.0` | `alex-act-manager@alex-mall` |
-| Core | `1.1.0` | `alex-act-core@alex-mall` |
+| Manager | `1.2.0` | `alex-act-manager@alex-mall` |
+| Core | `2.0.0` | `alex-act-core@alex-mall` |
 | Illustrator | `2.0.0` | `alex-act-illustrator-plugin@alex-mall` |
 | Document Tools | `1.0.1` | `alex-act-document-tools@alex-mall` |
 | Enterprise | `1.0.1` | `alex-act-enterprise@alex-mall` |
@@ -138,7 +138,7 @@ Confirm each plane independently:
 | --- | --- |
 | `installed` | Plugin files and `plugin.json` report the published version. |
 | `enabled` | The exact plugin key is enabled at the intended scope. |
-| `instruction-loaded` | The Core receipt owns 16 files whose versions and hashes match. |
+| `instruction-loaded` | The Manager receipt owns 16 files whose versions, owners, and hashes match. |
 | `skill-invokable` | The namespaced command runs, or reports `host-limited` with a healthy installed-file fallback. |
 | `user-settings` | The consented user baseline merge is verified, or a manual JSONC merge remains pending. |
 | `workspace` | The workspace bootstrap preserves local settings and reports CSS parity. |
