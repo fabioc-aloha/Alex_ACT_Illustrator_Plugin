@@ -1,7 +1,7 @@
 ---
 name: setup-illustrator-runtime
 description: "Audit Illustrator's stable Flint, Replicate, and Playwright MCP versions through npm's configured registry, install exact reviewed pins once, and verify direct Node runtime readiness. Use when checking for MCP updates, after installing or updating Illustrator, or when private runtime state is missing."
-lastReviewed: 2026-08-10
+lastReviewed: 2026-08-14
 ---
 
 # Setup Illustrator Runtime
@@ -25,7 +25,7 @@ The provisioner installs nothing globally and never passes `--registry` or edits
 
 | Pinned package | Runtime role |
 | --- | --- |
-| `flint-chart-mcp@0.4.1` | Required chart rendering |
+| `flint-chart-mcp@0.5.0` | Required chart rendering, ThemeSpec discovery, and version-matched chart/theme authoring resources |
 | `replicate-mcp@0.9.0` | Optional AI image generation |
 | `@playwright/mcp@0.0.78` | Optional browser verification |
 
@@ -36,6 +36,7 @@ The provisioner installs nothing globally and never passes `--registry` or edits
 | Registry is unexpected | Stop. Correct npm configuration outside this skill, then preview again. |
 | Provisioning fails | Report npm's error without adding a registry override. |
 | Runtime reports missing private state | Run this skill again; do not replace the launcher with npx. |
+| Runtime reports a version mismatch | Re-run the reviewed source version through this skill; never launch stale private state. |
 | `--check-updates` reports a stable update | Run Illustrator's compatibility review before changing the pin or provisioning set. |
 
 ## Anti-Patterns

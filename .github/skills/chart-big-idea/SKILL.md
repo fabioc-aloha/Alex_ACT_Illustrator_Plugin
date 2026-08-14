@@ -1,14 +1,14 @@
 ---
 name: chart-big-idea
 description: "Distill the one-sentence Big Idea, story arc, audience, and style stance for a chart BEFORE picking a chart type. Starts by questioning intent — whether the artifact should exist at all, and whether the stated purpose is the real one. Reads the surrounding docs / prose / ticket for an existing Big Idea first, then helps the user articulate one via a 3-question elicitation ladder if none is found. Asks whether the user wants a TRADITIONAL (safe) or INNOVATIVE (higher-impact, higher-risk) treatment. Use before invoking the flint-chart skill or the /render-chart prompt whenever the user's ask is 'chart this', 'visualize', 'make a chart', 'show the data', or when framing is unclear."
-lastReviewed: 2026-07-25
+lastReviewed: 2026-08-14
 ---
 
 # Chart Big Idea
 
 Frame the chart before you pick it. A chart is a rhetorical act — it makes an argument about the data. If you can't state the argument in one sentence, the chart type will be wrong no matter how it's rendered.
 
-This skill produces a **Chart Brief** — a short structured record of Big Idea + story arc + audience + style stance — which then feeds the `flint-chart` skill's §0.2 selection table.
+This skill produces a **Chart Brief** — a short structured record of Big Idea + intent + story arc + audience + style stance + theme / tone stance — which then feeds the `flint-chart` skill's §0.2 selection table.
 
 **Scope.** Steps 0, 1, and 3 — read the context, state the claim in one sentence, read the audience — apply to **any** communication artifact: a slide, a memo, a diagram, a report section. Steps 2, 4, and 5 are chart machinery, which is why this skill is chart-named. If you are framing something that is not a chart, run Steps 0–1 and 3 and stop there.
 
@@ -81,6 +81,14 @@ The Big Idea asks _what the data shows_. Before that, ask **what this artifact i
 2. **Is the stated purpose the real one?** Sometimes the request is "show that X worked" rather than "show what X did" — a decision already made, looking for a picture to ratify it. That is a legitimate thing to build, but name it: it belongs in the Brief as **Persuasive**, and the honest version makes its case without suppressing the counter-evidence.
 
 **If the intended message and the data disagree, surface it before drafting the Big Idea.** Do not quietly pick the chart that makes the requested point. Say what the data supports, name the gap, and let the user decide. This is the one moment in the workflow where the right answer may be _"not this chart"_ — every later step assumes the chart should exist.
+
+Classify the intent before choosing a treatment:
+
+| Intent | Job |
+| --- | --- |
+| **Explanatory** | Make one supported finding clear and memorable. |
+| **Exploratory** | Help the reader inspect patterns without pretending the conclusion is settled. |
+| **Persuasive** | Support a decision or position honestly, including material counter-evidence. |
 
 Adapted from Cole Nussbaumer Knaflic's _Storytelling with Data_ framing. Write ONE sentence that:
 
@@ -209,9 +217,11 @@ Output a compact brief (fits in one message, ~10 lines) that the `flint-chart` s
 ### Chart Brief
 
 - **Big Idea**: <one sentence, from Step 1>
+- **Intent**: EXPLANATORY | EXPLORATORY | PERSUASIVE
 - **Story arc**: <one label from Step 2 taxonomy>
 - **Audience**: <reading-time> / <fluency> / <stakes>
 - **Style stance**: TRADITIONAL | INNOVATIVE (with one-sentence rationale)
+- **Theme / tone stance**: <e.g. restrained editorial, playful explainer, technical instrument, executive deck>
 - **Suggested chartType(s)**: <1-2 from the Step 4 crosstab>
 - **Alternates considered**: <1-2 the crosstab surfaced but you didn't pick, with why>
 - **Anti-patterns to avoid**: <call out any per flint-chart §0.3 that this brief risks>

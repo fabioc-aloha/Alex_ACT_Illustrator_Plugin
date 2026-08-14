@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import {
+    existsSync,
+    mkdirSync,
+    mkdtempSync,
+    readFileSync,
+    rmSync,
+    writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -121,7 +128,7 @@ test('runtime provisioner previews the configured registry without mutating npm 
     assert.match(result.stdout, /mode:\s+preview/i);
     assert.match(result.stdout, /https:\/\/registry\.example\.invalid\/npm\//);
     for (const packageSpec of [
-      'flint-chart-mcp@0.4.1',
+      'flint-chart-mcp@0.5.0',
       'replicate-mcp@0.9.0',
       '@playwright/mcp@0.0.78',
     ]) {
@@ -145,6 +152,49 @@ test('setup skill bundles the direct runtime launcher', () => {
   assert(setup.bundled_resources.some((resource) => resource.path === launcher));
 });
 
+test('runtime launcher rejects a stale Flint package after a failed upgrade', () => {
+  const runtimeRoot = mkdtempSync(join(tmpdir(), 'illustrator-stale-runtime-'));
+  const packageRoot = join(runtimeRoot, 'node_modules', 'flint-chart-mcp');
+  const launcher = join(root, '.github', 'skills', 'setup-illustrator-runtime',
+    'scripts', 'runtime-launcher.mjs');
+  try {
+    mkdirSync(join(packageRoot, 'dist'), { recursive: true });
+    writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ version: '0.4.1' }));
+    writeFileSync(join(packageRoot, 'dist', 'cli.js'), 'process.exit(0);');
+
+    const result = spawnSync(process.execPath, [launcher, 'flint'], {
+      cwd: root,
+      encoding: 'utf8',
+      env: { ...process.env, ALEX_ACT_ILLUSTRATOR_RUNTIME_ROOT: runtimeRoot },
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /version mismatch.*expected 0\.5\.0.*found 0\.4\.1/is);
+  } finally {
+    rmSync(runtimeRoot, { recursive: true, force: true });
+  }
+});
+
+test('runtime launcher accepts the reviewed Flint package version', () => {
+  const runtimeRoot = mkdtempSync(join(tmpdir(), 'illustrator-current-runtime-'));
+  const packageRoot = join(runtimeRoot, 'node_modules', 'flint-chart-mcp');
+  const launcher = join(root, '.github', 'skills', 'setup-illustrator-runtime',
+    'scripts', 'runtime-launcher.mjs');
+  try {
+    mkdirSync(join(packageRoot, 'dist'), { recursive: true });
+    writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ version: '0.5.0' }));
+    writeFileSync(join(packageRoot, 'dist', 'cli.js'), 'process.exit(0);');
+
+    const result = spawnSync(process.execPath, [launcher, 'flint'], {
+      cwd: root,
+      encoding: 'utf8',
+      env: { ...process.env, ALEX_ACT_ILLUSTRATOR_RUNTIME_ROOT: runtimeRoot },
+    });
+    assert.equal(result.status, 0, result.stderr);
+  } finally {
+    rmSync(runtimeRoot, { recursive: true, force: true });
+  }
+});
+
 test('runtime setup audits stable dist-tags through the configured registry', () => {
   const provisioner = read('.github/skills/setup-illustrator-runtime/scripts/provision-runtime.mjs');
   const setupSkill = read('.github/skills/setup-illustrator-runtime/SKILL.md');
@@ -152,7 +202,7 @@ test('runtime setup audits stable dist-tags through the configured registry', ()
   assert.match(provisioner, /dist-tags\.latest/);
   assert.match(provisioner, /NPM_CONFIG_REGISTRY:\s*registry/);
   for (const packageSpec of [
-    'flint-chart-mcp@0.4.1',
+    'flint-chart-mcp@0.5.0',
     'replicate-mcp@0.9.0',
     '@playwright/mcp@0.0.78',
   ]) {
@@ -203,6 +253,11 @@ test('catalog parsing fails on missing or malformed requested output', () => {
 
 test('manifest copies current discovery metadata and report dependencies', () => {
   const manifest = JSON.parse(read('manifest.json'));
+  const plugin = JSON.parse(read('plugin.json'));
+  assert.equal(manifest.version, '2.1.0');
+  assert.equal(plugin.version, '2.1.0');
+  assert.match(read('README.md'), /Current release: v2\.1\.0/);
+  assert.match(read('CHANGELOG.md'), /## \[2\.1\.0\] - 2026-08-14/);
   const skills = new Map(manifest.assets.skills.map((skill) => [skill.name, skill]));
   for (const name of ['docs-shell', 'setup-illustrator-runtime', 'svg-banner']) {
     assert.equal(skills.get(name).frontmatter.description,
@@ -215,8 +270,8 @@ test('manifest copies current discovery metadata and report dependencies', () =>
   assert.match(read('.github/skills/docs-shell/starter/example-report.html'),
     /<script src="assets\/report-topnav\.js" defer><\/script>/);
   const flint = manifest.assets.mcp.servers.find((server) => server.server_name === 'flint');
-  assert.match(flint.notes, /0\.4\.1/);
-  assert.doesNotMatch(flint.notes, /0\.3\.0/);
+  assert.match(flint.notes, /0\.5\.0/);
+  assert.doesNotMatch(flint.notes, /0\.4\.1/);
 });
 
 test('user-facing prompts and skill guidance use the plugin namespace', () => {
@@ -233,4 +288,88 @@ test('user-facing prompts and skill guidance use the plugin namespace', () => {
   const install = read('.github/skills/install-visual-companions/SKILL.md');
   assert.match(install, /\/alex-act-illustrator-plugin install-visual-companions/);
   assert.doesNotMatch(install, /invoke `\/install-visual-companions`/);
+});
+
+test('Flint 0.5.x runtime contracts expose themes and source-owned authoring guidance', () => {
+  const provisioner = read('.github/skills/setup-illustrator-runtime/scripts/provision-runtime.mjs');
+  const verifier = read('scripts/verify-install.mjs');
+  const manifest = JSON.parse(read('manifest.json'));
+  const flint = manifest.assets.mcp.servers.find((server) => server.server_name === 'flint');
+
+  assert.match(provisioner, /name:\s*'flint-chart-mcp',\s*version:\s*'0\.5\.0'/);
+  assert.match(verifier, /list_themes/);
+  assert.match(verifier, /flint:\/\/agent-skill/);
+  assert.match(verifier, /flint:\/\/theme-skill/);
+  assert.match(verifier, /author_flint_chart/);
+  assert.match(verifier, /author_flint_theme/);
+  assert.match(flint.notes, /0\.5\.0/);
+  assert.doesNotMatch(flint.notes, /0\.4\.1/);
+});
+
+test('render-chart orchestrates bounded expert storytelling over one semantic truth layer', () => {
+  const prompt = read('.github/prompts/render-chart.prompt.md');
+
+  assert.match(prompt, /explanatory.*exploratory.*persuasive/is);
+  assert.match(prompt, /same `data` and `semantic_types`|keep.*`semantic_types`.*stable/is);
+  assert.match(prompt, /familiar.*expressive/is);
+  assert.match(prompt, /materially different|not.*palette-only/is);
+  assert.match(prompt, /claim.*conflict.*data|data.*conflict.*claim/is);
+  assert.match(prompt, /diagnostic.*fully formed spec.*explicit treatment/is);
+  assert.match(prompt, /strongest rejected alternative/i);
+});
+
+test('focused skills own expert storytelling techniques and audience-side critique', () => {
+  const bigIdea = read('.github/skills/chart-big-idea/SKILL.md');
+  const vocabulary = read('.github/skills/chart-vocabulary/SKILL.md');
+  const verify = read('.github/skills/render-verify/SKILL.md');
+
+  assert.match(bigIdea, /explanatory.*exploratory.*persuasive/is);
+  assert.match(bigIdea, /theme.*tone|tone.*theme/is);
+  for (const technique of [
+    /direct label/i,
+    /focal contrast/i,
+    /reference (?:line|band|structure)/i,
+    /small multiples/i,
+    /redundant encoding/i,
+  ]) assert.match(vocabulary, technique);
+  assert.match(verify, /first focal point/i);
+  assert.match(verify, /reading order/i);
+  assert.match(verify, /accessib/i);
+  assert.match(verify, /without relying on surrounding prose|without the explanation/is);
+});
+
+test('flint-theme composes upstream grammar with Theme Lab iteration and render verification', () => {
+  const path = '.github/skills/flint-theme/SKILL.md';
+  assert(existsSync(join(root, path)), 'flint-theme skill is missing');
+  const skill = read(path);
+
+  assert.match(skill, /flint:\/\/theme-skill/);
+  assert.match(skill, /author_flint_theme/);
+  assert.match(skill, /Theme Lab/);
+  assert.match(skill, /untrusted/i);
+  assert.match(skill, /bare.*ThemeSpec|ThemeSpec.*bare/is);
+  assert.match(skill, /render-verify/);
+  assert.match(skill, /line.*matrix.*part-to-whole.*multiseries.*distribution.*diverging/is);
+  assert.match(skill, /Would Revise If/);
+});
+
+test('storytelling composition preserves focused owners and optional companions', () => {
+  const manifest = JSON.parse(read('manifest.json'));
+  const names = manifest.assets.skills.map((skill) => skill.name);
+  const companions = read('.github/skills/install-visual-companions/SKILL.md');
+
+  assert.equal(names.length, 13);
+  assert(names.includes('flint-theme'));
+  assert(!names.includes('flint-chart-author'));
+  assert(!names.includes('visual-storytelling'));
+  for (const stage of [
+    /requirements and audience/i,
+    /spatial ideation/i,
+    /independent reading/i,
+    /render QA/i,
+    /evidence-rich review/i,
+    /critique and handoff/i,
+  ]) assert.match(companions, stage);
+  assert.match(companions, /never install.*silently|never install without.*consent/is);
+  assert.match(companions, /absence.*healthy|not.*incomplete/is);
 });

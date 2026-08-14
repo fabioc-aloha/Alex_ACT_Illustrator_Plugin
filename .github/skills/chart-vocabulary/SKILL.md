@@ -1,7 +1,7 @@
 ---
 name: chart-vocabulary
 description: "Reference catalog of chart types organized by seven communication goals (comparison, change-over-time, proportion, distribution, relationship, flow, deviation), plus a CSAR evaluation loop for AI-generated chart choices, override decision table, 5-visual rule for dashboard density, living gallery pointers (FT Visual Vocabulary, Data-to-Viz, Data Viz Catalog, Vega-Lite examples, Storytelling with Data), and a 6-step selection algorithm. Use when picking a chart type, evaluating an AI-suggested chart, reviewing chart choices for story-intent alignment, sanity-checking a dashboard's density, or explaining chart taxonomy to a heir."
-lastReviewed: 2026-07-30
+lastReviewed: 2026-08-14
 ---
 
 # chart-vocabulary
@@ -122,6 +122,25 @@ Show variance from a reference point.
 | **Gauge** | Single KPI vs. target (dashboards, KPI cards) | More than 3 gauges on a page |
 
 ## Module 2: The CSAR Evaluation Loop
+
+## Module 1.5: Storytelling Technique Router
+
+Choose a technique because it solves a reading problem, not because it makes the
+chart look authored.
+
+| Reading problem | Technique | Constraint |
+| --- | --- | --- |
+| Reader cannot find the claim | **Focal contrast** on one story-carrying mark or series | Use one pre-attentive emphasis; keep context visible. |
+| Legend lookup interrupts reading | **Direct labels** at line ends or beside marks | Check collisions and preserve a key when labels cannot fit. |
+| Benchmark or threshold matters | **Reference line, band, or structure** | Label the reference and distinguish target from observed data. |
+| Too many series obscure shape | **Small multiples** | Keep comparable scales unless independence is the point. |
+| Order carries the argument | **Sorting** by value, time, or semantic order | Do not reorder cyclic or causal sequences arbitrarily. |
+| Groups need comparison and context | **Grouping or faceting** | Prefer grouping for direct values; facets for shape and repeated structure. |
+| Color may fail or print poorly | **Redundant encoding** through label, shape, position, stroke, or texture | Color is never the only carrier of critical meaning. |
+| A specific event changes the story | **Annotation** with a concise evidence-linked note | Annotate the event, not every point. |
+
+Theme choice follows technique and audience. It cannot repair a wrong chart
+family or unsupported claim.
 
 When an AI tool generates a chart, evaluate before accepting. Compose with [`render-verify`](../render-verify/SKILL.md)'s Prose-coupling check for a two-layer safety net: CSAR asks *did it pick the right chart family*; render-verify asks *did it render the right message*.
 

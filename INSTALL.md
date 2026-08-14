@@ -11,10 +11,10 @@ Last verified: 2026-08-14.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Manager | `1.2.0` | `alex-act-manager@alex-mall` |
+| Manager | `1.2.1` | `alex-act-manager@alex-mall` |
 | Core | `2.0.0` | `alex-act-core@alex-mall` |
-| Illustrator | `2.0.0` | `alex-act-illustrator-plugin@alex-mall` |
-| Document Tools | `1.0.1` | `alex-act-document-tools@alex-mall` |
+| Illustrator | `2.1.0` | `alex-act-illustrator-plugin@alex-mall` |
+| Document Tools | `1.1.0` | `alex-act-document-tools@alex-mall` |
 | Enterprise | `1.0.1` | `alex-act-enterprise@alex-mall` |
 | MSFT | `1.0.1` | Private direct install, tenant-gated |
 

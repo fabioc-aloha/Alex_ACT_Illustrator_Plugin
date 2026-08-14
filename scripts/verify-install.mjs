@@ -50,7 +50,7 @@ import { evaluateCompatibility, parseCatalogEntries } from './verify-contract.mj
 // `.vscode/mcp.json` means bumping the pin in one place cannot leave this
 // checker silently validating a different version than the host will launch.
 const ROOT_PATH = join(dirname(fileURLToPath(import.meta.url)), '..');
-const FALLBACK_PACKAGE = 'flint-chart-mcp@0.4.1';
+const FALLBACK_PACKAGE = 'flint-chart-mcp@0.5.0';
 const CONFIG_PATH = join(ROOT_PATH, '.vscode', 'mcp.json');
 
 function registryPolicyFail(reason) {
@@ -269,8 +269,23 @@ const EXPECTED_TOOLS = [
   'compile_chart',
   'validate_chart',
   'list_chart_types',
+  'list_themes',
   'create_chart_view',
 ];
+const EXPECTED_THEMES = [
+  'nyt',
+  'economist',
+  'swiss',
+  'nature',
+  'mckinsey',
+  'datawrapper',
+  'powerbi',
+  'powerbi-light',
+  'pop',
+  'cartoon',
+];
+const EXPECTED_RESOURCES = ['flint://agent-skill', 'flint://theme-skill'];
+const EXPECTED_PROMPTS = ['author_flint_chart', 'author_flint_theme'];
 const TIMEOUT_MS = 120_000;
 
 const REQUESTS = [
@@ -281,7 +296,7 @@ const REQUESTS = [
     params: {
       protocolVersion: '2024-11-05',
       capabilities: {},
-      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.0.0' },
+      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.1.0' },
     },
   },
   { jsonrpc: '2.0', method: 'notifications/initialized' },
@@ -292,6 +307,14 @@ const REQUESTS = [
     method: 'tools/call',
     params: { name: 'list_chart_types', arguments: {} },
   },
+  {
+    jsonrpc: '2.0',
+    id: 4,
+    method: 'tools/call',
+    params: { name: 'list_themes', arguments: {} },
+  },
+  { jsonrpc: '2.0', id: 5, method: 'resources/list', params: {} },
+  { jsonrpc: '2.0', id: 6, method: 'prompts/list', params: {} },
   ...COMPAT_SPECS.map((s, i) => ({
     jsonrpc: '2.0',
     id: COMPAT_BASE_ID + i,
@@ -410,6 +433,7 @@ function report() {
   }
 
   console.log(`OK    tools (${found.length}): ${found.join(', ')}`);
+  reportLanguageSurface(messages);
 
   if (WANT_CATALOG) reportCatalog(messages);
   if (WANT_COMPAT) reportCompat(messages);
@@ -424,6 +448,42 @@ function report() {
     console.log('      client side: config path, trust prompt, or a stale session.');
     console.log('      See README "If the tools still don\'t appear".');
   });
+}
+
+function reportLanguageSurface(messages) {
+  const themeCall = messages.find((message) => message.id === 4 && message.result?.content);
+  const themeText = themeCall?.result.content.find((content) => content.type === 'text')?.text;
+  if (!themeText) fail('list_themes returned no text content');
+  let themePayload;
+  try {
+    themePayload = JSON.parse(themeText);
+  } catch {
+    fail('list_themes returned unparseable JSON');
+  }
+  const themeEntries = Array.isArray(themePayload) ? themePayload : themePayload?.themes;
+  const themeIds = Array.isArray(themeEntries)
+    ? themeEntries.map((entry) => (typeof entry === 'string' ? entry : entry?.id)).filter(Boolean)
+    : [];
+  const missingThemes = EXPECTED_THEMES.filter((id) => !themeIds.includes(id));
+  if (themeIds.length !== new Set(themeIds).size || missingThemes.length > 0) {
+    fail(`invalid theme catalog${missingThemes.length ? `; missing: ${missingThemes.join(', ')}` : ''}`);
+  }
+
+  const resources = messages.find((message) => message.id === 5)?.result?.resources;
+  if (!Array.isArray(resources)) fail('resources/list returned no resource array');
+  const resourceUris = resources.map((resource) => resource.uri);
+  const missingResources = EXPECTED_RESOURCES.filter((uri) => !resourceUris.includes(uri));
+  if (missingResources.length > 0) fail(`missing authoring resources: ${missingResources.join(', ')}`);
+
+  const prompts = messages.find((message) => message.id === 6)?.result?.prompts;
+  if (!Array.isArray(prompts)) fail('prompts/list returned no prompt array');
+  const promptNames = prompts.map((prompt) => prompt.name);
+  const missingPrompts = EXPECTED_PROMPTS.filter((name) => !promptNames.includes(name));
+  if (missingPrompts.length > 0) fail(`missing authoring prompts: ${missingPrompts.join(', ')}`);
+
+  console.log(`OK    themes (${themeIds.length}): ${themeIds.join(', ')}`);
+  console.log(`OK    authoring resources: ${EXPECTED_RESOURCES.join(', ')}`);
+  console.log(`OK    authoring prompts: ${EXPECTED_PROMPTS.join(', ')}`);
 }
 
 function reportCompat(messages) {
@@ -548,7 +608,7 @@ function verifyOptionalMcp(config) {
       params: {
         protocolVersion: '2024-11-05',
         capabilities: {},
-        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.0.0' },
+        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.1.0' },
       },
     };
     const listReq = { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} };

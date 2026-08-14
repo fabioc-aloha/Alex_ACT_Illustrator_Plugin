@@ -1,7 +1,7 @@
 ---
 name: install-visual-companions
 description: "Offer to install nine marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval. Use when the heir asks to enable visual-workflow tooling, or when the illustrator's chart / figure / print-SVG authoring produces artifacts that need runtime verification (multimodal vision loop). Companion to install-constellation in alex-act-core."
-lastReviewed: 2026-08-01
+lastReviewed: 2026-08-14
 ---
 
 # install-visual-companions
@@ -52,6 +52,24 @@ storytelling-requirements  →  visual-artifact-qa  →  chart-interpretation  �
 ```
 
 Composes end-to-end with zero conflicts. Closes what looks like a runtime-capability gap (multimodal vision on agent output) via composition, not net-new authorship. The vision loop is why the "canonical bundle" for the loop is the 4 skills above; the other 5 fill adjacent gaps.
+
+## Expert storytelling stages
+
+These are task-triggered options, not one required bundle. Check availability
+before routing; a missing companion is healthy and does not make Illustrator
+incomplete.
+
+| Storytelling moment | Optional companion | Role |
+| --- | --- | --- |
+| **Requirements and audience** | `storytelling-requirements` | Capture audience, Big Idea, questions, evidence, and delivery target. |
+| **Spatial ideation** | `napkin` | Sketch composition or sequence while the layout question is unresolved. |
+| **Independent reading** | `chart-interpretation` | Read the candidate from the audience side; surface patterns, omissions, bias, and competing narratives. |
+| **Render QA** | `visual-artifact-qa` | Add static output checks around the visual inspection boundary. |
+| **Evidence-rich review** | `eyeball` | Pair factual claims with source screenshots when auditable visual evidence is required. |
+| **Critique and handoff** | `image-annotations`, `visual-pr` | Mark specific defects and carry reviewed screenshots into a pull request. |
+
+Never install a companion silently. Route only to installed capabilities unless
+the heir explicitly invokes this skill and approves each requested plugin.
 
 ## Consent flow
 

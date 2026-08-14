@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-08-14
+
+### Added
+
+- Added `flint-theme`, a thin custom ThemeSpec workflow that loads Flint's
+  version-matched theme grammar, treats visual references as untrusted evidence,
+  iterates across Theme Lab's chart corpus, and hands final judgment to
+  `render-verify`.
+- Added expert storytelling techniques and comparative critique: familiar and
+  expressive treatments share one data and semantic truth layer, then differ
+  intentionally in chart intent, arrangement, technique, or visual system.
+- Added fail-closed runtime package-version checks so a stale private Flint CLI
+  cannot launch after a failed upgrade.
+
+### Changed
+
+- Updated the reviewed Flint source pin from `flint-chart-mcp@0.4.1` to `0.5.0`.
+  The verifier now requires `list_themes`, ten presets, both source-owned
+  authoring resources, and both authoring prompts in addition to the existing
+  tools, catalog, and compatibility checks.
+- Reworked `/render-chart` into a bounded expert-storytelling loop: frame,
+  inspect, explore, compare, theme, render, critique, iterate, and report the
+  strongest rejected alternative. Diagnostic charts, fully formed specs, and
+  explicit treatments retain fast paths.
+- Extended focused owners instead of adding a catch-all storytelling skill:
+  `chart-big-idea` owns intent and tone, `chart-vocabulary` owns technique
+  routing, and `render-verify` owns audience-side read-back.
+
 ## [2.0.0] - 2026-08-10
 
 ### Added

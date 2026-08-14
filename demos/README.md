@@ -1,6 +1,6 @@
 # Demos
 
-One demo, one MCP backend. Rendered end-to-end via `/render-chart` against the local `flint` MCP server, as pinned at render time (`flint-chart-mcp@0.3.0`). The plugin now pins `0.4.1`; these demos were not re-rendered, and the specs behind them still validate on it.
+One demo, one MCP backend. Rendered end-to-end via `/render-chart` against the local `flint` MCP server, as pinned at render time (`flint-chart-mcp@0.3.0`). The plugin source now pins `0.5.0`; these demos were not re-rendered, and compatibility validation preserves their specs.
 
 ## What ships
 

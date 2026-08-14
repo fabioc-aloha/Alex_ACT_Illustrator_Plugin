@@ -1,10 +1,18 @@
 ---
 name: flint-chart
 description: "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
-lastReviewed: 2026-08-10
+lastReviewed: 2026-08-14
 ---
 
 # flint-chart: pick, author, and render a chart
+
+## Load the version-matched Flint language first
+
+Read `flint://agent-skill` or invoke `author_flint_chart` before authoring. That
+source-owned resource carries the exact semantic types, chart templates,
+properties, and backend boundaries for the installed MCP version. This skill
+adds Alex-owned framing, creative treatment selection, configured-runtime
+setup, and `render-verify`; it does not replace Flint's language reference.
 
 ## What you produce (and what you do NOT)
 
@@ -145,7 +153,7 @@ directly (not to render via MCP).
   the project's approved compatibility decision.
 
    ```bash
-  npm install --save-exact flint-chart@0.4.1
+  npm install --save-exact flint-chart@0.5.0
    ```
 
   Add renderer peer dependencies only through the same project dependency
@@ -197,7 +205,7 @@ For JavaScript or TypeScript projects, use the approved project dependency
 workflow and preserve the lockfile:
 
 ```bash
-npm install --save-exact flint-chart@0.4.1
+  npm install --save-exact flint-chart@0.5.0
 ```
 
 Do not add or upgrade renderer dependencies unless the user explicitly requests
@@ -234,8 +242,23 @@ interface ChartAssemblyInput {
     chartProperties?: Record<string, any>; // per-chart tuning (optional)
   };
   options?: Record<string, any>; // global layout options (rarely needed)
+  field_display_names?: Record<string, string>; // readable axis / legend labels
+  theme_spec?: string | { extends?: string; [key: string]: any };
 }
 ```
+
+## Choose a visual theme
+
+Call `list_themes` when the audience or tone calls for a coherent house style.
+Use a preset ID beside `chart_spec`, for example `theme_spec: "economist"`, or
+load `flint-theme` for a custom or inherited ThemeSpec. ThemeSpec controls
+presentation and compiler behavior; it does not choose fields, aggregation,
+filtering, sorting, titles, or values.
+
+Flint `0.5.0` themes apply to Vega-Lite. ECharts and Chart.js ignore ThemeSpec,
+so do not claim cross-backend parity. For a custom system, validate the bare
+ThemeSpec in Theme Lab and inspect a representative chart corpus before using it
+in a deliverable.
 
 ## How data gets bound
 
@@ -512,16 +535,25 @@ Fetch [The Defensible Decision — Complete Chart Gallery](https://www.thedefens
 
 The gallery has 48 charts across 10 families with per-chart 💡 tips, distilled from Knaflic / Kirk / Few / Wexler.
 
-**Chart capability — runtime (fastest, always matches the pinned server version)**
+**Chart capability and language — runtime (fastest, always matches the pinned server version)**
 
 Two runtime paths that need no fetch and always reflect the actual server the user has installed:
 
 - **`list_chart_types` MCP tool** — call with `{ backend: 'vegalite' | 'echarts' | 'chartjs' }` to get the current server's chart-type catalog and encoding channels. Zero-fetch; matches whatever `flint-chart-mcp` version is pinned.
 - **`flint://chart-types` MCP resource** — a browsable version of the same catalog, exposed as an MCP resource for hosts that surface resources in their UI (e.g., Claude Desktop). Same data, host-native display.
+- **`flint://agent-skill` MCP resource** — the complete version-matched chart
+  language and authoring contract. Prefer it over copied type and property tables.
+- **`list_themes` + `flint://theme-skill`** — discover preset IDs and load the
+  version-matched ThemeSpec grammar. Illustrator's `flint-theme` skill adds the
+  Theme Lab and visual-QA loop.
 
 Prefer these over external references when the question is "does the server I'm actually talking to render `<chartType>` on `<backend>`?" They cost nothing and cannot go stale.
 
-> **0.4.1 note.** The underlying `flint-chart` library ships **backend-neutral chart-type recommendation** and **chart-type transformation** APIs (public since 0.3.0), but these are NOT yet exposed as distinct MCP tools — they surface only through the interactive `create_chart_view` MCP App UI. On hosts that render the MCP App (Claude Desktop today; VS Code Copilot expected to follow), the user can switch between compatible chart types in the rendered view without rewriting the spec (e.g., dense Line Chart → compact Sparkline rows; the data roles are preserved). For headless workflows, keep using §0.2 and the `list_chart_types` catalog.
+> **0.5.x note.** The underlying library's backend-neutral recommendations,
+> named views, and chart transformations surface through the interactive
+> `create_chart_view` MCP App rather than separate tools. Use them to explore
+> compatible arrangements without changing the data or semantic truth layer.
+> Headless workflows keep using §0.2 plus `list_chart_types`.
 
 **Chart capability — gallery (canonical live examples)**
 
@@ -534,21 +566,14 @@ Fetch the canonical [Flint gallery](https://microsoft.github.io/flint-chart/#/ga
 
 This is the authoritative reference for **what Flint actually does**; §0.2–0.4 above is the compact map, but the gallery is the source of truth for edge cases and backend-specific behavior.
 
-**Chart capability — deep reference (per-backend catalogs + semantic types + API)**
+**Chart capability — developer documentation**
 
-When the gallery is ambiguous or you need to compare all supported charts side-by-side in source form, fetch the upstream markdown at the `0.4.0` tag:
-
-- [`docs/reference-vegalite.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/reference-vegalite.md) — all 35 Vega-Lite chart types with encoding channels and the per-chart `chartProperties` matrix (control type, domain, default, availability)
-- [`docs/reference-echarts.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/reference-echarts.md) — the 37 ECharts chart types
-- [`docs/reference-chartjs.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/reference-chartjs.md) — the 21 Chart.js chart types
-- [`docs/design-semantics.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/design-semantics.md) — the semantic type system (46 registered types across 6 families) that drives Flint's automatic layout; reach for this when Step 3 needs a value the inline list does not cover
-- [`docs/api-reference.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/api-reference.md) — canonical `ChartAssemblyInput` structure and every top-level field
-- [`docs/overview.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/overview.md) — high-level tour of the compilation pipeline; useful when explaining what Flint does to a new user
-- [`docs/README.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/README.md) — the docs index; also documents the abstract channel vocabulary and the two-stage compiler
-
-> **Why `0.4.0` and not `0.4.1`.** The `flint-chart` library repository tags releases independently of the `flint-chart-mcp` npm package. Its tags are `0.1.1`, `0.2.1`, `0.3.0`, `0.4.0` — **there is no `0.4.1` tag**, so `/blob/0.4.1/` URLs 404. The `0.4.0` generated references report 35 Vega-Lite / 37 ECharts / 21 Chart.js chart types, which matches the pinned 0.4.1 server's `list_chart_types` output exactly, so they are the accurate reference for what this plugin runs.
-
-> **The library has more backends than the MCP server exposes.** The upstream docs also ship `reference-plotly.md` (38 chart types) and `reference-excel.md` (18 templates). Neither is reachable through this MCP server: `list_chart_types` accepts only `vegalite`, `echarts`, and `chartjs`, and rejects `plotly` or `excel` with an enum validation error (verified against 0.4.1). Treat Plotly/Excel material in the upstream docs as out of scope for anything you author here.
+Use the official [Flint documentation](https://microsoft.github.io/flint-chart/#/documentation/overview)
+for language design, semantics, layout, APIs, and backend architecture. Runtime
+resources remain authoritative for the installed server's exact vocabulary.
+The library documents Plotly and Excel, but the `0.5.0` MCP tool schema exposes
+only Vega-Lite, ECharts, and Chart.js; treat other backends as project-code
+integration, not MCP capability.
 
 **Rule of thumb**: Defensible Decision answers "should I use a bar or a boxplot?"; `list_chart_types` and the Flint gallery answer "will Flint's `Bar Chart` on ECharts backend do what I need?"; the deep reference (`docs/reference-*.md`) answers "what exact channels and properties does that combination support?".
 
@@ -659,8 +684,9 @@ support a subset (verify if targeting a non-VL backend):
 - **ECharts** adds: `"Calendar Heatmap"`, `"Gauge"`,
   `"Funnel"`, `"Treemap"`, `"Sunburst"`, `"Sankey"`,
   `"Parallel Coordinates"`, `"Graph"`, `"Tree"`.
-- **Chart.js** supports these 21: Scatter Plot, Connected Scatter Plot, Bubble
-  Chart, Strip Plot, Bar Chart, Grouped Bar Chart, Stacked Bar Chart, Combo
+- **Chart.js** supports these 22: Scatter Plot, Connected Scatter Plot, Bubble
+  Chart, Strip Plot, Bar Chart, Grouped Bar Chart, Stacked Bar Chart, Lollipop
+  Chart, Combo
   Chart, Histogram, Waterfall Chart, Gantt Chart, Line Chart, Bump Chart, Slope
   Chart, Area Chart, Range Area Chart, ECDF Plot, Pie Chart, Doughnut Chart,
   Radar Chart, Rose Chart.
@@ -1004,16 +1030,27 @@ Before returning, verify:
 6. You did **not** inline large data or hand-tune derived styling.
 7. The data carries no embedded total/subtotal level (e.g. an `all` / `total`
    row) mixed with its components on a stacked, grouped, or colored channel.
+8. Compiler warnings were inspected; a successful render may still have
+  truncated categories to fit the layout budget.
+9. Any ThemeSpec was checked on a representative corpus and is supported by the
+  selected backend.
 
 ## Would Revise If
 
 Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fires:
 
 - [_The Defensible Decision_ chart gallery](https://www.thedefensibledecision.com/gallery/chart-gallery.html) 404s or restructures such that the §0.5 deep-reference URLs no longer resolve — refresh the escalation targets or fold the needed tips into §0 directly.
-- Any of the §0.5 upstream deep-reference URLs (`docs/reference-vegalite.md`, `docs/reference-echarts.md`, `docs/reference-chartjs.md`, `docs/design-semantics.md`, `docs/api-reference.md`, `docs/overview.md`, `docs/README.md` at the `0.4.0` tag) 404 or move — refresh the URLs to the newest tag that exists (check `https://api.github.com/repos/microsoft/flint-chart/tags`; the library tags independently of the MCP package, so a matching tag may not exist).
+- `flint://agent-skill` or `flint://theme-skill` disappears, diverges from the
+  runtime tool schema, or cannot be read on a supported host — restore only the
+  minimum local reference needed while the upstream defect is active.
 - `flint-chart-mcp` ships a breaking change (chart-type rename, `ChartAssemblyInput` shape change, tool signature change) that this skill doesn't account for — sync §0.4 (Flint coverage) and the worked examples to the new version.
 - Any recommendation in §0.2 (question → family → chartType) is refuted by a source we trust (a case study, a Knaflic/Kirk/Few/Wexler update, or field feedback from ≥2 heir workspaces) — retire or rework that row.
 - The plugin gets ≥3 heir installs and none of them exercise §0.5 (deep-reference escalation) — that signals the compact table alone is sufficient and §0.5 is decorative; prune it.
 - The upstream fork base ([`microsoft/flint-chart/agent-skills/flint-chart-author/SKILL.md`](https://github.com/microsoft/flint-chart/blob/main/agent-skills/flint-chart-author/SKILL.md)) publishes a materially revised body — decide whether to rebase §1-N onto the new upstream or hold on the current fork point. **Do not rebase blindly.** As of 2026-08-05 upstream's skill is itself behind its own generated references: it still teaches "Donut chart: use `Pie Chart` with `innerRadius`" and never names the `Donut Chart` type that `reference-vegalite.md` documents. A straight rebase would regress the backend-specific donut guidance and the corrected `binCount` / `polyOrder` ranges in §Chart-level properties. Diff against the generated `reference-*.md` files, not against upstream's skill.
-- **Upstream absorbs chart selection itself.** `flint-chart` 0.3.0 shipped backend-neutral chart-type recommendations and transformations — the capability §0 exists to provide. The pin moved to `0.4.1` on 2026-08-05 after a handshake + catalog + 6-spec compatibility re-test; those recommendations are still reachable only through the `create_chart_view` MCP App UI, not as distinct MCP tools, so §0 stands. If they become tool-reachable and match or beat §0.2 on the same question, §0 is redundant: call the upstream recommender and keep only the framing this plugin adds on top.
-- **The backend list changes.** §0.4 and the worked examples assume Vega-Lite / ECharts / Chart.js. The `flint-chart` library carries Plotly (38 chart types, including Funnel, Gauge, and Density Contour) and Excel (18 native Office.js templates), but as of the pinned `0.4.1` server neither is reachable: `list_chart_types` rejects `plotly` and `excel` with an enum validation error. If a future server accepts either, the coverage rules and the "Flint can't express this" escape hatch both need reworking — re-check whenever `list_chart_types` accepts a backend this skill does not name.
+- **Upstream absorbs chart selection itself.** Recommendations, named views,
+  and transformations are available through `create_chart_view`, but not as
+  headless tools. If they become tool-reachable and match or beat §0.2 on the
+  same question, call upstream and keep only Alex framing on top.
+- **The backend list changes.** §0.4 and the worked examples assume Vega-Lite /
+  ECharts / Chart.js because those are the `0.5.0` MCP enum values. If a future
+  server accepts Plotly or Excel, rework coverage and ThemeSpec boundaries.

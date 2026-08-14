@@ -10,9 +10,9 @@ This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constell
 
 An Alex ACT constellation plugin for visual authoring. Ships **five visual-authoring areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), Shell (browsable / gallery / catalog surface), and Banner (deterministic SVG brand assets). Currently:
 
-- **Twelve skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `render-verify`, `corpus-qa-sweep`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `setup-illustrator-runtime`, `docs-shell`, `svg-banner`, and `install-visual-companions`
+- **Thirteen skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `flint-theme`, `render-verify`, `corpus-qa-sweep`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `setup-illustrator-runtime`, `docs-shell`, `svg-banner`, and `install-visual-companions`
 - **Four slash-command prompts** — `/alex-act-illustrator-plugin render-chart`, `/alex-act-illustrator-plugin banner`, `/alex-act-illustrator-plugin install-visual-companions`, and `/alex-act-illustrator-plugin setup-illustrator-runtime`
-- **Three MCP sidecars** in `.vscode/mcp.json` — exact `flint-chart-mcp@0.4.1` (required), exact `replicate-mcp@0.9.0` (optional; needs `REPLICATE_API_TOKEN`), and exact `@playwright/mcp@0.0.78` (optional browser sidecar). Install once through npm's configured registry, then every runtime invocation uses the plugin-private Node launcher; never probe or override the public registry.
+- **Three MCP sidecars** in `.vscode/mcp.json` — exact `flint-chart-mcp@0.5.0` (required), exact `replicate-mcp@0.9.0` (optional; needs `REPLICATE_API_TOKEN`), and exact `@playwright/mcp@0.0.78` (optional browser sidecar). Install once through npm's configured registry, then every runtime invocation uses the plugin-private Node launcher; never probe or override the public registry.
 - **Stable-version audit** — `setup-illustrator-runtime --check-updates` compares all three reviewed pins with `dist-tags.latest` through npm's configured registry. Report drift; never auto-upgrade before compatibility checks and a governed release.
 
 This repo is the **source of truth**. The [Alex ACT Plugin Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) delivers this repository directly from its immutable release tag.
@@ -24,6 +24,7 @@ This repo is the **source of truth**. The [Alex ACT Plugin Mall](https://github.
 | `.github/skills/chart-big-idea/`         | Installable skill (framing, shared across features)                         |
 | `.github/skills/chart-vocabulary/`       | Installable skill (chart selection catalog, Flint feature)                  |
 | `.github/skills/flint-chart/`            | Installable skill (chart family router + spec authoring, Flint feature)     |
+| `.github/skills/flint-theme/`            | Installable skill (custom ThemeSpec composition + Theme Lab iteration)      |
 | `.github/skills/render-verify/`          | Installable skill (verification, shared across features)                    |
 | `.github/skills/print-svg-style-guide/`  | Installable skill (print SVG grammar, Print figures feature)                |
 | `.github/skills/figure-generator/`       | Installable skill (deterministic figure production, Print figures feature)  |
@@ -31,7 +32,7 @@ This repo is the **source of truth**. The [Alex ACT Plugin Mall](https://github.
 | `.github/skills/docs-shell/`             | Installable skill (single-page HTML shell, Shell feature) + `starter/` kit  |
 | `.github/skills/svg-banner/`             | Installable skill (deterministic SVG banners, Banner feature)               |
 | `.github/skills/install-visual-companions/` | Installable skill (consent-gated companion-plugin composition)           |
-| `.github/prompts/`                       | Three installable namespaced prompts                                        |
+| `.github/prompts/`                       | Four installable namespaced prompts                                         |
 | `.vscode/mcp.json`                       | MCP server sidecars — `flint` (required), `replicate` + `playwright` (optional) |
 | `.vscode/settings.json`                  | Registers the `local/` skill + prompt discovery roots                       |
 | `manifest.json`                          | Plugin manifest — enumerates all shipping assets                            |

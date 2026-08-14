@@ -4,25 +4,27 @@
 
 [Core](https://github.com/fabioc-aloha/Alex_ACT_Core) · [Manager](https://github.com/fabioc-aloha/Alex_ACT_Manager) · [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) · [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) · [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise)
 
-Alex ACT Illustrator turns visual work into one governed workflow: frame the idea, choose the right medium, author the artifact, and verify what readers actually see. Charts, figures, imagery, documentation shells, and banners share one communication standard instead of competing guidance.
+Alex ACT Illustrator turns visual work into one governed expert-storytelling workflow: frame the idea, inspect the evidence, explore materially different treatments, choose the right medium and visual system, author the artifact, critique the render, and iterate until readers see the intended story. Charts, figures, imagery, documentation shells, and banners share one communication standard instead of competing guidance.
 
 An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Current release: v2.0.0.** This is the current public-surface release
-> under the Alex ACT semantic-versioning contract. The repository was renamed from
-> `flint-chart-plugin` on 2026-07-29; v0.6.0 was the first release under
+> **Current release: v2.1.0.** This release adds expert familiar/expressive
+> Flint exploration over one semantic truth layer, custom `flint-theme`
+> composition with Theme Lab iteration, and `flint-chart-mcp@0.5.0`. It is a
+> MINOR release under the Alex ACT semantic-versioning contract. The repository
+> was renamed from `flint-chart-plugin` on 2026-07-29; v0.6.0 was the first release under
 > `alex-act-illustrator-plugin@alex-mall`. A legacy install remains pinned
 > under its old ID and does not migrate automatically: install the current ID,
 > verify it, then remove the old entry.
 
-**Current compatibility:** Core `v1.1.0` provides the baseline runtime, and
-Manager `v1.1.0` provides the preferred lifecycle commands.
+**Current compatibility:** Core `v2.0.0` provides the baseline runtime, and
+Manager `v1.2.1` provides the preferred lifecycle commands.
 
 ## What it does
 
 Five authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and verification pass (`render-verify` Prose-coupling check):
 
-1. **Flint — statistical chart authoring.** `chart-big-idea` → `chart-vocabulary` (7-goal catalog + CSAR loop) → `flint-chart` (§0 selection router + `ChartAssemblyInput` spec) → render via `flint-chart-mcp` (Vega-Lite / ECharts / Chart.js, local) → `render-verify`. Data never leaves the machine. Entry point: `/alex-act-illustrator-plugin render-chart`.
+1. **Flint — expert statistical storytelling.** `chart-big-idea` → `chart-vocabulary` (chart families + storytelling techniques) → familiar/expressive `flint-chart` treatments over one `semantic_types` truth layer → optional preset or custom `flint-theme` visual system → render via `flint-chart-mcp` (Vega-Lite / ECharts / Chart.js, local) → comparative `render-verify` critique and iteration. Data never leaves the machine. Entry point: `/alex-act-illustrator-plugin render-chart`.
 2. **Print figures — hand-authored SVG for books and reports.** `chart-big-idea` (Step 0.5 earn-a-figure gate) → `print-svg-style-guide` (canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four composition idioms) → `figure-generator` (`.mjs` generator + `data/<slug>.json` + `data-sha256` audit hash + contract tests + dataset inversion). Book-tested across 53 figures in *The Defensible Decision* (Fabio Correa).
 3. **Replicate — AI image generation.** `chart-big-idea` → `replicate-imagery` (model routing + brand alignment + cost awareness) → upstream `replicate/skills` for prompting → `replicate` MCP calls the Replicate HTTP API. FLUX / Ideogram / Recraft / Imagen + editing / inpaint / upscale / background-removal. Requires `REPLICATE_API_TOKEN`; nothing spins up until you use it.
 4. **Shell — browsable / gallery / catalog surface.** `docs-shell` skill + `starter/` bundle render concatenated markdown as a single-page HTML shell with two-line topnav, sticky page header, and sidebar TOC. Repository-root and stable subfolder shells share the same relative-path contract. HTML-source docs can retain manifest-driven navigation, and the bundled read-only audit reports missing capabilities without erasing local extensions.
@@ -58,7 +60,7 @@ The source repository includes the [`demos/heart-with-axes/`](https://github.com
 flowchart TB
     A["Visual request"]:::blue
     B["Shared Big Idea<br/>framing"]:::purple
-  C["Choose authoring route<br/>Flint · Print SVG · Replicate<br/>Shell · Banner"]:::gold
+  C["Choose authoring route<br/>Flint chart/theme · Print SVG · Replicate<br/>Shell · Banner"]:::gold
     G["Visual artifact"]:::neutral
     H["Render verification"]:::gold
     I["Verified output"]:::green
@@ -86,6 +88,7 @@ Each authoring skill can still run independently when the framing or verificatio
 | `.github/skills/chart-big-idea/SKILL.md`        | Framing skill — Big Idea, story arc, audience, style stance, Chart Brief output. Step 0.5 earn-a-figure gate + Step 4.5 focus discipline.                                        |
 | `.github/skills/chart-vocabulary/SKILL.md`      | Chart-selection reference — 7-goal catalog + CSAR evaluation loop + 5-visual rule + gallery pointers. Adapted from `Alex_ACT_Visual_Storytelling`.                               |
 | `.github/skills/flint-chart/SKILL.md`           | Selection + spec-authoring skill (§0 chart selection + Steps 1-N `ChartAssemblyInput`). Publication config preset for book / report / exec-facing charts.                        |
+| `.github/skills/flint-theme/SKILL.md`           | Custom ThemeSpec composition — loads Flint's grammar, treats references as untrusted evidence, iterates across Theme Lab, then invokes render-verify.                            |
 | `.github/skills/render-verify/SKILL.md`         | Verification skill — failure catalogs (charts + any artifact), host-capability table, Playwright setup, Prose-coupling check for published figures.                              |
 | `.github/skills/corpus-qa-sweep/SKILL.md`       | Corpus-scale QA sweep — instrument the real output boundary, assert machine-checkable invariants across every item, then triage each flag. Pairs with `render-verify`.           |
 | `.github/skills/print-svg-style-guide/SKILL.md` | Print-quality SVG style guide — canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four structural composition idioms.                    |
@@ -390,7 +393,7 @@ first one that fails tells you where the fault is.
 
    It reads the pin from [`.vscode/mcp.json`](.vscode/mcp.json) so it verifies
    the version your config actually requests, handshakes over stdio, and asserts
-   all five tools are advertised. Exit 0 means the server is healthy and any
+  all six tools plus the theme catalog and chart/theme authoring resources are advertised. Exit 0 means the server is healthy and any
    remaining fault is on the client side — config path, trust, or a stale
    session. This is the one check that must not depend on your agent, since your
    agent may be the thing that's broken.
@@ -411,7 +414,7 @@ first one that fails tells you where the fault is.
   with an `initialize` handshake followed by `tools/list`; a `serverInfo` block
   plus a `tools` array means the same thing.
 2. **Client.** Ask the agent whether it can see `render_chart`, `compile_chart`,
-   `validate_chart`, `list_chart_types`, and `create_chart_view`. All five, or
+   `validate_chart`, `list_chart_types`, `list_themes`, and `create_chart_view`. All six, or
    your host isn't reading the config you edited.
 3. **Skills and prompts.** Type `/` in chat. The four namespaced prompts should
   appear under `alex-act-illustrator-plugin`; describe a chart, print figure,
@@ -420,9 +423,11 @@ first one that fails tells you where the fault is.
 4. **Render.** Ask for any chart. `list_chart_types` should return 35 Vega-Lite
    chart types, and a render should produce an image.
 
-This repo runs the same four checks against its own [`.vscode/`](.vscode/) config —
-last verified 2026-08-05 against `flint-chart-mcp` 0.4.1 (MCP protocol
-`2024-11-05`).
+This repo runs the same checks against its own [`.vscode/`](.vscode/) config.
+The 2026-08-14 disposable source canary passed `flint-chart-mcp` 0.5.0,
+protocol `2024-11-05`, six tools, ten themes, both authoring resources and
+prompts, catalogs `35/37/22`, and all seven documented specs through the
+configured registry and direct Node launcher. The temporary runtime was removed.
 
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).
 
@@ -464,6 +469,27 @@ Agent: [loads chart-big-idea → Step 0 finds no doc context → asks "what surp
 ```text
 User: /alex-act-illustrator-plugin render-chart render a scatter of weight vs mpg colored by origin
 Agent: [Big Idea preflight → authors ChartAssemblyInput → calls create_chart_view]
+```
+
+### Open-ended expert storytelling
+
+```text
+User: Show the board why regional growth is becoming dangerously concentrated.
+Agent: [frames explanatory intent + audience + stakes → inspects actual rows →
+  fixes one semantic_types layer → authors a familiar ranked-bar treatment
+  and an expressive small-multiple treatment → selects an editorial preset
+  or loads flint-theme → renders both → reads each back against the Big Idea →
+  repairs the selected treatment → reports the strongest rejected alternate]
+```
+
+### Custom visual system
+
+```text
+User: Translate this publication's visual identity into a reusable Flint theme.
+Agent: [loads flint-theme → treats the publication as untrusted evidence → reads
+  flint://theme-skill → authors a bare ThemeSpec → pastes into Theme Lab →
+  inspects line, matrix, part-to-whole, multiseries, distribution, and
+  diverging charts → fixes visible defects → render-verify]
 ```
 
 ### Validation only
@@ -575,7 +601,7 @@ while the approved registry is reachable. The setup preview shows the effective
 registry and exact pins before applying. Afterward, the direct Node launcher
 uses the plugin-private runtime without invoking npm.
 
-**Registry and version policy** — the plugin pins `flint-chart-mcp@0.4.1`,
+**Registry and version policy** — the plugin pins `flint-chart-mcp@0.5.0`,
 `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` exactly. Provisioning uses
 npm's configured registry once; runtime uses the plugin-private launcher. There is no
 public-registry fallback or automatic version-discovery request. Version changes

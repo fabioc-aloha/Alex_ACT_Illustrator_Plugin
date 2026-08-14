@@ -1,7 +1,7 @@
 ---
 name: render-verify
 description: "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
-lastReviewed: 2026-08-10
+lastReviewed: 2026-08-14
 ---
 
 # render-verify: look at what you rendered
@@ -233,6 +233,23 @@ defect.**
 - **Re-read the claim and ask whether the picture shows it.** If the claim is
   about a gap and the eye goes to a trend, the chart type is wrong — go back to
   `flint-chart` §0.2, do not patch the styling.
+
+### Storytelling read-back
+
+Read the artifact once as its intended audience, without relying on surrounding
+prose to rescue it:
+
+| Check | Question |
+| --- | --- |
+| **First focal point** | Does the eye land on the evidence carrying the Big Idea? |
+| **Reading order** | Do headline, context, marks, labels, and annotation unfold in a coherent sequence? |
+| **Context** | Can the reader identify measure, population, time, units, and comparison baseline? |
+| **Accessibility** | Does critical meaning survive without color through labels, shape, position, stroke, or texture? |
+| **Study cost** | Is the treatment appropriate for the audience's available reading time and fluency? |
+| **Visual independence** | Does the visual carry the claim without the explanation doing all the work? |
+
+If the first focal point or reading order is wrong, return to chart selection,
+technique, or ThemeSpec. Do not compensate by writing a longer caption.
 
 ## Step 5 — report honestly
 

@@ -1,12 +1,13 @@
 # Session Handoff
 
-Last updated: 2026-08-01
+Last updated: 2026-08-14
 
 ## Current State
 
-- Illustrator pins `flint-chart-mcp@0.4.1`, adopted 2026-08-05 after the compatibility suite passed against it.
-- The 2026-08-10 configured-registry audit confirms `flint-chart-mcp@0.4.1`, `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` all match their stable npm dist-tags.
-- MCP package specs are exact: Flint `0.4.1`, Replicate MCP `0.9.0`, Playwright MCP `0.0.78`.
+- Release source targets `v2.1.0` with `flint-chart-mcp@0.5.0`; installed runtime remains at `0.4.1` until separate provisioning approval.
+- MCP package specs in source are exact: Flint `0.5.0`, Replicate MCP `0.9.0`, Playwright MCP `0.0.78`.
+- Source now carries thirteen skills, including thin `flint-theme` composition, and an expert `/render-chart` workflow that explores familiar and expressive treatments over one semantic truth layer.
+- A disposable 2026-08-14 source canary passed Flint `0.5.0`, protocol `2024-11-05`, six tools, ten themes, two authoring resources, two prompts, catalogs `35/37/22`, all seven compatibility specs, and temporary cleanup.
 - MCP packages install once through npm's configured registry; every runtime invocation uses the plugin-private Node launcher and fails closed on missing runtime state.
 - `scripts/verify-install.mjs` rejects loose package versions and any hardcoded `registry.npmjs.org` reference in `.vscode/mcp.json`, `plugin.json`, or `manifest.json`.
 
@@ -32,13 +33,13 @@ Expected first line:
 OK    npm registry policy: exact pins, provisioned cache, offline runtime
 ```
 
-The verifier must then report Flint `0.4.1`, five tools, three backends, and valid documented spec patterns.
+The verifier must report Flint `0.5.0`, six tools, ten themes, both authoring resources and prompts, three backends, and valid documented spec patterns.
 
 ## Pending
 
-- Publish the registry-policy changes through the normal plugin release and Mall vendor workflow when approved.
-- Re-evaluate Flint only when the configured registry carries the candidate version. Do not use public npm availability as a release trigger.
+- Commit, push, release, and Mall publication are approved for the coordinated release pass.
+- Installed-runtime provisioning and canary execution remain separately gated until publication is coherent.
 
 ## Resume Point
 
-Start by running the verifier. If registry policy fails, repair the three source manifests together before any release or Mall refresh.
+Publish source and Mall records first. Do not mutate the installed private runtime until source, tag, GitHub Release, and Mall origin are coherent.

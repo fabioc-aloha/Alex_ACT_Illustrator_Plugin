@@ -1,8 +1,8 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "2.0.0",
-  "shape": "twelve-skill + four-prompt + three-mcp-sidecars + vscode-settings",
-  "description": "Visual-authoring bundle for AI agents. Twelve skills across five authoring areas plus install composition and runtime setup: Flint, Print figures, Replicate, Shell, Banner, install-visual-companions, and setup-illustrator-runtime. Shared framing and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
+  "version": "2.1.0",
+  "shape": "thirteen-skill + four-prompt + three-mcp-sidecars + vscode-settings",
+  "description": "Expert visual-storytelling and authoring bundle for AI agents. Thirteen skills across five authoring areas plus install composition and runtime setup: Flint chart and ThemeSpec language, Print figures, Replicate, Shell, Banner, install-visual-companions, and setup-illustrator-runtime. Shared framing, bounded creative exploration, and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
   "authors": [
@@ -42,6 +42,15 @@
         "role": "selection + rendering (consumes the Chart Brief)",
         "frontmatter": {
           "description": "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
+        }
+      },
+      {
+        "name": "flint-theme",
+        "path": ".github/skills/flint-theme/SKILL.md",
+        "install_to": ".github/skills/local/flint-theme/SKILL.md",
+        "role": "custom ThemeSpec composition: routes grammar to Flint's version-matched MCP resource, then owns untrusted-reference handling, Theme Lab corpus iteration, and render-verify handoff",
+        "frontmatter": {
+          "description": "Creates and refines reusable Flint ThemeSpec visual systems from brand guidance, websites, decks, design tokens, or publication references. Use when a user asks for a custom Flint theme, wants to translate a visual identity into charts, or needs to test theme behavior across a chart corpus."
         }
       },
       {
@@ -194,7 +203,7 @@
         "install_to": ".github/prompts/local/render-chart.prompt.md",
         "role": "verb-prompt workflow entry point (/render-chart)",
         "frontmatter": {
-          "description": "Pick the right chart for the user's data + question, then author, render, and verify it via the flint-chart-mcp server. Loads the chart-big-idea skill for framing, the flint-chart skill for selection and rendering, and the render-verify skill to confirm the render actually says what it was meant to say."
+          "description": "Orchestrates expert visual storytelling over Flint: frame the claim, inspect data, explore familiar and expressive treatments over one semantic truth layer, select or author a theme, render, compare, iterate, and verify. Use for open-ended chart and data-story requests; preserves fast paths for diagnostic charts, fully formed specs, and explicit treatments."
         }
       },
       {
@@ -239,7 +248,7 @@
           "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "flint"],
           "transport": "stdio",
           "role": "renders the ChartAssemblyInput (Vega-Lite / ECharts / Chart.js)",
-          "notes": "Exact 0.4.1 package installed once through the configured npm registry into a plugin-private runtime. The direct Node launcher starts no npm or npx process. Version changes require an explicit compatibility review."
+          "notes": "Exact 0.5.0 package installed once through the configured npm registry into a plugin-private runtime. The direct Node launcher starts no npm or npx process. Adds ThemeSpec discovery plus version-matched chart and theme authoring resources. Version changes require an explicit compatibility review."
         },
         {
           "server_name": "replicate",
@@ -294,12 +303,15 @@
   "handoff_flow": {
     "flint": [
       "/render-chart prompt fires — OR the user asks for a chart ambiently and flint-chart loads directly",
-      "load chart-big-idea skill → Step 0 (read surrounding context) → Step 0.5 earn-a-figure gate → Step 1 intent check → Steps 1-5 (Big Idea → arc → audience → style → Brief)",
-      "load chart-vocabulary skill → 7-goal catalog + CSAR loop → pick chart family + type (or defer to flint-chart §0.2 compact router)",
-      "load flint-chart skill → §0.1 hands off to chart-big-idea if it was not already run → §0.2 selection constrained by the Brief → §0.4 Flint-coverage check",
-      "author ChartAssemblyInput per Steps 1-N",
-      "render via flint MCP server (create_chart_view | render_chart | validate_chart | compile_chart)",
-      "load render-verify skill → open the artifact → read console errors → walk the failure catalogs → Prose-coupling check against the Big Idea"
+      "load chart-big-idea skill → earn-a-figure gate → explanatory/exploratory/persuasive intent → Big Idea → arc → audience → style + theme/tone stance → Brief",
+      "inspect actual rows, units, cardinality, totals, outliers, and context; transform upstream when the analytical question requires it",
+      "author one data + semantic_types truth layer; enrich ambiguous fields with intrinsicDomain, unit, or sortOrder",
+      "load chart-vocabulary technique router + flint-chart; for open-ended work author one familiar and one expressive treatment that differ materially in chart_spec, arrangement, technique, or theme",
+      "call list_themes for a preset OR load flint-theme → flint://theme-skill / author_flint_theme → Theme Lab corpus iteration",
+      "render serious candidates via flint MCP (create_chart_view | render_chart); use validate_chart and compile_chart for their narrower contracts",
+      "load render-verify → inspect errors + failure catalog + first focal point + reading order + context + accessibility + Big Idea visibility",
+      "iterate the smallest responsible layer → report selected treatment, verification evidence, caption/alt text, and strongest rejected alternative",
+      "fast path: diagnostic chart, fully formed spec, or explicit treatment skips alternative generation"
     ],
     "print_figures": [
       "user asks for a book / report figure OR the print-svg-style-guide skill loads ambiently",
