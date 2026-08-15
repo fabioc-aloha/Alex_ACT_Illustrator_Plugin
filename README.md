@@ -2,7 +2,7 @@
 
 ![Alex ACT Illustrator Plugin](https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/banner.svg)
 
-[Core](https://github.com/fabioc-aloha/Alex_ACT_Core) · [Manager](https://github.com/fabioc-aloha/Alex_ACT_Manager) · [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) · [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) · [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise)
+[Core](https://github.com/fabioc-aloha/Alex_ACT_Core) · [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) · [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) · [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise)
 
 Alex ACT Illustrator turns visual work into one governed expert-storytelling workflow: frame the idea, inspect the evidence, explore materially different treatments, choose the right medium and visual system, author the artifact, critique the render, and iterate until readers see the intended story. Charts, figures, imagery, documentation shells, and banners share one communication standard instead of competing guidance.
 
@@ -17,8 +17,8 @@ An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization
 > under its old ID and does not migrate automatically: install the current ID,
 > verify it, then remove the old entry.
 
-**Current compatibility:** Core `v2.0.0` provides the baseline runtime, and
-Manager `v1.2.1` provides the preferred lifecycle commands.
+**Current compatibility:** Core `v2.0.0` provides the baseline runtime; native
+Copilot CLI commands provide plugin lifecycle operations.
 
 ## What it does
 
