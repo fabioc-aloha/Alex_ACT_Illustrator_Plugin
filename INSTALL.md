@@ -10,7 +10,7 @@ Last verified: 2026-08-15.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Core | `2.0.0` | `alex-act-core@alex-mall` |
+| Core | `3.0.0` | `alex-act-core@alex-mall` |
 | Illustrator | `2.1.0` | `alex-act-illustrator-plugin@alex-mall` |
 | Document Tools | `1.1.0` | `alex-act-document-tools@alex-mall` |
 | Enterprise | `1.0.1` | `alex-act-enterprise@alex-mall` |
@@ -89,7 +89,7 @@ Use `copilot plugin install <plugin>@<marketplace>` and `copilot plugin list`
 for installation and verification. Each specialization's namespaced setup
 command owns its downstream configuration.
 
-## 6. Verify Core Activation
+## 5. Verify Core Activation
 
 Core verification uses `copilot plugin list` plus a second
 `/alex-act-core bootstrap-core` preview.
@@ -178,5 +178,6 @@ commands remain the fallback when a generic skill call is unavailable.
 - [ ] Selected specialization plugins are installed and enabled.
 - [ ] The 16-file Core-owned instruction activation is verified or explicitly
   declined.
-- [ ] The current workspace preserves its settings and reports CSS parity.
+- [ ] If project bootstrap is selected, the current workspace preserves its settings and reports CSS parity.
+- [ ] Repeated project work is kept local through a reviewed project skill or script; cross-platform work remains optional.
 - [ ] Optional workload configuration is limited to the projects that need it.
