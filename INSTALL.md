@@ -11,20 +11,20 @@ Last verified: 2026-08-15.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Manager | `1.2.1` | `alex-act-manager@alex-mall` |
+| Manager | `1.3.0` | `alex-act-manager@alex-mall` |
 | Core | `2.0.0` | `alex-act-core@alex-mall` |
 | Illustrator | `2.1.0` | `alex-act-illustrator-plugin@alex-mall` |
 | Document Tools | `1.1.0` | `alex-act-document-tools@alex-mall` |
 | Enterprise | `1.0.1` | `alex-act-enterprise@alex-mall` |
-| MSFT | `1.1.0` | Private direct install, tenant-gated |
+| MSFT | `1.1.1` | `alex-act-msft@agency-playground`, tenant-gated |
 
 ## Prerequisites
 
 - Copilot CLI `1.0.75` or newer.
 - Git available on `PATH`.
 - VS Code with GitHub Copilot Chat, or another Copilot CLI host.
-- A Microsoft enterprise-managed GitHub identity with explicit access to
-  `fabioc_microsoft/alex-act-msft` when installing private MSFT.
+- A Microsoft enterprise-managed GitHub identity with access to private
+  `agency-microsoft/playground` when installing MSFT.
 - Microsoft corporate identity and network access when installing MSFT.
 
 Check the tools:
@@ -80,10 +80,10 @@ The guided flow offers these components:
 | Enterprise | Your projects use the public Azure, Fabric, Power BI, or Microsoft 365 plugin ecosystem. |
 | MSFT | You are a Microsoft employee on the corporate network and need internal Agency, WorkIQ, or organization-reporting capability. |
 
-MSFT is private. The setup flow must confirm Microsoft employment,
-corporate-network access, and an active Microsoft-managed GitHub account that
-can read `fabioc_microsoft/alex-act-msft` before direct installation. External
-personal accounts cannot access the managed repository.
+MSFT is private. Agency Playground is the preferred release path. The setup
+flow must confirm Microsoft employment, corporate-network access, and an active
+Microsoft-managed GitHub account. Manager `v1.2.1` may still use the managed
+source fallback until its separately governed lifecycle update ships.
 
 ## 4. Review User Settings
 
