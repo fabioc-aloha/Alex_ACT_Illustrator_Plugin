@@ -296,7 +296,7 @@ const REQUESTS = [
     params: {
       protocolVersion: '2024-11-05',
       capabilities: {},
-      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.2.0' },
+      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.2.1' },
     },
   },
   { jsonrpc: '2.0', method: 'notifications/initialized' },
@@ -372,7 +372,7 @@ child.on('close', () => {
 // If the server dies before reading stdin, writing to the closed pipe raises
 // EPIPE. Swallow it so the user gets the diagnostic below rather than a stack
 // trace from an unhandled stream error.
-child.stdin.on('error', () => {});
+child.stdin.on('error', () => { });
 
 for (const request of REQUESTS) {
   child.stdin.write(`${JSON.stringify(request)}\n`);
@@ -608,7 +608,7 @@ function verifyOptionalMcp(config) {
       params: {
         protocolVersion: '2024-11-05',
         capabilities: {},
-        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.2.0' },
+        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.2.1' },
       },
     };
     const listReq = { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} };

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-08-15
+
+### Fixed
+
+- Styled the Markdown preview code-block copy control for the light preview
+  theme and restored the single-frame Mermaid container contract.
+
 ## [2.2.0] - 2026-08-15
 
 ### Added

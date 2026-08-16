@@ -1,7 +1,7 @@
 /* ============================================================================
    GitHub-flavored Markdown Preview Theme
    Alex Cognitive Architecture - Polished Edition
-   
+
    Copy to .vscode/markdown-light.css and reference in settings.json:
    "markdown.styles": [".vscode/markdown-light.css"]
    ============================================================================ */
@@ -129,6 +129,29 @@ pre code {
     padding: 0 !important;
     border-radius: 0 !important;
     color: #1f2328 !important;
+}
+
+/* VS Code injects this control after the light theme overrides its defaults. */
+pre>.code-block-copy-button {
+    background-color: #ffffff !important;
+    border: 1px solid #d1d9e0 !important;
+    border-radius: 4px !important;
+    color: #57606a !important;
+    opacity: 1 !important;
+}
+
+pre>.code-block-copy-button:hover {
+    background-color: #eaeef2 !important;
+    color: #1f2328 !important;
+}
+
+pre>.code-block-copy-button:focus-visible {
+    outline: 2px solid #0969da !important;
+    outline-offset: 2px !important;
+}
+
+pre>.code-block-copy-button .codicon {
+    color: inherit !important;
 }
 
 /* Force all code text readable (nuclear option for VS Code dark themes) */
@@ -357,14 +380,37 @@ img {
    ER, gantt, pie, mindmap, timeline, git
    ============================================ */
 
-/* Container styling */
-.mermaid,
-.mermaid svg {
+/* Container styling: frame the container once, never both container and SVG. */
+.mermaid:not(svg) {
     background-color: #ffffff !important;
     border: 1px solid #e1e4e8 !important;
     padding: 20px !important;
     border-radius: 8px !important;
     text-align: center !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    margin: 24px auto !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+}
+
+.mermaid:not(svg)>svg {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+}
+
+svg.mermaid {
+    display: block !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 24px auto !important;
+    box-sizing: border-box !important;
 }
 
 /* ---- FLOWCHART / GRAPH ---- */

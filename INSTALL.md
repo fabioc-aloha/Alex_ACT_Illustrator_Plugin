@@ -10,9 +10,9 @@ Last verified: 2026-08-15.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Core | `3.0.0` | `alex-act-core@alex-mall` |
-| Illustrator | `2.2.0` | `alex-act-illustrator-plugin@alex-mall` |
-| Document Tools | `1.1.0` | `alex-act-document-tools@alex-mall` |
+| Core | `3.0.1` | `alex-act-core@alex-mall` |
+| Illustrator | `2.2.1` | `alex-act-illustrator-plugin@alex-mall` |
+| Document Tools | `1.1.1` | `alex-act-document-tools@alex-mall` |
 | Enterprise | `1.0.2` | `alex-act-enterprise@alex-mall` |
 | MSFT | `1.1.1` | `alex-act-msft@agency-playground`, tenant-gated |
 
