@@ -1,6 +1,6 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "shape": "thirteen-skill + four-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Expert visual-storytelling and authoring bundle for AI agents. Thirteen skills across five authoring areas plus install composition and runtime setup: Flint chart and ThemeSpec language, Print figures, Replicate, Shell, Banner, install-visual-companions, and setup-illustrator-runtime. Shared framing, bounded creative exploration, and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",

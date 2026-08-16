@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-08-15
+
+### Fixed
+
+- Updated the shared installation guide for the managed-source MSFT release
+  while Agency Playground registration is pending.
+
 ## [2.2.1] - 2026-08-15
 
 ### Fixed

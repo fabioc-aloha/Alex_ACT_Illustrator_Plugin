@@ -8,7 +8,8 @@ Alex ACT Illustrator turns visual work into one governed expert-storytelling wor
 
 An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Current release: v2.2.1.** This PATCH release repairs the light Markdown
+> **Current release: v2.2.2.** This PATCH release synchronizes the shared
+> installation guide with the managed-source MSFT delivery boundary.
 > preview copy control and keeps Mermaid diagrams to one visual frame.
 > The repository was renamed from `flint-chart-plugin` on 2026-07-29; v0.6.0
 > was the first release under `alex-act-illustrator-plugin@alex-mall`. A legacy

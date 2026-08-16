@@ -10,11 +10,11 @@ Last verified: 2026-08-15.
 
 | Component | Version | Distribution |
 | --- | --- | --- |
-| Core | `3.0.1` | `alex-act-core@alex-mall` |
-| Illustrator | `2.2.1` | `alex-act-illustrator-plugin@alex-mall` |
+| Core | `3.0.2` | `alex-act-core@alex-mall` |
+| Illustrator | `2.2.2` | `alex-act-illustrator-plugin@alex-mall` |
 | Document Tools | `1.1.1` | `alex-act-document-tools@alex-mall` |
-| Enterprise | `1.0.2` | `alex-act-enterprise@alex-mall` |
-| MSFT | `1.1.3` | `fabioc_microsoft/alex-act-msft`, managed-source access required |
+| Enterprise | `1.0.3` | `alex-act-enterprise@alex-mall` |
+| MSFT | `1.1.4` | `fabioc_microsoft/alex-act-msft`, managed-source access required |
 
 ## Prerequisites
 
