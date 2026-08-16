@@ -37,9 +37,10 @@ The verifier must report Flint `0.5.0`, six tools, ten themes, both authoring re
 
 ## Pending
 
-- Commit, push, release, and Mall publication are approved for the coordinated release pass.
-- Installed-runtime provisioning and canary execution remain separately gated until publication is coherent.
+- Installed-runtime provisioning and canary execution remain separately gated.
 
 ## Resume Point
 
-Publish source and Mall records first. Do not mutate the installed private runtime until source, tag, GitHub Release, and Mall origin are coherent.
+Illustrator `v2.2.0` is published from source `3b3c7a0` and Mall origin record
+`3ae61a1`. Do not mutate the installed private runtime without separate
+approval.
