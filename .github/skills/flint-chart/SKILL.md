@@ -1,7 +1,7 @@
 ---
 name: flint-chart
 description: "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
-lastReviewed: 2026-08-14
+lastReviewed: 2026-08-15
 ---
 
 # flint-chart: pick, author, and render a chart
@@ -25,6 +25,10 @@ or `assembleChartjs` to get a backend spec.
 
 - **DO** emit `chart_spec` (chart type, channel→field mapping, properties)
   and `semantic_types` (field → semantic type).
+- **Carry the claim into a standalone chart.** Set `chart_spec.title` to the
+  Chart Brief's Big Idea, tightened only for display, and use `subtitle` for
+  what is measured, of whom, when, and in which units. A chart may travel
+  without its surrounding prose; its claim must travel with it.
 - **Reference columns by name.** How `data` itself gets bound depends on
   the situation — a URL, a host-side variable, or embedded rows (see "How
   data gets bound"). Embedding is fine for small tables; just don't
@@ -236,6 +240,8 @@ interface ChartAssemblyInput {
   chart_spec: {
     //                        ← you write this
     chartType: string; // e.g. "Scatter Plot"
+    title?: string; // claim-bearing headline for a standalone Vega-Lite chart
+    subtitle?: string; // measure, population, period, and units
     encodings: Record<string, EncodingValue>; // channel → { field, ... } (or array)
     baseSize?: { width: number; height: number }; // target layout size, default 400×320
     canvasSize?: { width: number; height: number }; // optional hard ceiling on stretch
@@ -246,6 +252,25 @@ interface ChartAssemblyInput {
   theme_spec?: string | { extends?: string; [key: string]: any };
 }
 ```
+
+## Carry the Big Idea into the chart
+
+For a standalone chart, use the Chart Brief as the source of its presentation
+text:
+
+- `chart_spec.title` states the finding in a concise sentence. It is not a
+  topic label or an axis title.
+- `chart_spec.subtitle` supplies the reading context: measure, population,
+  period, and units.
+- Omit both only when a surrounding caption already supplies the same reading,
+  such as a sparkline in a table or a dashboard tile beneath a titled panel.
+
+Flint `0.5.0` realizes the title and subtitle in the Vega-Lite backend. When
+ECharts or Chart.js is the delivery target, keep the authored text with the
+`ChartAssemblyInput` and make it visible in the surrounding artifact after
+inspecting the compiled result. Do not move the claim into `theme_spec`:
+themes govern presentation, while title and subtitle state what the reader is
+meant to understand.
 
 ## Choose a visual theme
 

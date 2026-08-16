@@ -1,10 +1,10 @@
 # Session Handoff
 
-Last updated: 2026-08-14
+Last updated: 2026-08-15
 
 ## Current State
 
-- Release source targets `v2.1.0` with `flint-chart-mcp@0.5.0`; installed runtime remains at `0.4.1` until separate provisioning approval.
+- Release source targets `v2.2.0` with `flint-chart-mcp@0.5.0`; installed runtime remains separately gated until source, tag, GitHub Release, and Mall origin are coherent.
 - MCP package specs in source are exact: Flint `0.5.0`, Replicate MCP `0.9.0`, Playwright MCP `0.0.78`.
 - Source now carries thirteen skills, including thin `flint-theme` composition, and an expert `/render-chart` workflow that explores familiar and expressive treatments over one semantic truth layer.
 - A disposable 2026-08-14 source canary passed Flint `0.5.0`, protocol `2024-11-05`, six tools, ten themes, two authoring resources, two prompts, catalogs `35/37/22`, all seven compatibility specs, and temporary cleanup.

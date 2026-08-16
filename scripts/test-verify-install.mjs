@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import {
-    existsSync,
-    mkdirSync,
-    mkdtempSync,
-    readFileSync,
-    rmSync,
-    writeFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -254,10 +254,10 @@ test('catalog parsing fails on missing or malformed requested output', () => {
 test('manifest copies current discovery metadata and report dependencies', () => {
   const manifest = JSON.parse(read('manifest.json'));
   const plugin = JSON.parse(read('plugin.json'));
-  assert.equal(manifest.version, '2.1.0');
-  assert.equal(plugin.version, '2.1.0');
-  assert.match(read('README.md'), /Current release: v2\.1\.0/);
-  assert.match(read('CHANGELOG.md'), /## \[2\.1\.0\] - 2026-08-14/);
+  assert.equal(manifest.version, '2.2.0');
+  assert.equal(plugin.version, '2.2.0');
+  assert.match(read('README.md'), /Current release: v2\.2\.0/);
+  assert.match(read('CHANGELOG.md'), /## \[2\.2\.0\] - 2026-08-15/);
   const skills = new Map(manifest.assets.skills.map((skill) => [skill.name, skill]));
   for (const name of ['docs-shell', 'setup-illustrator-runtime', 'svg-banner']) {
     assert.equal(skills.get(name).frontmatter.description,
@@ -308,6 +308,8 @@ test('Flint 0.5.x runtime contracts expose themes and source-owned authoring gui
 
 test('render-chart orchestrates bounded expert storytelling over one semantic truth layer', () => {
   const prompt = read('.github/prompts/render-chart.prompt.md');
+  const flint = read('.github/skills/flint-chart/SKILL.md');
+  const bigIdea = read('.github/skills/chart-big-idea/SKILL.md');
 
   assert.match(prompt, /explanatory.*exploratory.*persuasive/is);
   assert.match(prompt, /same `data` and `semantic_types`|keep.*`semantic_types`.*stable/is);
@@ -316,6 +318,14 @@ test('render-chart orchestrates bounded expert storytelling over one semantic tr
   assert.match(prompt, /claim.*conflict.*data|data.*conflict.*claim/is);
   assert.match(prompt, /diagnostic.*fully formed spec.*explicit treatment/is);
   assert.match(prompt, /strongest rejected alternative/i);
+  assert.match(prompt, /chart_spec\.title/);
+  assert.match(prompt, /chart_spec\.subtitle/);
+  assert.match(prompt, /standalone Vega-Lite chart/i);
+  assert.match(flint, /title\?: string/);
+  assert.match(flint, /subtitle\?: string/);
+  assert.match(flint, /Carry the Big Idea into the chart/);
+  assert.match(bigIdea, /chart_spec\.title/);
+  assert.match(bigIdea, /chart_spec\.subtitle/);
 });
 
 test('focused skills own expert storytelling techniques and audience-side critique', () => {

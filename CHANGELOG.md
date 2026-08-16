@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-08-15
+
+### Added
+
+- Connected the Chart Brief to Flint `0.5.0` presentation fields: standalone
+  Vega-Lite charts now carry the Big Idea in `chart_spec.title` and their
+  measurement context in `chart_spec.subtitle`. ECharts and Chart.js retain the
+  authored text for surrounding-artifact presentation after compilation.
+
+### Fixed
+
+- Corrected the README's Core compatibility claim to `v3.0.0`.
+
 ## [2.1.0] - 2026-08-14
 
 ### Added

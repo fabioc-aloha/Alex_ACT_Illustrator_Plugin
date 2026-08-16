@@ -1,6 +1,6 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "shape": "thirteen-skill + four-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Expert visual-storytelling and authoring bundle for AI agents. Thirteen skills across five authoring areas plus install composition and runtime setup: Flint chart and ThemeSpec language, Print figures, Replicate, Shell, Banner, install-visual-companions, and setup-illustrator-runtime. Shared framing, bounded creative exploration, and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
@@ -245,7 +245,10 @@
           "server_name": "flint",
           "required": true,
           "command": "node",
-          "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "flint"],
+          "args": [
+            ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+            "flint"
+          ],
           "transport": "stdio",
           "role": "renders the ChartAssemblyInput (Vega-Lite / ECharts / Chart.js)",
           "notes": "Exact 0.5.0 package installed once through the configured npm registry into a plugin-private runtime. The direct Node launcher starts no npm or npx process. Adds ThemeSpec discovery plus version-matched chart and theme authoring resources. Version changes require an explicit compatibility review."
@@ -254,7 +257,10 @@
           "server_name": "replicate",
           "required": false,
           "command": "node",
-          "args": [".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs", "replicate"],
+          "args": [
+            ".github/skills/setup-illustrator-runtime/scripts/runtime-launcher.mjs",
+            "replicate"
+          ],
           "transport": "stdio",
           "role": "connects the agent to Replicate's HTTP API for AI image / video generation, model discovery, comparison, and prediction execution",
           "env": {
@@ -295,7 +301,10 @@
       "path": ".vscode/settings.json",
       "install_to": ".vscode/settings.json",
       "role": "registers the local/ skill + prompt discovery roots",
-      "keys": ["chat.agentSkillsLocations", "chat.promptFilesLocations"],
+      "keys": [
+        "chat.agentSkillsLocations",
+        "chat.promptFilesLocations"
+      ],
       "merge": "additive — merge these two keys into any existing settings.json; never disable VS Code's default roots, since an adopter's own skills and prompts live there",
       "notes": "VS Code discovers skills in .github/skills/ and prompts in .github/prompts/ but does not search their subfolders, so this plugin's local/ install paths load nothing without these keys — silently, with no error, the same failure mode as the .mcp.json path trap. Alex ACT Edition heirs >=3.x already register these roots and can skip this asset."
     }

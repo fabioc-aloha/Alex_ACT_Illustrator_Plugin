@@ -1,7 +1,7 @@
 ---
 name: chart-big-idea
 description: "Distill the one-sentence Big Idea, story arc, audience, and style stance for a chart BEFORE picking a chart type. Starts by questioning intent — whether the artifact should exist at all, and whether the stated purpose is the real one. Reads the surrounding docs / prose / ticket for an existing Big Idea first, then helps the user articulate one via a 3-question elicitation ladder if none is found. Asks whether the user wants a TRADITIONAL (safe) or INNOVATIVE (higher-impact, higher-risk) treatment. Use before invoking the flint-chart skill or the /render-chart prompt whenever the user's ask is 'chart this', 'visualize', 'make a chart', 'show the data', or when framing is unclear."
-lastReviewed: 2026-08-14
+lastReviewed: 2026-08-15
 ---
 
 # Chart Big Idea
@@ -228,6 +228,10 @@ Output a compact brief (fits in one message, ~10 lines) that the `flint-chart` s
 ```
 
 Then invoke `flint-chart` §0.2 with the brief as context. The brief locks the framing; §0.2 handles the mechanical chartType lookup + Flint coverage check.
+
+For a standalone Vega-Lite chart, the Big Idea becomes `chart_spec.title` and
+the measurement context becomes `chart_spec.subtitle`. This preserves the claim
+when the chart travels without the surrounding prose.
 
 ## Anti-patterns
 

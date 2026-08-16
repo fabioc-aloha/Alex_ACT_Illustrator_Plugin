@@ -296,7 +296,7 @@ const REQUESTS = [
     params: {
       protocolVersion: '2024-11-05',
       capabilities: {},
-      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.1.0' },
+      clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.2.0' },
     },
   },
   { jsonrpc: '2.0', method: 'notifications/initialized' },
@@ -608,7 +608,7 @@ function verifyOptionalMcp(config) {
       params: {
         protocolVersion: '2024-11-05',
         capabilities: {},
-        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.1.0' },
+        clientInfo: { name: 'alex-act-illustrator-plugin-verify', version: '2.2.0' },
       },
     };
     const listReq = { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} };
