@@ -14,7 +14,7 @@ Last verified: 2026-08-15.
 | Illustrator | `2.2.1` | `alex-act-illustrator-plugin@alex-mall` |
 | Document Tools | `1.1.1` | `alex-act-document-tools@alex-mall` |
 | Enterprise | `1.0.2` | `alex-act-enterprise@alex-mall` |
-| MSFT | `1.1.1` | `alex-act-msft@agency-playground`, tenant-gated |
+| MSFT | `1.1.3` | `fabioc_microsoft/alex-act-msft`, managed-source access required |
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ Last verified: 2026-08-15.
 - Git available on `PATH`.
 - VS Code with GitHub Copilot Chat, or another Copilot CLI host.
 - A Microsoft enterprise-managed GitHub identity with access to private
-  `agency-microsoft/playground` when installing MSFT.
+  `fabioc_microsoft/alex-act-msft` when installing MSFT.
 - Microsoft corporate identity and network access when installing MSFT.
 
 Check the tools:
@@ -81,12 +81,12 @@ Install only the capabilities needed for the current work:
 | Enterprise | Your projects use the public Azure, Fabric, Power BI, or Microsoft 365 plugin ecosystem. |
 | MSFT | You are a Microsoft employee on the corporate network and need internal Agency, WorkIQ, or organization-reporting capability. |
 
-MSFT is private. Agency Playground is the preferred release path. Confirm
-Microsoft employment, corporate-network access, and an active
-Microsoft-managed GitHub account before installing it.
+MSFT is private and currently source-only. Confirm Microsoft employment,
+corporate-network access, and managed-source access before installing it.
 
-Use `copilot plugin install <plugin>@<marketplace>` and `copilot plugin list`
-for installation and verification. Each specialization's namespaced setup
+Use `copilot plugin install <plugin>@<marketplace>` for public specializations
+and `copilot plugin install fabioc_microsoft/alex-act-msft` for MSFT, then use
+`copilot plugin list` for verification. Each specialization's namespaced setup
 command owns its downstream configuration.
 
 ## 5. Verify Core Activation
