@@ -118,6 +118,30 @@ Run this 3-question elicitation ladder. Ask **one question at a time**; stop as 
 
 **Anti-pattern**: running the whole ladder in one message ("What surprised you? What decision changes? What headline?"). One question, wait, listen, next.
 
+## Step 1.5: Claim computability
+
+A Big Idea the data cannot support is a correctness failure, not a framing
+problem. Before spending effort on arc and style, make the claim's evidence
+executable. One row per decision-bearing claim:
+
+| Claim | Required fields | Formula | Grain | Status |
+| --- | --- | --- | --- | --- |
+| "Email returns $3.20 per $1" | pipeline, campaign spend | pipeline / spend | campaign-quarter | Computable |
+
+Four rules decide the Status column:
+
+- **Denominator present.** A ratio, rate, or "per" claim needs its denominator in the source. A larger numerator is not evidence of greater efficiency.
+- **Baseline named.** "Jan to Jun" is not "versus prior period." State which one the claim means.
+- **Kind separated.** Observations, calculations, scenarios, and forecasts are different claims. Never present a scenario as an observed result.
+- **Grain matches.** Required fields must exist at the grain the claim asserts, not a coarser one.
+
+If a claim is not computable, replace it with an evidence boundary that names
+the missing input. Do not estimate silently, and do not let the chart imply a
+number the data never contained.
+
+Adapted from the Claim Computability Gate in the `storytelling-requirements`
+skill of [`fabioc-aloha/Alex_ACT_Visual_Storytelling`](https://github.com/fabioc-aloha/Alex_ACT_Visual_Storytelling).
+
 ## Step 2: Story arc
 
 Once the Big Idea is written, classify the story arc. This narrows chart families before `flint-chart` §0.2 fires:
@@ -282,3 +306,4 @@ Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fire
 - Cole Nussbaumer Knaflic publishes a materially revised Big Idea framing that supersedes the three-part rule used here.
 - The Step 1 intent check never changes an outcome across ~10 invocations → it is ceremony; fold it back into the elicitation ladder's first question.
 - Users invoke this skill to frame **non-chart** artifacts often enough that Steps 2/4/5 are routinely skipped → the general half (Steps 0/1/3) has outgrown the chart-specific half, and it should be split into its own skill rather than scope-noted.
+- Step 1.5 marks every claim Computable across ~10 invocations without ever forcing an evidence boundary → the gate is ceremony for this audience; cut it to the denominator rule alone.

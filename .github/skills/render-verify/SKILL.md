@@ -118,6 +118,23 @@ Adapted from _The Defensible Decision_ (Fabio Correa) via the `dd-book-illustrat
 
 ## Step 1 — pick a verification capability
 
+**If the artifact is ASCII, stop here and use the ASCII branch below instead.**
+Steps 1 through 3 assume a rendered artifact that a browser can open. An ASCII
+chart has no such artifact: the text in the code fence is both the source and
+the render, so there is nothing to screenshot and no console to read.
+
+For ASCII, substitute [`ascii-chart`](../ascii-chart/SKILL.md) Module 5, the
+alignment QA loop. It covers the same ground for a character grid: validate
+every line against the width constant, verify borders and padding by counting
+characters rather than eyeballing them, and re-check after each fix. That is
+the ASCII equivalent of opening the render and reading the errors.
+
+Then rejoin at Step 4. Claim checking and honest reporting do not depend on a
+renderer, so the Storytelling read-back, the mutation check, and Step 5 apply
+unchanged. Geometry passing is not the same as the numbers being right, and on
+a character grid that gap is easy to miss: a chart can validate perfectly while
+displaying a value the data does not support.
+
 This skill names the **capability**, not a product. Work down this ladder and
 stop at the first rung that works. **Do not install a second MCP server for a
 job the host already does.**
@@ -251,6 +268,31 @@ prose to rescue it:
 If the first focal point or reading order is wrong, return to chart selection,
 technique, or ThemeSpec. Do not compensate by writing a longer caption.
 
+### Mutation check (decision-bearing values)
+
+Rendering checks confirm the picture drew. They cannot confirm the numbers are
+right, so a figure can pass every geometry, catalog, and accessibility check
+while asserting something false.
+
+Before shipping a figure whose numbers drive a decision:
+
+1. Change one decision-bearing value in the source data.
+2. Regenerate the artifact.
+3. Require the output to change visibly, and any coupled check to fail.
+4. Restore the source bit-identically and regenerate once more.
+
+If the output does not move, the figure is not reading the data it claims to
+read. Visual inspection does not find this, because the wrong number renders
+exactly as cleanly as the right one.
+
+Check every surface carrying the value, not only the plotted marks: embedded
+data, visible labels, aria description, tooltip, caption, and any
+evidence-boundary text.
+
+Composes with Core's `mutation-testing` skill, which applies the same idea to a
+test harness. Adapted from the Executable Example Contract in the
+`visual-storytelling` skill of [`fabioc-aloha/Alex_ACT_Visual_Storytelling`](https://github.com/fabioc-aloha/Alex_ACT_Visual_Storytelling).
+
 ## Step 5 — report honestly
 
 State which capability you used, that you looked, and what you checked. If you
@@ -378,6 +420,10 @@ path inside that folder. Verified 2026-07-25: a bare filename leaked into
 ## Would Revise If
 
 Revise this skill by 2026-10-25 (90 days) or sooner if:
+
+- **The mutation check never fails on a real figure across ~10 shipped charts.**
+  Either the pipeline is genuinely sound, or the check is being run as a
+  formality. Confirm by seeding one deliberate defect before cutting the step.
 
 - **The host's built-in browser tools gain or lose console-error access.**
   `browser_console_messages` is currently the main capability that justifies the

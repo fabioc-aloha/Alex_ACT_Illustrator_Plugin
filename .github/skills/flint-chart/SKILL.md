@@ -553,6 +553,14 @@ Recommend the substitute, not the missing chart:
 | Decomposition Tree / Key Influencers / Smart Narrative (AI-Powered)     | Not in Flint's scope                                           | These are Power BI features; Flint is a chart compiler, not an analytics engine         |
 | Table / Matrix (precise value lookup)                                   | Use a data table (not Flint)                                   | Stephen Few's rule — tables for lookup, graphs for pattern                              |
 
+This table is a **catalog** boundary: Flint does not offer these chart types.
+[`ascii-chart`](../ascii-chart/SKILL.md) carries a separate **medium** boundary
+listing forms ASCII cannot carry at all, such as pie, donut, sunburst, violin,
+and streamgraph, because angle and smooth curves need resolution a character
+cell does not have. The two lists barely overlap and are not interchangeable: a
+chart absent here may render fine in ASCII, and a chart Flint renders well may
+be impossible in ASCII.
+
 ### 0.5 When to fetch a deep reference
 
 Four reference layers, ordered by cost. Fetch the cheapest one that answers the question.

@@ -8,9 +8,9 @@ This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constell
 
 ## What this repo is
 
-An Alex ACT constellation plugin for visual authoring. Ships **five visual-authoring areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), Shell (browsable / gallery / catalog surface), and Banner (deterministic SVG brand assets). Currently:
+An Alex ACT constellation plugin for visual authoring. Ships **six visual-authoring areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), Shell (browsable / gallery / catalog surface), Banner (deterministic SVG brand assets), and ASCII (monospace delivery where no rendering engine exists). Currently:
 
-- **Thirteen skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `flint-theme`, `render-verify`, `corpus-qa-sweep`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `setup-illustrator-runtime`, `docs-shell`, `svg-banner`, and `install-visual-companions`
+- **Fourteen skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `flint-theme`, `render-verify`, `corpus-qa-sweep`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `setup-illustrator-runtime`, `docs-shell`, `svg-banner`, `install-visual-companions`, and `ascii-chart`
 - **Four slash-command prompts** — `/alex-act-illustrator-plugin render-chart`, `/alex-act-illustrator-plugin banner`, `/alex-act-illustrator-plugin install-visual-companions`, and `/alex-act-illustrator-plugin setup-illustrator-runtime`
 - **Three MCP sidecars** in `.vscode/mcp.json` — exact `flint-chart-mcp@0.5.0` (required), exact `replicate-mcp@0.9.0` (optional; needs `REPLICATE_API_TOKEN`), and exact `@playwright/mcp@0.0.78` (optional browser sidecar). Install once through npm's configured registry, then every runtime invocation uses the plugin-private Node launcher; never probe or override the public registry.
 - **Stable-version audit** — `setup-illustrator-runtime --check-updates` compares all three reviewed pins with `dist-tags.latest` through npm's configured registry. Report drift; never auto-upgrade before compatibility checks and a governed release.

@@ -17,6 +17,7 @@ This skill is the **selection and evaluation reference**. It sits upstream of th
 | Author the Flint spec + render | [`flint-chart`](../flint-chart/SKILL.md) |
 | Structural / hand-authored SVG | [`figure-generator`](../figure-generator/SKILL.md) + [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) |
 | AI-generated illustration / hero image | [`replicate-imagery`](../replicate-imagery/SKILL.md) |
+| Terminal, log, PR comment, or context window | [`ascii-chart`](../ascii-chart/SKILL.md) |
 | Verify after render | [`render-verify`](../render-verify/SKILL.md) |
 | Deliver / browse the gallery | [`docs-shell`](../docs-shell/SKILL.md) |
 
@@ -233,13 +234,14 @@ Run this algorithm when choosing charts for a dashboard, report, or book figure:
    → statistical charts: flint-chart (Vega-Lite / ECharts / Chart.js via Flint MCP)
    → structural / hand-authored SVG: figure-generator + print-svg-style-guide
    → AI-generated illustration: replicate-imagery
+   → no renderer available (terminal, log, PR, context window): ascii-chart
 
 7. Verify: render-verify (Prose-coupling + failure catalog)
 ```
 
 ## Attribution
 
-The chart catalog (Module 1), CSAR loop (Module 2), 5-visual rule (Module 3), gallery references (Module 4), and selection tree (Module 5) are adapted from the `visual-vocabulary` skill in [`fabioc-aloha/Alex_ACT_Visual_Storytelling`](https://github.com/fabioc-aloha/Alex_ACT_Visual_Storytelling) (v1.2.0, absorbed 2026-07-30). The upstream skill also carries Module 4 SVG composition patterns (panel primitive, pie sizing, dark-slate palette); those are covered in the plugin's [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) and [`figure-generator`](../figure-generator/SKILL.md) with print-legibility math + brand-palette semantic colors, so they are not duplicated here.
+The chart catalog (Module 1), CSAR loop (Module 2), 5-visual rule (Module 3), gallery references (Module 4), and selection tree (Module 5) are adapted from the `visual-vocabulary` skill in [`fabioc-aloha/Alex_ACT_Visual_Storytelling`](https://github.com/fabioc-aloha/Alex_ACT_Visual_Storytelling) (v1.2.0, absorbed 2026-07-30). That upstream plugin was retired on 2026-08-18 under Alex ACT Steward ADR-039; its repository remains archived and readable, and its ASCII delivery moved here as [`ascii-chart`](../ascii-chart/SKILL.md). The upstream skill also carries Module 4 SVG composition patterns (panel primitive, pie sizing, dark-slate palette); those are covered in the plugin's [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) and [`figure-generator`](../figure-generator/SKILL.md) with print-legibility math + brand-palette semantic colors, so they are not duplicated here.
 
 FT Visual Vocabulary, Data-to-Viz, Data Viz Catalog, Vega-Lite examples, and Storytelling with Data are cited under their published URLs; this skill is a decision framework built on top of those galleries, not a replacement for them.
 

@@ -21,15 +21,16 @@ Copilot CLI commands provide plugin lifecycle operations.
 
 ## What it does
 
-Five authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and verification pass (`render-verify` Prose-coupling check):
+Six authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and verification pass (`render-verify` Prose-coupling check):
 
 1. **Flint — expert statistical storytelling.** `chart-big-idea` → `chart-vocabulary` (chart families + storytelling techniques) → familiar/expressive `flint-chart` treatments over one `semantic_types` truth layer → optional preset or custom `flint-theme` visual system → render via `flint-chart-mcp` (Vega-Lite / ECharts / Chart.js, local) → comparative `render-verify` critique and iteration. Data never leaves the machine. Entry point: `/alex-act-illustrator-plugin render-chart`.
 2. **Print figures — hand-authored SVG for books and reports.** `chart-big-idea` (Step 0.5 earn-a-figure gate) → `print-svg-style-guide` (canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four composition idioms) → `figure-generator` (`.mjs` generator + `data/<slug>.json` + `data-sha256` audit hash + contract tests + dataset inversion). Book-tested across 53 figures in *The Defensible Decision* (Fabio Correa).
 3. **Replicate — AI image generation.** `chart-big-idea` → `replicate-imagery` (model routing + brand alignment + cost awareness) → upstream `replicate/skills` for prompting → `replicate` MCP calls the Replicate HTTP API. FLUX / Ideogram / Recraft / Imagen + editing / inpaint / upscale / background-removal. Requires `REPLICATE_API_TOKEN`; nothing spins up until you use it.
 4. **Shell — browsable / gallery / catalog surface.** `docs-shell` skill + `starter/` bundle render concatenated markdown as a single-page HTML shell with two-line topnav, sticky page header, and sidebar TOC. Repository-root and stable subfolder shells share the same relative-path contract. HTML-source docs can retain manifest-driven navigation, and the bundled read-only audit reports missing capabilities without erasing local extensions.
 5. **Banner — deterministic brand identity.** `svg-banner` reads the active palette and brand structure, then generates a reproducible 1200×320 SVG for READMEs, plans, notes, and release artifacts. Entry point: `/alex-act-illustrator-plugin banner`.
+6. **ASCII — delivery where no renderer exists.** `chart-big-idea` → `chart-vocabulary` → `ascii-chart` renders bar, dot, sparkline, histogram, box plot, scatter, bubble, heatmap, funnel, waterfall, treemap, gauge, and KPI forms on a monospace grid for terminals, log files, pull request comments, and context windows. The only delivery path here with zero runtime dependency: no MCP server, no browser, no token. Its bundled gallery carries 32 worked forms, a Flint coverage matrix, and an explicit list of what ASCII cannot carry. Adopted from the retired Visual Storytelling plugin on 2026-08-18.
 
-**Install composition** is adjacent rather than a sixth authoring area: `install-visual-companions` offers the visual runtime shelf per plugin, with explicit consent and marketplace verification before installation.
+**Install composition** is adjacent rather than a seventh authoring area: `install-visual-companions` offers the visual runtime shelf per plugin, with explicit consent and marketplace verification before installation.
 
 <!-- markdownlint-disable MD033 MD049 -->
 
@@ -95,7 +96,10 @@ Each authoring skill can still run independently when the framing or verificatio
 | `.github/skills/docs-shell/SKILL.md`            | Docs viewer with a portable adoption guide, standalone-report navigation, and a read-only capability audit.                                                                      |
 | `.github/skills/replicate-imagery/SKILL.md`     | Route AI image generation and editing to Replicate (FLUX, Ideogram, Recraft, imagen) via the bundled `replicate` MCP server. Delegates prompting to Replicate's upstream skills. |
 | `.github/skills/svg-banner/SKILL.md`            | 1200×320 SVG brand banner generator with pluggable brand config (default: Alex ACT). For READMEs, plans, notes, release artifacts. Absorbed from `Alex_ACT_Steward` 2026-07-30.  |
-| `install-visual-companions` skill               | Consent-gated installer for nine independently maintained visual-workflow companion plugins; verifies marketplace identity before offering each install.                         |
+| `.github/skills/ascii-chart/SKILL.md`           | Pure-ASCII chart and dashboard rendering on a monospace grid for terminals, logs, PR comments, and context windows. No renderer, no browser, no MCP. Adopted 2026-08-18.          |
+| `.github/skills/ascii-chart/references/ascii-gallery.md` | 32 worked ASCII forms by communication goal, a Flint coverage matrix, and the forms ASCII cannot carry. Generated, never hand-edited.                                    |
+| `demos/ascii-gallery/`                          | Self-contained gallery generator, sample dataset, and browsable HTML output. Regenerates both the demo and the bundled skill reference from one source.                          |
+| `install-visual-companions` skill               | Consent-gated installer for eight independently maintained visual-workflow companion plugins; verifies marketplace identity before offering each install.                        |
 | `.github/prompts/render-chart.prompt.md`        | `/alex-act-illustrator-plugin render-chart <request>` entry point (loads the three chart skills)                                                                                 |
 | `.github/prompts/banner.prompt.md`              | `/alex-act-illustrator-plugin banner` entry point (invokes the svg-banner skill)                                                                                                 |
 | `install-visual-companions` prompt              | `/alex-act-illustrator-plugin install-visual-companions` entry point for choosing and installing companions one at a time.                                                       |

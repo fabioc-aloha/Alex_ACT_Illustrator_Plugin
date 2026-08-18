@@ -1,12 +1,12 @@
 ---
 name: install-visual-companions
-description: "Offer to install nine marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval. Use when the heir asks to enable visual-workflow tooling, or when the illustrator's chart / figure / print-SVG authoring produces artifacts that need runtime verification (multimodal vision loop). Companion to install-constellation in alex-act-core."
+description: "Offer to install eight marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval. Use when the heir asks to enable visual-workflow tooling, or when the illustrator's chart / figure / print-SVG authoring produces artifacts that need runtime verification (multimodal vision loop). Companion to install-constellation in alex-act-core."
 lastReviewed: 2026-08-14
 ---
 
 # install-visual-companions
 
-Nine marketplace plugins compose to deliver visual-authoring workflows around Illustrator: chart rendering, screenshot verification, whiteboard iteration, PR annotation, and the vision loop that closes what looks like a runtime-capability gap via composition rather than net-new authorship.
+Eight marketplace plugins compose to deliver visual-authoring workflows around Illustrator: chart rendering, screenshot verification, whiteboard iteration, PR annotation, and the vision loop that closes what looks like a runtime-capability gap via composition rather than net-new authorship.
 
 **None are part of Illustrator's baseline install** — heirs opt in per workload, one at a time. Delegate to Core's [`plugin-management`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/skills/plugin-management/SKILL.md) skill for the mechanical `copilot plugin install / marketplace add` commands and safety rules.
 
@@ -26,7 +26,7 @@ Nine marketplace plugins compose to deliver visual-authoring workflows around Il
 - Pure-code work, non-visual data pipelines, backend / infra without UI — the companions add zero cost when not installed but non-trivial install-time friction when installed
 - The heir hasn't installed Illustrator yet — install Core + Illustrator first; visual companions layer on top
 
-## The nine companion plugins
+## The eight companion plugins
 
 Discovered and verified via the Steward GH-APP-SUPPORT feedback loop (private governance record) (4-round A/B test on user's brain, 2026-07-31; ledger row `[GH-APP-FEEDBACK]` closure). Ownership moved from `alex-act-core`'s `install-constellation` Step 7 to this skill in Illustrator v0.6.0 (2026-08-01) so the visual-workflow shelf lives with the visual-authoring plugin that anchors it.
 
@@ -40,18 +40,24 @@ Discovered and verified via the Steward GH-APP-SUPPORT feedback loop (private go
 | `chart-interpretation` | `alex-mall` | Read charts, extract insights (reverse of authoring) | ✅ |
 | `visual-artifact-qa` | `alex-mall` | Render-time verification (visual output that passes static checks can still fail to render) | ✅ |
 | `visual-pr` | `awesome-copilot` | PR screenshot + annotation embed workflow | ⚪ Skills-only, needs real PR to exercise |
-| `storytelling-requirements` | `alex-mall` | Guided Big Idea → chart discipline | ✅ |
+
+> `storytelling-requirements` was the ninth companion until 2026-08-18. Its
+> plugin was retired under Alex ACT Steward ADR-039 and its framing role is now
+> owned in-plugin by [`chart-big-idea`](../chart-big-idea/SKILL.md), so it needs
+> no install.
 
 ## Vision loop composition
 
-Discovered via GH-APP-SUPPORT Round 3:
+Discovered via GH-APP-SUPPORT Round 3. The framing gate moved in-plugin on
+2026-08-18, so the loop now needs three installs rather than four:
 
 ```text
-storytelling-requirements  →  visual-artifact-qa  →  chart-interpretation  →  eyeball
-   (framing gate)              (render check)         (read-back audit)      (claim proof)
+chart-big-idea  →  visual-artifact-qa  →  chart-interpretation  →  eyeball
+ (framing gate,      (render check)        (read-back audit)      (claim proof)
+  in-plugin)
 ```
 
-Composes end-to-end with zero conflicts. Closes what looks like a runtime-capability gap (multimodal vision on agent output) via composition, not net-new authorship. The vision loop is why the "canonical bundle" for the loop is the 4 skills above; the other 5 fill adjacent gaps.
+Composes end-to-end with zero conflicts. Closes what looks like a runtime-capability gap (multimodal vision on agent output) via composition, not net-new authorship. The vision loop is why the "canonical bundle" for the loop is the 3 companions above plus in-plugin framing; the other 5 fill adjacent gaps.
 
 ## Expert storytelling stages
 
@@ -61,7 +67,7 @@ incomplete.
 
 | Storytelling moment | Optional companion | Role |
 | --- | --- | --- |
-| **Requirements and audience** | `storytelling-requirements` | Capture audience, Big Idea, questions, evidence, and delivery target. |
+| **Requirements and audience** | [`chart-big-idea`](../chart-big-idea/SKILL.md) (in-plugin) | Capture audience, Big Idea, questions, evidence, and delivery target. No install needed. |
 | **Spatial ideation** | `napkin` | Sketch composition or sequence while the layout question is unresolved. |
 | **Independent reading** | `chart-interpretation` | Read the candidate from the audience side; surface patterns, omissions, bias, and competing narratives. |
 | **Render QA** | `visual-artifact-qa` | Add static output checks around the visual inspection boundary. |
@@ -75,9 +81,9 @@ the heir explicitly invokes this skill and approves each requested plugin.
 
 ### Step 1 — Confirm the workload
 
-Print the 9-plugin table. Ask the heir:
+Print the 8-plugin table. Ask the heir:
 
-> "Which visual companions do you want? Reply 'vision loop' (storytelling-requirements + visual-artifact-qa + chart-interpretation + eyeball, ~4 plugins, the composition pattern from GH-APP-SUPPORT), 'all nine', or name specific plugins. Reply 'skip' to install nothing."
+> "Which visual companions do you want? Reply 'vision loop' (visual-artifact-qa + chart-interpretation + eyeball, 3 plugins, the composition pattern from GH-APP-SUPPORT; the framing gate is already in-plugin as chart-big-idea), 'all eight', or name specific plugins. Reply 'skip' to install nothing."
 
 Default to no action if the heir says "skip" or does not respond. Never install without an explicit consent list per plugin.
 
@@ -111,7 +117,6 @@ copilot plugin install <name>@<marketplace>
 Example — install the vision-loop bundle:
 
 ```pwsh
-copilot plugin install storytelling-requirements@alex-mall
 copilot plugin install visual-artifact-qa@alex-mall
 copilot plugin install chart-interpretation@alex-mall
 copilot plugin install eyeball@awesome-copilot
@@ -169,7 +174,7 @@ Print a summary:
 ## Composes with
 
 - [`render-verify`](../render-verify/SKILL.md) — Illustrator's own visual-output audit skill; the vision loop extends this with cross-plugin composition
-- [`chart-big-idea`](../chart-big-idea/SKILL.md) — Big Idea framing feeds into `storytelling-requirements` for the input side of the vision loop
+- [`chart-big-idea`](../chart-big-idea/SKILL.md) — owns the framing gate at the input side of the vision loop since 2026-08-18, replacing the retired `storytelling-requirements` companion
 - Core's [`install-constellation`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/skills/install-constellation/SKILL.md) — installs the four constellation plugins; this skill installs the visual companions after Illustrator is available
 - Core's [`plugin-management`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/skills/plugin-management/SKILL.md) — delegated for all mechanical plugin operations + Safety rules
 
