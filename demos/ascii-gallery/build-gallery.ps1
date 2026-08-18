@@ -166,8 +166,10 @@ Add-Entry 'Proportion' 'Waffle grid' 'Part of a whole as countable units' 'Preci
 $rev = $data | ForEach-Object { [double]$_.revenue } | Sort-Object
 $min = $rev[0]; $max = $rev[-1]
 $buckets = @()
+$binWidth = 2000
+$bucketStart = [math]::Floor($min / $binWidth) * $binWidth
 for ($i = 0; $i -lt 5; $i++) {
-    $lo = $min + (($max - $min) / 5 * $i); $hi = $lo + (($max - $min) / 5)
+    $lo = $bucketStart + ($binWidth * $i); $hi = $lo + $binWidth
     $c = @($rev | Where-Object { $_ -ge $lo -and ($_ -lt $hi -or ($i -eq 4 -and $_ -le $hi)) }).Count
     $buckets += [pscustomobject]@{ Lo = $lo; Count = $c }
 }
@@ -496,39 +498,41 @@ Add-Entry 'Deviation' 'Variance column' 'Actual against plan per period' 'No pla
 
 # --- Flint coverage ---------------------------------------------------------
 $coverage = @(
-    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Bar'; Ascii = 'Horizontal bar'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Grouped Bar'; Ascii = 'Grouped bar'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Stacked Bar (normalize)'; Ascii = 'Stacked 100% bar'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Slope Chart'; Ascii = 'Slope chart'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Faceted Bar'; Ascii = 'Small multiples'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Waterfall Chart'; Ascii = 'Waterfall'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Trend'; Flint = 'Line'; Ascii = 'Line chart'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Trend'; Flint = 'Area'; Ascii = 'Area chart'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Trend'; Flint = 'Sparkline'; Ascii = 'Sparkline'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Trend'; Flint = 'Bar + Line combo'; Ascii = 'Pareto'; Status = 'Approximate' }
-    [pscustomobject]@{ Family = 'Distribution'; Flint = 'Histogram'; Ascii = 'Histogram'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Trend'; Flint = 'Area Chart'; Ascii = 'Area chart'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Bar Chart'; Ascii = 'Horizontal bar or Column trend'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Bar Table'; Ascii = 'Percentage rows'; Status = 'Approximate' }
     [pscustomobject]@{ Family = 'Distribution'; Flint = 'Boxplot'; Ascii = 'Box plot'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Distribution'; Flint = 'Strip Plot'; Ascii = 'Strip plot'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Distribution'; Flint = 'ECDF Plot'; Ascii = 'ECDF'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Distribution'; Flint = 'Violin Plot'; Ascii = 'Box plot or Histogram'; Status = 'Not viable' }
-    [pscustomobject]@{ Family = 'Distribution'; Flint = 'Density Plot'; Ascii = 'Histogram'; Status = 'Not viable' }
-    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Scatter'; Ascii = 'Scatter plot'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Scatter + size (Bubble)'; Ascii = 'Bubble plot'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Parallel Coordinates'; Ascii = 'Parallel coordinates'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Regression'; Ascii = 'Scatter plot'; Status = 'Approximate' }
-    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Connected Scatter'; Ascii = 'Slope chart'; Status = 'Not viable' }
-    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Stacked normalize'; Ascii = 'Stacked 100% bar'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Treemap'; Ascii = 'Treemap'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Funnel'; Ascii = 'Funnel'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Pie'; Ascii = 'Percentage rows or Waffle grid'; Status = 'Not viable' }
-    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Donut'; Ascii = 'Percentage rows or Waffle grid'; Status = 'Not viable' }
-    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Sunburst'; Ascii = 'Treemap'; Status = 'Not viable' }
-    [pscustomobject]@{ Family = 'Flow'; Flint = 'Sankey'; Ascii = 'Sankey flow'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Flow'; Flint = 'Heatmap'; Ascii = 'Heatmap'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'Flow'; Flint = 'Streamgraph'; Ascii = 'Small multiples'; Status = 'Not viable' }
     [pscustomobject]@{ Family = 'KPI'; Flint = 'Bullet Chart'; Ascii = 'Bullet chart'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Bump Chart'; Ascii = 'Slope chart'; Status = 'Approximate' }
+    [pscustomobject]@{ Family = 'Financial'; Flint = 'Candlestick Chart'; Ascii = 'Table with OHLC columns'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Spatial'; Flint = 'Choropleth'; Ascii = 'Ranked bars or table'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Connected Scatter Plot'; Ascii = 'Slope chart'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Distribution'; Flint = 'Density Plot'; Ascii = 'Histogram'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Donut Chart'; Ascii = 'Percentage rows or Waffle grid'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Distribution'; Flint = 'ECDF Plot'; Ascii = 'ECDF'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Flow'; Flint = 'Gantt Chart'; Ascii = 'Stage pipeline'; Status = 'Approximate' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Grouped Bar Chart'; Ascii = 'Grouped bar'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Heatmap'; Ascii = 'Heatmap'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Distribution'; Flint = 'Histogram'; Ascii = 'Histogram'; Status = 'Covered' }
     [pscustomobject]@{ Family = 'KPI'; Flint = 'KPI Card'; Ascii = 'KPI card'; Status = 'Covered' }
-    [pscustomobject]@{ Family = 'KPI'; Flint = 'Gauge Chart'; Ascii = 'Gauge'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Trend'; Flint = 'Line Chart'; Ascii = 'Line chart'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Lollipop Chart'; Ascii = 'Dot plot'; Status = 'Approximate' }
+    [pscustomobject]@{ Family = 'Spatial'; Flint = 'Map'; Ascii = 'Ranked bars or table'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Pie Chart'; Ascii = 'Percentage rows or Waffle grid'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Pyramid Chart'; Ascii = 'Diverging bar (split panels)'; Status = 'Approximate' }
+    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Radar Chart'; Ascii = 'Parallel coordinates'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Trend'; Flint = 'Range Area Chart'; Ascii = 'Area chart with stated bounds'; Status = 'Approximate' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Ranged Dot Plot'; Ascii = 'Dot plot'; Status = 'Approximate' }
+    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Regression'; Ascii = 'Scatter plot with coefficient'; Status = 'Approximate' }
+    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Rose Chart'; Ascii = 'Percentage rows'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Relationship'; Flint = 'Scatter Plot'; Ascii = 'Scatter plot or Bubble plot'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Slope Chart'; Ascii = 'Slope chart'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Trend'; Flint = 'Sparkline'; Ascii = 'Sparkline'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Proportion'; Flint = 'Stacked Bar Chart'; Ascii = 'Stacked 100% bar'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Trend'; Flint = 'Streamgraph'; Ascii = 'Small multiples'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Distribution'; Flint = 'Strip Plot'; Ascii = 'Strip plot'; Status = 'Covered' }
+    [pscustomobject]@{ Family = 'Distribution'; Flint = 'Violin Plot'; Ascii = 'Box plot or Histogram'; Status = 'Not viable' }
+    [pscustomobject]@{ Family = 'Comparison'; Flint = 'Waterfall Chart'; Ascii = 'Waterfall'; Status = 'Covered' }
 )
 $limits = @(
     [pscustomobject]@{ Form = 'Pie, Donut, Sunburst'; Why = 'angle encodes the value, and a character cell cannot carry a partial angle'; Instead = 'Stacked 100% bar, Percentage rows, or Waffle grid' }
@@ -539,39 +543,17 @@ $limits = @(
 )
 $covered = @($coverage | Where-Object Status -eq 'Covered').Count
 
-$flintEquivalents = @{
-    'Horizontal bar'       = [pscustomobject]@{ Type = 'Bar Chart'; Match = 'Exact' }
-    'Dot plot'             = [pscustomobject]@{ Type = 'Lollipop Chart'; Match = 'Nearest' }
-    'Bullet chart'         = [pscustomobject]@{ Type = 'Bullet Chart'; Match = 'Exact' }
-    'Grouped bar'          = [pscustomobject]@{ Type = 'Grouped Bar Chart'; Match = 'Exact' }
-    'Slope chart'          = [pscustomobject]@{ Type = 'Slope Chart'; Match = 'Exact' }
-    'Waterfall'            = [pscustomobject]@{ Type = 'Waterfall Chart'; Match = 'Exact' }
-    'Pareto'               = [pscustomobject]@{ Type = 'Bar Chart'; Match = 'Nearest' }
-    'Gauge'                = [pscustomobject]@{ Type = 'Bullet Chart'; Match = 'Nearest' }
-    'KPI card'             = [pscustomobject]@{ Type = 'KPI Card'; Match = 'Exact' }
-    'Sparkline'            = [pscustomobject]@{ Type = 'Sparkline'; Match = 'Exact' }
-    'Column trend'         = [pscustomobject]@{ Type = 'Bar Chart'; Match = 'Exact' }
-    'Step line'            = [pscustomobject]@{ Type = 'Line Chart'; Match = 'Nearest' }
-    'Small multiples'      = [pscustomobject]@{ Type = 'Line Chart'; Match = 'Exact, faceted' }
-    'Line chart'           = [pscustomobject]@{ Type = 'Line Chart'; Match = 'Exact' }
-    'Area chart'           = [pscustomobject]@{ Type = 'Area Chart'; Match = 'Exact' }
-    'Stacked 100% bar'     = [pscustomobject]@{ Type = 'Stacked Bar Chart'; Match = 'Exact' }
-    'Percentage rows'      = [pscustomobject]@{ Type = 'Bar Table'; Match = 'Nearest' }
-    'Waffle grid'          = [pscustomobject]@{ Type = 'Stacked Bar Chart'; Match = 'Nearest' }
-    'Treemap'              = [pscustomobject]@{ Type = 'No direct type'; Match = 'ASCII only' }
-    'Histogram'            = [pscustomobject]@{ Type = 'Histogram'; Match = 'Exact' }
-    'Box plot'             = [pscustomobject]@{ Type = 'Boxplot'; Match = 'Exact' }
-    'Strip plot'           = [pscustomobject]@{ Type = 'Strip Plot'; Match = 'Exact' }
-    'ECDF'                 = [pscustomobject]@{ Type = 'ECDF Plot'; Match = 'Exact' }
-    'Scatter plot'         = [pscustomobject]@{ Type = 'Scatter Plot'; Match = 'Exact' }
-    'Heatmap'              = [pscustomobject]@{ Type = 'Heatmap'; Match = 'Exact' }
-    'Bubble plot'          = [pscustomobject]@{ Type = 'Scatter Plot'; Match = 'Exact, size channel' }
-    'Parallel coordinates' = [pscustomobject]@{ Type = 'No direct type'; Match = 'ASCII only' }
-    'Funnel'               = [pscustomobject]@{ Type = 'Pyramid Chart'; Match = 'Nearest' }
-    'Stage pipeline'       = [pscustomobject]@{ Type = 'Gantt Chart'; Match = 'Nearest' }
-    'Sankey flow'          = [pscustomobject]@{ Type = 'No direct type'; Match = 'ASCII only' }
-    'Diverging bar'        = [pscustomobject]@{ Type = 'Pyramid Chart'; Match = 'Nearest' }
-    'Variance column'      = [pscustomobject]@{ Type = 'Bar Chart'; Match = 'Nearest' }
+$dataFile = Join-Path $env:TEMP 'alex-act-ascii-gallery-data.json'
+$specFile = Join-Path $env:TEMP 'alex-act-ascii-gallery-specs.json'
+try {
+    $data | ConvertTo-Json -Depth 4 | Set-Content -Path $dataFile -Encoding utf8
+    & node (Join-Path $PSScriptRoot 'build-flint-specs.mjs') $dataFile $specFile
+    if ($LASTEXITCODE -ne 0) { throw "Flint gallery compiler exited with code $LASTEXITCODE" }
+    $flintJson = Get-Content $specFile -Raw
+    $flintEquivalents = $flintJson | ConvertFrom-Json -AsHashtable
+}
+finally {
+    Remove-Item $dataFile, $specFile -ErrorAction SilentlyContinue
 }
 
 # --- render markdown --------------------------------------------------------
@@ -639,6 +621,9 @@ $html.Add('<!DOCTYPE html>')
 $html.Add('<html lang="en"><head><meta charset="utf-8">')
 $html.Add('<meta name="viewport" content="width=device-width, initial-scale=1">')
 $html.Add('<title>ASCII + Flint Chart Gallery</title>')
+$html.Add('<script src="https://cdn.jsdelivr.net/npm/vega@6"></script>')
+$html.Add('<script src="https://cdn.jsdelivr.net/npm/vega-lite@6"></script>')
+$html.Add('<script src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>')
 $html.Add('<style>')
 $html.Add(':root{--bg:#0f172a;--card:#1e293b;--ink:#e2e8f0;--mute:#94a3b8;--accent:#10b981;--flint:#38bdf8;--line:#334155}')
 $html.Add('*{box-sizing:border-box}')
@@ -656,10 +641,15 @@ $html.Add('.card h3{margin:0 0 .35rem;font-size:1.05rem;color:#fff}')
 $html.Add('.meta{margin:0 0 .75rem;color:var(--mute);font-size:.85rem}')
 $html.Add('.comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(18rem,.7fr);gap:1rem;align-items:stretch}')
 $html.Add('.column{min-width:0}')
+$html.Add('.column:first-child pre{height:calc(100% - 1.15rem)}')
 $html.Add('.column-label{margin:0 0 .45rem;color:var(--mute);font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}')
-$html.Add('.flint-panel{height:calc(100% - 1.15rem);min-height:7rem;display:flex;flex-direction:column;justify-content:center;background:#111c2f;border:1px solid var(--line);border-left:3px solid var(--flint);border-radius:8px;padding:1rem 1.1rem}')
-$html.Add('.flint-type{margin:0;color:#fff;font-size:1.15rem;font-weight:700}')
-$html.Add('.flint-match{margin:.35rem 0 0;color:var(--flint);font-size:.82rem}')
+$html.Add('.flint-panel{min-height:7rem;display:flex;flex-direction:column;justify-content:center;background:#f8fafc;border:1px solid var(--line);border-left:3px solid var(--flint);border-radius:8px;padding:.7rem .8rem;overflow:hidden}')
+$html.Add('.flint-chart{display:flex;align-items:center;justify-content:center;overflow:hidden}')
+$html.Add('.flint-chart svg{display:block;max-width:100%;height:auto}')
+$html.Add('.flint-caption{display:flex;align-items:baseline;justify-content:space-between;gap:.75rem;padding:.55rem .3rem .1rem;border-top:1px solid #cbd5e1}')
+$html.Add('.flint-type{margin:0;color:#0f172a;font-size:.9rem;font-weight:700}')
+$html.Add('.flint-match{margin:0;color:#0369a1;font-size:.75rem;white-space:nowrap}')
+$html.Add('.flint-empty{min-height:12rem;align-items:flex-start;padding:1.1rem}')
 $html.Add('.tag{display:inline-block;padding:.05rem .5rem;border-radius:999px;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;margin-left:.4rem}')
 $html.Add('.real{background:rgba(16,185,129,.15);color:var(--accent)}')
 $html.Add('.illustrative{background:rgba(148,163,184,.15);color:var(--mute)}')
@@ -668,9 +658,11 @@ $html.Add('.notviable{background:rgba(148,163,184,.12);color:var(--mute);text-de
 $html.Add('pre{margin:0;overflow-x:auto;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:.9rem;color:var(--ink);font:13px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace}')
 $html.Add('footer{padding:2rem 1.5rem;color:var(--mute);font-size:.85rem;border-top:1px solid var(--line);margin-top:2rem}')
 $html.Add('table{width:100%;border-collapse:collapse;font-size:.88rem}')
+$html.Add('.table-scroll{max-width:100%;overflow-x:auto}')
+$html.Add('.table-scroll table{min-width:42rem}')
 $html.Add('th,td{text-align:left;padding:.42rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}')
 $html.Add('th{color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:.72rem}')
-$html.Add('@media(max-width:800px){.comparison{grid-template-columns:1fr}.flint-panel{min-height:5.5rem}}')
+$html.Add('@media(max-width:800px){.comparison{grid-template-columns:1fr}.column:first-child pre{height:auto}.flint-empty{min-height:5.5rem}}')
 $html.Add('</style></head><body>')
 $html.Add('<header><h1>ASCII + Flint Chart Gallery</h1>')
 $html.Add('<p>Compare each terminal-safe ASCII form with its Flint 0.5.0 Vega-Lite equivalent, organized by Illustrator&#39;s seven communication goals.</p>')
@@ -689,7 +681,12 @@ foreach ($g in $goals) {
         $flint = $flintEquivalents[$e.Form]
         $html.Add('<div class="comparison">')
         $html.Add('<div class="column"><p class="column-label">ASCII</p><pre>' + (HtmlEscape $e.Ascii) + '</pre></div>')
-        $html.Add('<div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><p class="flint-type">' + (HtmlEscape $flint.Type) + '</p><p class="flint-match">' + (HtmlEscape $flint.Match) + '</p></div></div>')
+        if ($flint.spec) {
+            $html.Add('<div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="' + (HtmlEscape $e.Form) + '"></div><div class="flint-caption"><p class="flint-type">' + (HtmlEscape $flint.type) + '</p><p class="flint-match">' + (HtmlEscape $flint.match) + '</p></div></div></div>')
+        }
+        else {
+            $html.Add('<div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel flint-empty"><p class="flint-type">' + (HtmlEscape $flint.type) + '</p><p class="flint-match">' + (HtmlEscape $flint.match) + '</p></div></div>')
+        }
         $html.Add('</div>')
         $html.Add('</div>')
     }
@@ -697,6 +694,7 @@ foreach ($g in $goals) {
 $html.Add('<h2 id="flint-coverage">Flint coverage</h2>')
 $html.Add('<div class="card">')
 $html.Add('<p class="meta">Of the ' + $coverage.Count + ' chart types Flint offers, ' + $covered + ' have a direct ASCII counterpart here. The rest are listed so the boundary is explicit rather than discovered halfway through a render.</p>')
+$html.Add('<div class="table-scroll">')
 $html.Add('<table><thead><tr><th>Flint family</th><th>Flint chart</th><th>ASCII form</th><th>Status</th></tr></thead><tbody>')
 foreach ($c in $coverage) {
     $cls = switch ($c.Status) { 'Covered' { 'real' } 'Approximate' { 'approximate' } default { 'notviable' } }
@@ -704,16 +702,23 @@ foreach ($c in $coverage) {
 }
 $html.Add('</tbody></table>')
 $html.Add('</div>')
+$html.Add('</div>')
 $html.Add('<div class="card">')
 $html.Add('<h3>Not viable in ASCII</h3>')
+$html.Add('<div class="table-scroll">')
 $html.Add('<table><thead><tr><th>Form</th><th>Why</th><th>Use instead</th></tr></thead><tbody>')
 foreach ($l in $limits) {
     $html.Add('<tr><td>' + (HtmlEscape $l.Form) + '</td><td>' + (HtmlEscape $l.Why) + '</td><td>' + (HtmlEscape $l.Instead) + '</td></tr>')
 }
 $html.Add('</tbody></table>')
 $html.Add('</div>')
+$html.Add('</div>')
 $html.Add('</main>')
 $html.Add('<footer>Generated by <code>demos/ascii-gallery/build-gallery.ps1</code> from <code>sales-sample.csv</code>. ASCII figures are no wider than 78 characters; Flint counterparts reflect the pinned 0.5.0 Vega-Lite catalog.</footer>')
+$html.Add('<script>')
+$html.Add('const flintSpecs = ' + $flintJson + ';')
+$html.Add('Promise.all([...document.querySelectorAll(".flint-chart")].map((container) => vegaEmbed(container, flintSpecs[container.dataset.form].spec, { actions: false, renderer: "svg" }).catch((error) => { container.textContent = "Chart failed to render"; console.error(container.dataset.form, error); })));')
+$html.Add('</script>')
 $html.Add('</body></html>')
 Set-Content -Path (Join-Path $outRoot 'gallery.html') -Value ($html -join "`n") -Encoding utf8
 

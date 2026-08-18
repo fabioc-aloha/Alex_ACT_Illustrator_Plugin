@@ -3,8 +3,6 @@ name: ascii-chart
 description: "Render charts and compact dashboards as pure ASCII in a monospace grid: bar, dot, sparkline, histogram, box plot, scatter, bubble, heatmap, funnel, waterfall, treemap, gauge, KPI card, and more. No rendering engine, no SVG, no browser, no MCP server. Use when the delivery target is a terminal, a log file, a pull request comment, a commit message, a README code block, or a context window where no renderer exists, or when the user asks for a text chart, an ASCII chart, or a plain-text dashboard."
 lastReviewed: 2026-08-18
 ---
-lastReviewed: 2026-08-15
----
 
 # Delivery: ASCII Dashboard
 

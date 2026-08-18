@@ -35,11 +35,15 @@ function sumBy(fields, valueField = 'revenue') {
   return [...groups.values()];
 }
 
-const byMonth = sumBy(['date']);
+function monthLabel(date) {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`));
+}
+
+const byMonth = sumBy(['date']).map((row) => ({ ...row, month: monthLabel(row.date) }));
 const byRegion = sumBy(['region']);
 const byProduct = sumBy(['product']);
 const byRegionProduct = sumBy(['region', 'product']);
-const byRegionMonth = sumBy(['region', 'date']);
+const byRegionMonth = sumBy(['region', 'date']).map((row) => ({ ...row, month: monthLabel(row.date) }));
 const totalRevenue = rows.reduce((sum, row) => sum + row.revenue, 0);
 const totalCost = rows.reduce((sum, row) => sum + row.cost, 0);
 const averageMonth = byMonth.reduce((sum, row) => sum + row.revenue, 0) / byMonth.length;
@@ -68,11 +72,18 @@ function nearest(type, data, semantics, encodings, properties) {
   return { type, match: 'Nearest', spec: compile(type, data, semantics, encodings, properties) };
 }
 
+function partial(type, detail, data, semantics, encodings, properties) {
+  return { type, match: `Partial: ${detail}`, spec: compile(type, data, semantics, encodings, properties) };
+}
+
 function unsupported() {
   return { type: 'No direct type', match: 'ASCII only', spec: null };
 }
 
-const productShares = byProduct.map((row) => ({ ...row, share: row.revenue / totalRevenue }));
+const productShares = byProduct.map((row) => ({
+  ...row,
+  'Share (%)': Math.round(row.revenue / totalRevenue * 1000) / 10,
+}));
 const regionShares = byRegion.map((row) => ({ ...row, all: 'Revenue', share: row.revenue / totalRevenue }));
 const monthlyVariance = byMonth.map((row) => ({
   ...row,
@@ -94,43 +105,43 @@ const pipelineRows = [
 ];
 
 const specs = {
-  'Horizontal bar': exact('Bar Chart', byProduct, { product: 'Category', revenue: 'Amount' }, { y: { field: 'product' }, x: { field: 'revenue' } }),
-  'Dot plot': nearest('Lollipop Chart', byMonth, { date: 'YearMonth', revenue: 'Amount' }, { y: { field: 'date' }, x: { field: 'revenue' } }),
+  'Horizontal bar': exact('Bar Chart', byProduct, { product: 'Category', revenue: 'Amount' }, { y: { field: 'product' }, x: { field: 'revenue' } }, { includeZero_x: true }),
+  'Dot plot': nearest('Lollipop Chart', byMonth, { month: 'Month', revenue: 'Amount' }, { y: { field: 'month' }, x: { field: 'revenue' } }, { includeZero_x: true }),
   'Bullet chart': exact('Bullet Chart', byRegion.map((row) => ({ ...row, target: 130000 })), { region: 'Region', revenue: 'Amount', target: 'Amount' }, { y: { field: 'region' }, x: { field: 'revenue' }, goal: { field: 'target' } }),
-  'Grouped bar': exact('Grouped Bar Chart', byRegionProduct, { region: 'Region', product: 'Category', revenue: 'Amount' }, { x: { field: 'region' }, y: { field: 'revenue' }, group: { field: 'product' } }),
-  'Slope chart': exact('Slope Chart', slopeRows, { date: 'YearMonth', region: 'Region', revenue: 'Amount' }, { x: { field: 'date' }, y: { field: 'revenue' }, color: { field: 'region' }, detail: { field: 'region' } }),
-  Waterfall: exact('Waterfall Chart', waterfallRows, { step: 'Category', value: 'Profit' }, { x: { field: 'step' }, y: { field: 'value' } }),
-  Pareto: nearest('Bar Chart', byRegionProduct.map((row) => ({ ...row, label: `${row.region} ${row.product}` })), { label: 'Category', revenue: 'Amount' }, { x: { field: 'label' }, y: { field: 'revenue' } }),
+  'Grouped bar': exact('Grouped Bar Chart', byRegionProduct, { region: 'Region', product: 'Category', revenue: 'Amount' }, { x: { field: 'region' }, y: { field: 'revenue' }, group: { field: 'product' } }, { includeZero_y: true }),
+  'Slope chart': exact('Slope Chart', slopeRows.map((row) => ({ ...row, month: monthLabel(row.date) })), { month: 'Month', region: 'Region', revenue: 'Amount' }, { x: { field: 'month' }, y: { field: 'revenue' }, color: { field: 'region' }, detail: { field: 'region' } }),
+  Waterfall: exact('Waterfall Chart', waterfallRows, { step: 'Category', value: 'Profit' }, { x: { field: 'step' }, y: { field: 'value' } }, { includeZero_y: true }),
+  Pareto: partial('Bar Chart', 'bars only', byRegionProduct.map((row) => ({ ...row, label: `${row.region} ${row.product}` })), { label: 'Category', revenue: 'Amount' }, { y: { field: 'label', sortBy: 'x', sortOrder: 'descending' }, x: { field: 'revenue' } }, { includeZero_x: true }),
   Gauge: nearest('Bullet Chart', [{ metric: 'Revenue', value: totalRevenue, goal: target }], { metric: 'Category', value: 'Amount', goal: 'Amount' }, { y: { field: 'metric' }, x: { field: 'value' }, goal: { field: 'goal' } }),
-  'KPI card': exact('KPI Card', [{ metric: 'Revenue', value: totalRevenue, goal: target }], { metric: 'Category', value: 'Amount', goal: 'Amount' }, { metric: { field: 'metric' }, value: { field: 'value' }, goal: { field: 'goal' } }),
-  Sparkline: exact('Sparkline', byMonth, { date: 'YearMonth', revenue: 'Amount' }, { x: { field: 'date' }, y: { field: 'revenue' } }),
-  'Column trend': exact('Bar Chart', byMonth, { date: 'YearMonth', revenue: 'Amount' }, { x: { field: 'date' }, y: { field: 'revenue' } }),
-  'Step line': nearest('Line Chart', byMonth, { date: 'YearMonth', revenue: 'Amount' }, { x: { field: 'date' }, y: { field: 'revenue' } }, { interpolate: 'step-after', showPoints: true }),
-  'Small multiples': { type: 'Line Chart', match: 'Exact, faceted', spec: compile('Line Chart', byRegionMonth, { date: 'YearMonth', region: 'Region', revenue: 'Amount' }, { x: { field: 'date' }, y: { field: 'revenue' }, row: { field: 'region' } }) },
-  'Line chart': exact('Line Chart', byMonth, { date: 'YearMonth', revenue: 'Amount' }, { x: { field: 'date' }, y: { field: 'revenue' } }, { showPoints: true }),
-  'Area chart': exact('Area Chart', byMonth, { date: 'YearMonth', revenue: 'Amount' }, { x: { field: 'date' }, y: { field: 'revenue' } }),
-  'Stacked 100% bar': exact('Stacked Bar Chart', regionShares, { all: 'Category', region: 'Region', share: 'Percentage' }, { x: { field: 'all' }, y: { field: 'share' }, color: { field: 'region' } }, { stackMode: 'normalize' }),
-  'Percentage rows': nearest('Bar Table', productShares, { product: 'Category', share: 'Percentage' }, { y: { field: 'product' }, x: { field: 'share' } }),
-  'Waffle grid': nearest('Stacked Bar Chart', regionShares, { all: 'Category', region: 'Region', share: 'Percentage' }, { x: { field: 'all' }, y: { field: 'share' }, color: { field: 'region' } }, { stackMode: 'normalize' }),
+  'KPI card': partial('KPI Card', 'no trend', [{ metric: 'Revenue', value: totalRevenue, goal: target }], { metric: 'Category', value: 'Amount', goal: 'Amount' }, { metric: { field: 'metric' }, value: { field: 'value' }, goal: { field: 'goal' } }),
+  Sparkline: exact('Sparkline', byMonth, { month: 'Month', revenue: 'Amount' }, { x: { field: 'month' }, y: { field: 'revenue' } }),
+  'Column trend': exact('Bar Chart', byMonth, { month: 'Month', revenue: 'Amount' }, { x: { field: 'month' }, y: { field: 'revenue' } }, { includeZero_y: true }),
+  'Step line': nearest('Line Chart', byMonth, { month: 'Month', revenue: 'Amount' }, { x: { field: 'month' }, y: { field: 'revenue' } }, { interpolate: 'step-after', showPoints: true, includeZero_y: false }),
+  'Small multiples': { type: 'Line Chart', match: 'Exact, faceted', spec: compile('Line Chart', byRegionMonth, { month: 'Month', region: 'Region', revenue: 'Amount' }, { x: { field: 'month' }, y: { field: 'revenue' }, row: { field: 'region' } }, { includeZero_y: false }) },
+  'Line chart': exact('Line Chart', byMonth, { month: 'Month', revenue: 'Amount' }, { x: { field: 'month' }, y: { field: 'revenue' } }, { showPoints: true, includeZero_y: false }),
+  'Area chart': exact('Area Chart', byMonth, { month: 'Month', revenue: 'Amount' }, { x: { field: 'month' }, y: { field: 'revenue' } }, { includeZero_y: true }),
+  'Stacked 100% bar': exact('Stacked Bar Chart', regionShares, { all: 'Category', region: 'Region', share: 'Percentage' }, { y: { field: 'all' }, x: { field: 'share' }, color: { field: 'region' } }, { stackMode: 'normalize', includeZero_x: true }),
+  'Percentage rows': nearest('Bar Table', productShares, { product: 'Category', 'Share (%)': 'Quantity' }, { y: { field: 'product' }, x: { field: 'Share (%)' } }, { includeZero_x: true }),
+  'Waffle grid': nearest('Stacked Bar Chart', regionShares, { all: 'Category', region: 'Region', share: 'Percentage' }, { y: { field: 'all' }, x: { field: 'share' }, color: { field: 'region' } }, { stackMode: 'normalize', includeZero_x: true }),
   Treemap: unsupported(),
-  Histogram: exact('Histogram', rows, { revenue: 'Amount' }, { x: { field: 'revenue' } }),
-  'Box plot': exact('Boxplot', rows, { region: 'Region', revenue: 'Amount' }, { x: { field: 'region' }, y: { field: 'revenue' }, color: { field: 'region' } }),
+  Histogram: exact('Histogram', rows, { revenue: 'Amount' }, { x: { field: 'revenue' } }, { binCount: 5 }),
+  'Box plot': exact('Boxplot', rows.map((row) => ({ ...row, group: 'All sales' })), { group: 'Category', revenue: 'Amount' }, { x: { field: 'group' }, y: { field: 'revenue' } }, { showOutliers: false, includeZero_y: false }),
   'Strip plot': exact('Strip Plot', rows, { region: 'Region', revenue: 'Amount' }, { x: { field: 'revenue' }, y: { field: 'region' }, color: { field: 'region' } }),
   ECDF: exact('ECDF Plot', rows, { region: 'Region', revenue: 'Amount' }, { x: { field: 'revenue' }, color: { field: 'region' } }),
   'Scatter plot': exact('Scatter Plot', rows, { units: 'Quantity', revenue: 'Amount' }, { x: { field: 'units' }, y: { field: 'revenue' } }),
-  Heatmap: exact('Heatmap', byRegionMonth, { date: 'YearMonth', region: 'Region', revenue: 'Amount' }, { x: { field: 'date' }, y: { field: 'region' }, color: { field: 'revenue' } }),
+  Heatmap: exact('Heatmap', byRegionMonth, { month: 'Month', region: 'Region', revenue: 'Amount' }, { x: { field: 'month' }, y: { field: 'region' }, color: { field: 'revenue' } }),
   'Bubble plot': { type: 'Scatter Plot', match: 'Exact, size channel', spec: compile('Scatter Plot', rows, { units: 'Quantity', revenue: 'Amount', cost: 'Amount', region: 'Region' }, { x: { field: 'units' }, y: { field: 'revenue' }, size: { field: 'cost' }, color: { field: 'region' } }) },
   'Parallel coordinates': unsupported(),
-  Funnel: nearest('Pyramid Chart', [
+  Funnel: nearest('Bar Chart', [
     { stage: 'Leads', value: 4000 },
     { stage: 'Qualified', value: 2400 },
     { stage: 'Proposal', value: 1100 },
     { stage: 'Won', value: 420 },
-  ], { stage: 'Category', value: 'Quantity' }, { y: { field: 'stage' }, x: { field: 'value' }, color: { field: 'stage' } }),
-  'Stage pipeline': nearest('Gantt Chart', pipelineRows, { stage: 'Category', start: 'Date', end: 'Date' }, { y: { field: 'stage' }, x: { field: 'start' }, x2: { field: 'end' } }),
+  ], { stage: 'Category', value: 'Quantity' }, { y: { field: 'stage', sortBy: 'x', sortOrder: 'descending' }, x: { field: 'value' } }, { includeZero_x: true }),
+  'Stage pipeline': partial('Gantt Chart', 'sequence only', pipelineRows, { stage: 'Category', start: 'Date', end: 'Date' }, { y: { field: 'stage' }, x: { field: 'start' }, x2: { field: 'end' } }),
   'Sankey flow': unsupported(),
-  'Diverging bar': nearest('Pyramid Chart', monthlyVariance, { date: 'YearMonth', delta: 'Profit', direction: 'Category' }, { y: { field: 'date' }, x: { field: 'delta' }, color: { field: 'direction' } }),
-  'Variance column': nearest('Bar Chart', monthlyVariance, { date: 'YearMonth', delta: 'Profit', direction: 'Category' }, { x: { field: 'date' }, y: { field: 'delta' }, color: { field: 'direction' } }),
+  'Diverging bar': nearest('Bar Chart', monthlyVariance.map((row) => ({ ...row, month: monthLabel(row.date) })), { month: 'Month', delta: 'Profit', direction: 'Category' }, { y: { field: 'month' }, x: { field: 'delta' }, color: { field: 'direction' } }, { includeZero_x: true }),
+  'Variance column': nearest('Bar Chart', monthlyVariance.map((row) => ({ ...row, month: monthLabel(row.date) })), { month: 'Month', delta: 'Profit', direction: 'Category' }, { x: { field: 'month' }, y: { field: 'delta' }, color: { field: 'direction' } }, { includeZero_y: true }),
 };
 
 writeFileSync(outputPath, JSON.stringify(specs), 'utf8');

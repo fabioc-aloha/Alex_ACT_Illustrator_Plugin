@@ -26,7 +26,7 @@ Regenerate with `pwsh -NoProfile -File demos/ascii-gallery/build-gallery.ps1`.
 ### Horizontal bar
 
 Best when ranking items; long labels. Avoid when more than 15 rows. Data: **real**.
-Flint equivalent: **Bar Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
 Widget A  ##################################  $148,800
@@ -36,7 +36,7 @@ Widget B  ######################............   $97,600
 ### Dot plot
 
 Best when precise values in a tight range. Avoid when audience expects bars. Data: **real**.
-Flint equivalent: **Lollipop Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 Jan  o--------------------------------   $36,800
@@ -50,7 +50,7 @@ Jun  ------------------------o--------   $42,900
 ### Bullet chart
 
 Best when actual against a target. Avoid when no agreed benchmark. Data: **real**.
-Flint equivalent: **Bullet Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
 North  ###########################|##....  107%
@@ -60,7 +60,7 @@ South  #######################....|......   83%
 ### Grouped bar
 
 Best when two or three series per category. Avoid when more than three series. Data: **real**.
-Flint equivalent: **Grouped Bar Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
 North
@@ -74,7 +74,7 @@ South
 ### Slope chart
 
 Best when two periods and rank changes matter. Avoid when more than about ten rows. Data: **real**.
-Flint equivalent: **Slope Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
         Jan                       Jun
@@ -85,7 +85,7 @@ South   $16,000 ////////////////  $18,500
 ### Waterfall
 
 Best when a total is built from sequential moves. Avoid when the steps are not additive. Data: **real**.
-Flint equivalent: **Waterfall Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
 Revenue  ########################################  $246,400
@@ -96,7 +96,7 @@ Margin   ############                               $73,920
 ### Pareto
 
 Best when a few categories drive most of the total. Avoid when the distribution is flat. Data: **real**.
-Flint equivalent: **Bar Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 North Widget A   ######################   $83,300  cum  34%
@@ -108,7 +108,7 @@ South Widget B   ###########...........   $41,800  cum 100%
 ### Gauge
 
 Best when one headline number against a scale. Avoid when several measures need comparing. Data: **real**.
-Flint equivalent: **Bullet Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 0%                 50%                100%
@@ -119,7 +119,7 @@ Revenue $246,400 against target $260,000
 ### KPI card
 
 Best when one measure with trend and delta. Avoid when the reader needs the full series. Data: **real**.
-Flint equivalent: **KPI Card** (Exact).
+Flint equivalent: **** ().
 
 ```text
 +----------------------------+
@@ -134,7 +134,7 @@ Flint equivalent: **KPI Card** (Exact).
 ### Sparkline
 
 Best when inline trend beside a KPI. Avoid when exact values matter more than shape. Data: **real**.
-Flint equivalent: **Sparkline** (Exact).
+Flint equivalent: **** ().
 
 ```text
 Revenue  //\/\   $36,800 -> $42,900
@@ -144,7 +144,7 @@ Months   JFMAMJ
 ### Column trend
 
 Best when discrete periods; magnitude visible. Avoid when many periods (use sparkline). Data: **real**.
-Flint equivalent: **Bar Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
                   ##    ##    ##    ##
@@ -158,7 +158,7 @@ Flint equivalent: **Bar Chart** (Exact).
 ### Step line
 
 Best when values hold then jump. Avoid when smooth continuous change. Data: **real**.
-Flint equivalent: **Line Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 Jan  _________________________|   $36,800
@@ -172,7 +172,7 @@ Jun  _____________________________|   $42,900
 ### Small multiples
 
 Best when comparing trends across categories. Avoid when fewer than four categories. Data: **real**.
-Flint equivalent: **Line Chart** (Exact, faceted).
+Flint equivalent: **** ().
 
 ```text
 North   //\/\    $139,100
@@ -182,7 +182,7 @@ South   //\/\    $107,300
 ### Line chart
 
 Best when a continuous series where shape matters. Avoid when categories rather than time. Data: **real**.
-Flint equivalent: **Line Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
  $44,800 |                      *
@@ -198,7 +198,7 @@ Flint equivalent: **Line Chart** (Exact).
 ### Area chart
 
 Best when volume under the line is the point. Avoid when values sit far above zero, which flattens the visible variation as it does here. Data: **real**.
-Flint equivalent: **Area Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
         |           ####      #### ####
@@ -216,7 +216,7 @@ Flint equivalent: **Area Chart** (Exact).
 ### Stacked 100% bar
 
 Best when two to four parts of a whole. Avoid when many small slices. Data: **real**.
-Flint equivalent: **Stacked Bar Chart** (Exact).
+Flint equivalent: **** ().
 
 ```text
 ##################################==========================
@@ -226,7 +226,7 @@ North 56.5% South 43.5%
 ### Percentage rows
 
 Best when ranked shares needing exact values. Avoid when shares change over time. Data: **real**.
-Flint equivalent: **Bar Table** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 Widget A  ########################................  60.4%
@@ -236,7 +236,7 @@ Widget B  ################........................  39.6%
 ### Waffle grid
 
 Best when part of a whole as countable units. Avoid when precise decimals matter. Data: **real**.
-Flint equivalent: **Stacked Bar Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 ####################
@@ -250,7 +250,7 @@ Flint equivalent: **Stacked Bar Chart** (Nearest).
 ### Treemap
 
 Best when nested share of a total. Avoid when more than about eight leaves. Data: **real**.
-Flint equivalent: **No direct type** (ASCII only).
+Flint equivalent: **** ().
 
 ```text
 +----------------------------------+----------------------+
@@ -264,20 +264,20 @@ Flint equivalent: **No direct type** (ASCII only).
 ### Histogram
 
 Best when shape of a single variable. Avoid when fewer than 20 observations. Data: **real**.
-Flint equivalent: **Histogram** (Exact).
+Flint equivalent: **** ().
 
 ```text
-  $6,200  ##########################.... n=6
-  $7,980  #################............. n=4
-  $9,760  ############################## n=7
- $11,540  #############................. n=3
- $13,320  #################............. n=4
+  $6,000  ############################## n=6
+  $8,000  ############################## n=6
+ $10,000  #########################..... n=5
+ $12,000  ####################.......... n=4
+ $14,000  ###############............... n=3
 ```
 
 ### Box plot
 
 Best when spread and outliers at a glance. Avoid when audience unfamiliar with quartiles. Data: **real**.
-Flint equivalent: **Boxplot** (Exact).
+Flint equivalent: **** ().
 
 ```text
 |---------[=========+==========[------------|
@@ -287,7 +287,7 @@ min $6,200   Q1 $8,300   med $10,200   Q3 $12,500   max $15,100
 ### Strip plot
 
 Best when every observation should stay visible. Avoid when hundreds of overlapping points. Data: **real**.
-Flint equivalent: **Strip Plot** (Exact).
+Flint equivalent: **** ().
 
 ```text
 North  |          o  oo oo o          o  o   o o o o
@@ -299,7 +299,7 @@ South  |o  8ooo          o o  o o o o
 ### ECDF
 
 Best when the question is what share falls below a value. Avoid when a very small sample. Data: **real**.
-Flint equivalent: **ECDF Plot** (Exact).
+Flint equivalent: **** ().
 
 ```text
  100% |                               ________
@@ -316,7 +316,7 @@ Flint equivalent: **ECDF Plot** (Exact).
 ### Scatter plot
 
 Best when correlation between two measures. Avoid when more than a few hundred points. Data: **real**.
-Flint equivalent: **Scatter Plot** (Exact).
+Flint equivalent: **** ().
 
 ```text
 |                                       * * *
@@ -334,7 +334,7 @@ units ->                          revenue on y axis
 ### Heatmap
 
 Best when two categorical axes, one measure. Avoid when precise values needed. Data: **real**.
-Flint equivalent: **Heatmap** (Exact).
+Flint equivalent: **** ().
 
 ```text
         Jan   Feb   Mar   Apr   May   Jun
@@ -345,7 +345,7 @@ South   #.... #.... ##... #.... ##... ##...
 ### Bubble plot
 
 Best when a third measure sizes each point. Avoid when sizes differ by less than about twice. Data: **real**.
-Flint equivalent: **Scatter Plot** (Exact, size channel).
+Flint equivalent: **** ().
 
 ```text
 |                                     @ @ @ @
@@ -361,7 +361,7 @@ units ->       o low cost    O mid    @ high cost
 ### Parallel coordinates
 
 Best when several measures compared per record. Avoid when the measures are derived from each other, which makes every line identical as it does here. Data: **real**.
-Flint equivalent: **No direct type** (ASCII only).
+Flint equivalent: **** ().
 
 ```text
         revenue       units         cost
@@ -378,7 +378,7 @@ Jun     ------*-----  ------*-----  ------*-----
 ### Funnel
 
 Best when stage-by-stage drop-off. Avoid when stages are not sequential. Data: **illustrative**.
-Flint equivalent: **Pyramid Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 ########################################  Leads      4,000
@@ -390,7 +390,7 @@ Flint equivalent: **Pyramid Chart** (Nearest).
 ### Stage pipeline
 
 Best when steps with hand-offs. Avoid when branching or looping flows. Data: **illustrative**.
-Flint equivalent: **Gantt Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 [ Ingest ] -> [ Clean ] -> [ Select ] -> [ Render ] -> [ Verify ]
@@ -400,7 +400,7 @@ Flint equivalent: **Gantt Chart** (Nearest).
 ### Sankey flow
 
 Best when quantities merge or split between stages. Avoid when many crossing links. Data: **real**.
-Flint equivalent: **No direct type** (ASCII only).
+Flint equivalent: **** ().
 
 ```text
 North   $139,100 ===========---------\
@@ -413,7 +413,7 @@ South   $107,300 =========-----------/
 ### Diverging bar
 
 Best when above and below a reference. Avoid when no meaningful midpoint. Data: **real**.
-Flint equivalent: **Pyramid Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 Jan                        ##|                         -$4,267
@@ -427,7 +427,7 @@ Jun                          |#                        +$1,833
 ### Variance column
 
 Best when actual against plan per period. Avoid when no plan exists. Data: **real**.
-Flint equivalent: **Bar Chart** (Nearest).
+Flint equivalent: **** ().
 
 ```text
 Jan    $36,800  vs avg   $41,067     -4,267  [UNDER]
@@ -440,45 +440,47 @@ Jun    $42,900  vs avg   $41,067     +1,833  [OK]
 
 ## Flint coverage
 
-Of the 33 chart types Flint offers, 24 have a direct ASCII
+Of the 35 chart types Flint offers, 16 have a direct ASCII
 counterpart here. The rest are listed so the boundary is explicit rather than
 discovered halfway through a render.
 
 | Flint family | Flint chart | ASCII form | Status |
 | --- | --- | --- | --- |
-| Comparison | Bar | Horizontal bar | Covered |
-| Comparison | Grouped Bar | Grouped bar | Covered |
-| Comparison | Stacked Bar (normalize) | Stacked 100% bar | Covered |
-| Comparison | Slope Chart | Slope chart | Covered |
-| Comparison | Faceted Bar | Small multiples | Covered |
-| Comparison | Waterfall Chart | Waterfall | Covered |
-| Trend | Line | Line chart | Covered |
-| Trend | Area | Area chart | Covered |
-| Trend | Sparkline | Sparkline | Covered |
-| Trend | Bar + Line combo | Pareto | Approximate |
-| Distribution | Histogram | Histogram | Covered |
+| Trend | Area Chart | Area chart | Covered |
+| Comparison | Bar Chart | Horizontal bar or Column trend | Covered |
+| Comparison | Bar Table | Percentage rows | Approximate |
 | Distribution | Boxplot | Box plot | Covered |
-| Distribution | Strip Plot | Strip plot | Covered |
-| Distribution | ECDF Plot | ECDF | Covered |
-| Distribution | Violin Plot | Box plot or Histogram | Not viable |
-| Distribution | Density Plot | Histogram | Not viable |
-| Relationship | Scatter | Scatter plot | Covered |
-| Relationship | Scatter + size (Bubble) | Bubble plot | Covered |
-| Relationship | Parallel Coordinates | Parallel coordinates | Covered |
-| Relationship | Regression | Scatter plot | Approximate |
-| Relationship | Connected Scatter | Slope chart | Not viable |
-| Proportion | Stacked normalize | Stacked 100% bar | Covered |
-| Proportion | Treemap | Treemap | Covered |
-| Proportion | Funnel | Funnel | Covered |
-| Proportion | Pie | Percentage rows or Waffle grid | Not viable |
-| Proportion | Donut | Percentage rows or Waffle grid | Not viable |
-| Proportion | Sunburst | Treemap | Not viable |
-| Flow | Sankey | Sankey flow | Covered |
-| Flow | Heatmap | Heatmap | Covered |
-| Flow | Streamgraph | Small multiples | Not viable |
 | KPI | Bullet Chart | Bullet chart | Covered |
+| Comparison | Bump Chart | Slope chart | Approximate |
+| Financial | Candlestick Chart | Table with OHLC columns | Not viable |
+| Spatial | Choropleth | Ranked bars or table | Not viable |
+| Relationship | Connected Scatter Plot | Slope chart | Not viable |
+| Distribution | Density Plot | Histogram | Not viable |
+| Proportion | Donut Chart | Percentage rows or Waffle grid | Not viable |
+| Distribution | ECDF Plot | ECDF | Covered |
+| Flow | Gantt Chart | Stage pipeline | Approximate |
+| Comparison | Grouped Bar Chart | Grouped bar | Covered |
+| Relationship | Heatmap | Heatmap | Covered |
+| Distribution | Histogram | Histogram | Covered |
 | KPI | KPI Card | KPI card | Covered |
-| KPI | Gauge Chart | Gauge | Covered |
+| Trend | Line Chart | Line chart | Covered |
+| Comparison | Lollipop Chart | Dot plot | Approximate |
+| Spatial | Map | Ranked bars or table | Not viable |
+| Proportion | Pie Chart | Percentage rows or Waffle grid | Not viable |
+| Comparison | Pyramid Chart | Diverging bar (split panels) | Approximate |
+| Relationship | Radar Chart | Parallel coordinates | Not viable |
+| Trend | Range Area Chart | Area chart with stated bounds | Approximate |
+| Comparison | Ranged Dot Plot | Dot plot | Approximate |
+| Relationship | Regression | Scatter plot with coefficient | Approximate |
+| Proportion | Rose Chart | Percentage rows | Not viable |
+| Relationship | Scatter Plot | Scatter plot or Bubble plot | Covered |
+| Comparison | Slope Chart | Slope chart | Covered |
+| Trend | Sparkline | Sparkline | Covered |
+| Proportion | Stacked Bar Chart | Stacked 100% bar | Covered |
+| Trend | Streamgraph | Small multiples | Not viable |
+| Distribution | Strip Plot | Strip plot | Covered |
+| Distribution | Violin Plot | Box plot or Histogram | Not viable |
+| Comparison | Waterfall Chart | Waterfall | Covered |
 
 ### Not viable in ASCII
 
