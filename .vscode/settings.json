@@ -1,13 +1,26 @@
 {
-  // Steward-maintained as of 2026-07-29. This repo authors its own skills at
-  // `.github/skills/` and `.github/prompts/`, which are VS Code Copilot's
-  // default discovery roots, so no `chat.agentSkillsLocations` or
-  // `chat.promptFilesLocations` overrides are needed here.
-  //
-  // Heirs that install this plugin via Mall receive it under
-  // `.github/skills/local/` and `.github/prompts/local/`; those heirs need
-  // their own settings.json entries to register the `local/` roots. See
-  // README "Install".
+  "$comment": "Self-dogfooding settings — this repo's own Copilot Chat picks up the plugin's own skills/prompts/instructions/agents from .github/. Broad discovery paths mirror Alex_ACT_Steward so multi-tool (Copilot / Claude / agents.io / Synapse) workspaces work uniformly. Heirs installing Core override in their own workspace as needed.",
+  "chat.agentSkillsLocations": {
+    ".agents/skills": true,
+    ".github/skills": true,
+    ".claude/skills": true,
+    "~/.agents/skills": true,
+    "~/.copilot/skills": true,
+    "~/.claude/skills": true,
+    ".github/skills/local": true
+  },
+  "chat.promptFilesLocations": {
+    ".github/prompts": true,
+    ".github/prompts/local": true
+  },
+  "chat.agentFilesLocations": {
+    ".github/agents": true,
+    ".github/agents/local": true
+  },
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  },
+  "chat.permissions.default": "autoApprove",
   "markdown.styles": [
     ".vscode/markdown-light.css"
   ]
