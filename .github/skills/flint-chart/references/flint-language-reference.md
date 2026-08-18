@@ -1,7 +1,7 @@
 # Flint Language Reference
 
-**Reviewed**: 2026-08-17  
-**Pinned runtime**: `flint-chart-mcp@0.5.0`  
+**Reviewed**: 2026-08-17
+**Pinned runtime**: `flint-chart-mcp@0.5.0`
 **Scope**: Conceptual reference for Illustrator's Flint workflow. The installed
 MCP resources remain authoritative for the exact grammar of the runtime that is
 actually available to the agent.
