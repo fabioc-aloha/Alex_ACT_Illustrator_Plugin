@@ -25,6 +25,8 @@ Regenerate with `pwsh -NoProfile -File demos/ascii-gallery/build-gallery.ps1`.
 
 ### Horizontal bar
 
+**Big Idea.** Widget A brings in 60% of revenue, half again more than Widget B.
+
 Best when ranking items; long labels. Avoid when more than 15 rows. Data: **real**.
 Flint equivalent: **** ().
 
@@ -34,6 +36,8 @@ Widget B  ######################............   $97,600
 ```
 
 ### Dot plot
+
+**Big Idea.** Monthly revenue rose overall, dipping only in April and June.
 
 Best when precise values in a tight range. Avoid when audience expects bars. Data: **real**.
 Flint equivalent: **** ().
@@ -49,6 +53,8 @@ Jun  ------------------------o--------   $42,900
 
 ### Bullet chart
 
+**Big Idea.** North clears the regional revenue mark that South falls short of.
+
 Best when actual against a target. Avoid when no agreed benchmark. Data: **real**.
 Flint equivalent: **** ().
 
@@ -58,6 +64,8 @@ South  #######################....|......   83%
 ```
 
 ### Grouped bar
+
+**Big Idea.** Widget A leads in both regions, so the product gap is not a regional artifact.
 
 Best when two or three series per category. Avoid when more than three series. Data: **real**.
 Flint equivalent: **** ().
@@ -73,6 +81,8 @@ South
 
 ### Slope chart
 
+**Big Idea.** Both regions grew from January to June and neither changed rank.
+
 Best when two periods and rank changes matter. Avoid when more than about ten rows. Data: **real**.
 Flint equivalent: **** ().
 
@@ -84,6 +94,8 @@ South   $16,000 ////////////////  $18,500
 
 ### Waterfall
 
+**Big Idea.** Cost consumes 70% of revenue, leaving a 30% margin.
+
 Best when a total is built from sequential moves. Avoid when the steps are not additive. Data: **real**.
 Flint equivalent: **** ().
 
@@ -94,6 +106,8 @@ Margin   ############                               $73,920
 ```
 
 ### Pareto
+
+**Big Idea.** The top two region-product pairs carry 60% of all revenue.
 
 Best when a few categories drive most of the total. Avoid when the distribution is flat. Data: **real**.
 Flint equivalent: **** ().
@@ -107,6 +121,8 @@ South Widget B   ###########...........   $41,800  cum 100%
 
 ### Gauge
 
+**Big Idea.** Revenue reached 95% of the 260,000 target.
+
 Best when one headline number against a scale. Avoid when several measures need comparing. Data: **real**.
 Flint equivalent: **** ().
 
@@ -117,6 +133,8 @@ Revenue $246,400 against target $260,000
 ```
 
 ### KPI card
+
+**Big Idea.** Revenue closed at 246,400, up 16.6% since January.
 
 Best when one measure with trend and delta. Avoid when the reader needs the full series. Data: **real**.
 Flint equivalent: **** ().
@@ -133,6 +151,8 @@ Flint equivalent: **** ().
 
 ### Sparkline
 
+**Big Idea.** Revenue trended up across the half year despite two monthly dips.
+
 Best when inline trend beside a KPI. Avoid when exact values matter more than shape. Data: **real**.
 Flint equivalent: **** ().
 
@@ -142,6 +162,8 @@ Months   JFMAMJ
 ```
 
 ### Column trend
+
+**Big Idea.** Every month except April and June beat the month before it.
 
 Best when discrete periods; magnitude visible. Avoid when many periods (use sparkline). Data: **real**.
 Flint equivalent: **** ().
@@ -157,6 +179,8 @@ Flint equivalent: **** ().
 
 ### Step line
 
+**Big Idea.** Revenue holds a level for a month at a time rather than moving continuously.
+
 Best when values hold then jump. Avoid when smooth continuous change. Data: **real**.
 Flint equivalent: **** ().
 
@@ -171,6 +195,8 @@ Jun  _____________________________|   $42,900
 
 ### Small multiples
 
+**Big Idea.** Both regions follow the same monthly shape at different scales.
+
 Best when comparing trends across categories. Avoid when fewer than four categories. Data: **real**.
 Flint equivalent: **** ().
 
@@ -180,6 +206,8 @@ South   //\/\    $107,300
 ```
 
 ### Line chart
+
+**Big Idea.** Revenue climbed from 36,800 to a May peak of 44,800, then eased.
 
 Best when a continuous series where shape matters. Avoid when categories rather than time. Data: **real**.
 Flint equivalent: **** ().
@@ -196,6 +224,8 @@ Flint equivalent: **** ().
 ```
 
 ### Area chart
+
+**Big Idea.** Monthly revenue grew steadily, but the totals sit far above zero.
 
 Best when volume under the line is the point. Avoid when values sit far above zero, which flattens the visible variation as it does here. Data: **real**.
 Flint equivalent: **** ().
@@ -215,6 +245,8 @@ Flint equivalent: **** ().
 
 ### Stacked 100% bar
 
+**Big Idea.** North holds 57% of revenue against South's 43%.
+
 Best when two to four parts of a whole. Avoid when many small slices. Data: **real**.
 Flint equivalent: **** ().
 
@@ -225,6 +257,8 @@ North 56.5% South 43.5%
 
 ### Percentage rows
 
+**Big Idea.** Widget A holds 60% of revenue against Widget B's 40%.
+
 Best when ranked shares needing exact values. Avoid when shares change over time. Data: **real**.
 Flint equivalent: **** ().
 
@@ -234,6 +268,8 @@ Widget B  ################........................  39.6%
 ```
 
 ### Waffle grid
+
+**Big Idea.** About 56 of every 100 revenue dollars come from North.
 
 Best when part of a whole as countable units. Avoid when precise decimals matter. Data: **real**.
 Flint equivalent: **** ().
@@ -249,6 +285,8 @@ Flint equivalent: **** ().
 
 ### Treemap
 
+**Big Idea.** Widget A occupies three fifths of the revenue area.
+
 Best when nested share of a total. Avoid when more than about eight leaves. Data: **real**.
 Flint equivalent: **** ().
 
@@ -263,6 +301,8 @@ Flint equivalent: **** ().
 
 ### Histogram
 
+**Big Idea.** Most transactions cluster near 10,000 with a thin tail out to 15,100.
+
 Best when shape of a single variable. Avoid when fewer than 20 observations. Data: **real**.
 Flint equivalent: **** ().
 
@@ -276,6 +316,8 @@ Flint equivalent: **** ().
 
 ### Box plot
 
+**Big Idea.** The middle half of transactions falls between 8,300 and 12,500.
+
 Best when spread and outliers at a glance. Avoid when audience unfamiliar with quartiles. Data: **real**.
 Flint equivalent: **** ().
 
@@ -285,6 +327,8 @@ min $6,200   Q1 $8,300   med $10,200   Q3 $12,500   max $15,100
 ```
 
 ### Strip plot
+
+**Big Idea.** South clusters at the low end while North spreads across the full range.
 
 Best when every observation should stay visible. Avoid when hundreds of overlapping points. Data: **real**.
 Flint equivalent: **** ().
@@ -297,6 +341,8 @@ South  |o  8ooo          o o  o o o o
 ```
 
 ### ECDF
+
+**Big Idea.** Half of all transactions come in under about 10,000.
 
 Best when the question is what share falls below a value. Avoid when a very small sample. Data: **real**.
 Flint equivalent: **** ().
@@ -314,6 +360,8 @@ Flint equivalent: **** ().
 ## Relationship
 
 ### Scatter plot
+
+**Big Idea.** Revenue rises with units sold and no transaction breaks the pattern.
 
 Best when correlation between two measures. Avoid when more than a few hundred points. Data: **real**.
 Flint equivalent: **** ().
@@ -333,6 +381,8 @@ units ->                          revenue on y axis
 
 ### Heatmap
 
+**Big Idea.** North outsells South in every one of the six months.
+
 Best when two categorical axes, one measure. Avoid when precise values needed. Data: **real**.
 Flint equivalent: **** ().
 
@@ -343,6 +393,8 @@ South   #.... #.... ##... #.... ##... ##...
 ```
 
 ### Bubble plot
+
+**Big Idea.** Higher-revenue transactions carry proportionally higher cost, so margin stays flat.
 
 Best when a third measure sizes each point. Avoid when sizes differ by less than about twice. Data: **real**.
 Flint equivalent: **** ().
@@ -359,6 +411,8 @@ units ->       o low cost    O mid    @ high cost
 ```
 
 ### Parallel coordinates
+
+**Big Idea.** Revenue, units, and cost move together because each is derived from the others.
 
 Best when several measures compared per record. Avoid when the measures are derived from each other, which makes every line identical as it does here. Data: **real**.
 Flint equivalent: **** ().
@@ -377,6 +431,8 @@ Jun     ------*-----  ------*-----  ------*-----
 
 ### Funnel
 
+**Big Idea.** Each stage loses a predictable share of the stage before it.
+
 Best when stage-by-stage drop-off. Avoid when stages are not sequential. Data: **illustrative**.
 Flint equivalent: **** ().
 
@@ -389,6 +445,8 @@ Flint equivalent: **** ().
 
 ### Stage pipeline
 
+**Big Idea.** The pipeline clears four stages and flags the fifth for review.
+
 Best when steps with hand-offs. Avoid when branching or looping flows. Data: **illustrative**.
 Flint equivalent: **** ().
 
@@ -398,6 +456,8 @@ Flint equivalent: **** ().
 ```
 
 ### Sankey flow
+
+**Big Idea.** Two regional streams merge into a single 246,400 total.
 
 Best when quantities merge or split between stages. Avoid when many crossing links. Data: **real**.
 Flint equivalent: **** ().
@@ -412,6 +472,8 @@ South   $107,300 =========-----------/
 
 ### Diverging bar
 
+**Big Idea.** Three months ran above the monthly average and three below it.
+
 Best when above and below a reference. Avoid when no meaningful midpoint. Data: **real**.
 Flint equivalent: **** ().
 
@@ -425,6 +487,8 @@ Jun                          |#                        +$1,833
 ```
 
 ### Variance column
+
+**Big Idea.** Monthly revenue stays within about 10% of the half-year average.
 
 Best when actual against plan per period. Avoid when no plan exists. Data: **real**.
 Flint equivalent: **** ().

@@ -556,6 +556,677 @@ finally {
     Remove-Item $dataFile, $specFile -ErrorAction SilentlyContinue
 }
 
+# --- Unicode variants -------------------------------------------------------
+# The middle rung between ASCII and a real vector chart. Three techniques, each
+# buying sub-cell resolution a single ASCII glyph cannot express:
+#   block elements  1/8 steps within one cell, for bars and columns
+#   braille         a 2x4 dot matrix per cell, so 8x the addressable points
+#   box-drawing     connected strokes for stepped and bounded shapes
+# Built with [char] codes so the file stays encoding-agnostic.
+$BLOCK_V = @([char]0x20, [char]0x2581, [char]0x2582, [char]0x2583, [char]0x2584, [char]0x2585, [char]0x2586, [char]0x2587, [char]0x2588)
+$BLOCK_H = @([char]0x20, [char]0x258F, [char]0x258E, [char]0x258D, [char]0x258C, [char]0x258B, [char]0x258A, [char]0x2589, [char]0x2588)
+$BLK_FULL = [char]0x2588
+$DOTS = @(@(0x01, 0x08), @(0x02, 0x10), @(0x04, 0x20), @(0x40, 0x80))
+
+function UBar([double]$value, [double]$max, [int]$width) {
+    $eighths = [int][math]::Round($value / $max * $width * 8)
+    $fullCells = [math]::Floor($eighths / 8)
+    $rem = $eighths % 8
+    $s = ([string]$BLK_FULL * $fullCells)
+    if ($rem -gt 0) { $s += $BLOCK_H[$rem] }
+    $s.PadRight($width)
+}
+
+function USpark([double[]]$values) {
+    $lo = ($values | Measure-Object -Minimum).Minimum
+    $hi = ($values | Measure-Object -Maximum).Maximum
+    ($values | ForEach-Object {
+        $BLOCK_V[[int][math]::Round(($_ - $lo) / ($hi - $lo) * 7) + 1]
+    }) -join ''
+}
+
+function UColumns([double[]]$values, [int]$height, [int]$spacing) {
+    $hi = ($values | Measure-Object -Maximum).Maximum
+    $rows = @()
+    for ($r = $height; $r -ge 1; $r--) {
+        $line = ''
+        foreach ($v in $values) {
+            $eighths = [int][math]::Round($v / $hi * $height * 8)
+            $cell = $eighths - (($r - 1) * 8)
+            $glyph = if ($cell -ge 8) { $BLK_FULL } elseif ($cell -le 0) { ' ' } else { $BLOCK_V[$cell] }
+            $line += ([string]$glyph * 2) + (' ' * $spacing)
+        }
+        $rows += $line.TrimEnd()
+    }
+    $rows -join "`n"
+}
+
+function UBraille([double[]]$series, [int]$cellsWide, [int]$cellsTall) {
+    $dotW = $cellsWide * 2
+    $dotH = $cellsTall * 4
+    $lo = ($series | Measure-Object -Minimum).Minimum
+    $hi = ($series | Measure-Object -Maximum).Maximum
+    $grid = New-Object 'int[,]' $cellsTall, $cellsWide
+    $yAt = {
+        param($x)
+        $t = $x / ($dotW - 1) * ($series.Count - 1)
+        $i = [math]::Floor($t)
+        $f = $t - $i
+        $v = if ($i + 1 -lt $series.Count) { $series[$i] * (1 - $f) + $series[$i + 1] * $f } else { $series[$i] }
+        [int][math]::Round(($hi - $v) / ($hi - $lo) * ($dotH - 1))
+    }
+    for ($x = 0; $x -lt $dotW; $x++) {
+        $y = & $yAt $x
+        $yNext = if ($x + 1 -lt $dotW) { & $yAt ($x + 1) } else { $y }
+        $from = [math]::Min($y, $yNext); $to = [math]::Max($y, $yNext)
+        for ($yy = $from; $yy -le $to; $yy++) {
+            $grid[[math]::Floor($yy / 4), [math]::Floor($x / 2)] = $grid[[math]::Floor($yy / 4), [math]::Floor($x / 2)] -bor $DOTS[$yy % 4][$x % 2]
+        }
+    }
+    $rows = @()
+    for ($r = 0; $r -lt $cellsTall; $r++) {
+        $line = ''
+        for ($c = 0; $c -lt $cellsWide; $c++) {
+            $m = $grid[$r, $c]
+            $line += if ($m -eq 0) { ' ' } else { [char](0x2800 + $m) }
+        }
+        $rows += $line.TrimEnd()
+    }
+    $rows -join "`n"
+}
+
+$allRevenue = [double[]]($data | ForEach-Object { [double]$_.revenue })
+$monthRevenue = [double[]]($byMonth | ForEach-Object { $_.Revenue })
+
+$unicodeVariants = @{}
+function Add-Unicode($form, $technique, $note, $art) {
+    # Same rule as Add-Entry: padding is load-bearing inside a line, never after it.
+    $trimmed = (($art -split "`n") | ForEach-Object { $_.TrimEnd() }) -join "`n"
+    $unicodeVariants[$form] = [pscustomobject]@{ Technique = $technique; Note = $note; Art = $trimmed }
+}
+
+Add-Unicode 'Horizontal bar' 'Block elements' 'Eighth-cell bar ends instead of whole characters' (
+    ($byProduct | ForEach-Object { $_.Name.PadRight(10) + (UBar $_.Revenue $maxProd 34) + ' ' + (Money $_.Revenue).PadLeft(9) }) -join "`n"
+)
+Add-Unicode 'Bullet chart' 'Block elements' 'Sub-cell precision against the target marker' (
+    (& {
+        $maxRegion = ($byRegion | Measure-Object Revenue -Maximum).Maximum
+        $byRegion | ForEach-Object {
+            $_.Name.PadRight(7) + (UBar $_.Revenue $maxRegion 30) + '|' + ' ' + (Money $_.Revenue).PadLeft(9)
+        }
+    }) -join "`n"
+)
+Add-Unicode 'Gauge' 'Block elements' 'Progress resolves to 1/8 of a cell' (
+    (& {
+        $target = 260000
+        $pct = $totalRev / $target * 100
+        @(
+            '0%' + (' ' * 17) + '50%' + (' ' * 16) + '100%'
+            '[' + (UBar $totalRev $target 40) + ']  ' + $pct.ToString('N0') + '%'
+            'Revenue ' + (Money $totalRev) + ' against target ' + (Money $target)
+        )
+    }) -join "`n"
+)
+Add-Unicode 'Sparkline' 'Block elements' 'Eight levels instead of three slash directions' (
+    'Revenue  ' + (USpark $monthRevenue) + '   ' + (Money $byMonth[0].Revenue) + ' -> ' + (Money $byMonth[-1].Revenue) + "`n" +
+    'Months   JFMAMJ'
+)
+Add-Unicode 'Column trend' 'Block elements' 'Column tops land between rows, not on them' (
+    (UColumns $monthRevenue 6 2) + "`n" + (($byMonth | ForEach-Object { $_.Label.Substring(0, 2).PadRight(4) }) -join '')
+)
+Add-Unicode 'Histogram' 'Block elements' 'Bin heights resolve below a full row' (
+    (& {
+        $bins = @(0, 0, 0, 0, 0, 0)
+        foreach ($v in $allRevenue) {
+            $i = [math]::Min(5, [int][math]::Floor(($v - $min) / ($max - $min) * 6))
+            $bins[$i]++
+        }
+        $hiBin = ($bins | Measure-Object -Maximum).Maximum
+        for ($i = 0; $i -lt 6; $i++) {
+            $lowEdge = $min + ($max - $min) * $i / 6
+            (Money $lowEdge).PadLeft(8) + ' ' + (UBar $bins[$i] $hiBin 30) + ' ' + $bins[$i]
+        }
+    }) -join "`n"
+)
+Add-Unicode 'Line chart' 'Braille' 'Eight vertical positions per row instead of one' (
+    (& {
+        $art = UBraille $monthRevenue 46 5
+        $lines = $art -split "`n"
+        $lo = ($monthRevenue | Measure-Object -Minimum).Minimum
+        $hi = ($monthRevenue | Measure-Object -Maximum).Maximum
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            $v = $hi - ($hi - $lo) * $i / ($lines.Count - 1)
+            $lines[$i] = (Money $v).PadLeft(8) + ' |' + $lines[$i]
+        }
+        $lines += (' ' * 9) + (($byMonth | ForEach-Object { $_.Label.PadRight(8) }) -join '')
+        $lines
+    }) -join "`n"
+)
+Add-Unicode 'Area chart' 'Block elements' 'Fills from a nonzero floor so the variation stays visible' (
+    (& {
+        $lo = ($monthRevenue | Measure-Object -Minimum).Minimum
+        $hi = ($monthRevenue | Measure-Object -Maximum).Maximum
+        $floor = $lo - ($hi - $lo) * 0.35
+        $rows = @()
+        for ($r = 6; $r -ge 1; $r--) {
+            $line = (' ' * 8) + '|'
+            foreach ($v in $monthRevenue) {
+                $eighths = [int][math]::Round(($v - $floor) / ($hi - $floor) * 6 * 8)
+                $cell = $eighths - (($r - 1) * 8)
+                $glyph = if ($cell -ge 8) { $BLK_FULL } elseif ($cell -le 0) { ' ' } else { $BLOCK_V[$cell] }
+                $line += ([string]$glyph * 4) + ' '
+            }
+            $rows += $line.TrimEnd()
+        }
+        $rows += (' ' * 8) + '+' + ('-' * 29)
+        $rows += (' ' * 9) + (($byMonth | ForEach-Object { $_.Label.PadRight(5) }) -join '')
+        $rows += (' ' * 9) + 'floor ' + (Money $floor) + ', not zero'
+        $rows
+    }) -join "`n"
+)
+Add-Unicode 'ECDF' 'Braille' 'The step edge lands on a dot, not a whole cell' (
+    (& {
+        $sorted = [double[]]($allRevenue | Sort-Object)
+        $curve = @()
+        for ($i = 0; $i -lt 40; $i++) {
+            $v = $min + ($max - $min) * $i / 39
+            $curve += (@($sorted | Where-Object { $_ -le $v }).Count / $sorted.Count) * 100
+        }
+        $art = UBraille ([double[]]$curve) 40 4
+        $lines = $art -split "`n"
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            $p = 100 - 25 * $i
+            $lines[$i] = ($p.ToString() + '%').PadLeft(5) + ' |' + $lines[$i]
+        }
+        $lines += (' ' * 6) + '+' + ('-' * 40)
+        $lines += (' ' * 7) + (Money $min).PadRight(32) + (Money $max)
+        $lines
+    }) -join "`n"
+)
+Add-Unicode 'Scatter plot' 'Braille' 'Each cell carries eight addressable points' (
+    (& {
+        $pairs = $data | ForEach-Object { [pscustomobject]@{ X = [double]$_.units; Y = [double]$_.revenue } } | Sort-Object X
+        $ys = [double[]]($pairs | ForEach-Object { $_.Y })
+        $art = UBraille $ys 44 5
+        $lines = $art -split "`n"
+        $lines += '+' + ('-' * 44)
+        $lines += 'units ascending ->'
+        $lines
+    }) -join "`n"
+)
+Add-Unicode 'Step line' 'Box-drawing' 'Connected strokes instead of separated underscores' (
+    (& {
+        $lo = ($monthRevenue | Measure-Object -Minimum).Minimum
+        $hi = ($monthRevenue | Measure-Object -Maximum).Maximum
+        $H = 6
+        $grid = @()
+        for ($r = 0; $r -lt $H; $r++) { $grid += , (New-Object 'char[]' 36) }
+        for ($r = 0; $r -lt $H; $r++) { for ($c = 0; $c -lt 36; $c++) { $grid[$r][$c] = ' ' } }
+        $rowOf = { param($v) [int][math]::Round(($hi - $v) / ($hi - $lo) * ($H - 1)) }
+        for ($i = 0; $i -lt $monthRevenue.Count; $i++) {
+            $r = & $rowOf $monthRevenue[$i]
+            $c0 = $i * 6
+            for ($c = $c0; $c -lt [math]::Min(36, $c0 + 6); $c++) { $grid[$r][$c] = [char]0x2500 }
+            if ($i -gt 0) {
+                $rPrev = & $rowOf $monthRevenue[$i - 1]
+                $from = [math]::Min($r, $rPrev); $to = [math]::Max($r, $rPrev)
+                for ($y = $from + 1; $y -lt $to; $y++) { $grid[$y][$c0] = [char]0x2502 }
+                if ($r -lt $rPrev) { $grid[$r][$c0] = [char]0x256D; $grid[$rPrev][$c0] = [char]0x256F }
+                elseif ($r -gt $rPrev) { $grid[$r][$c0] = [char]0x2570; $grid[$rPrev][$c0] = [char]0x256E }
+            }
+        }
+        $out = @()
+        for ($r = 0; $r -lt $H; $r++) {
+            $v = $hi - ($hi - $lo) * $r / ($H - 1)
+            $out += (Money $v).PadLeft(8) + ' |' + (-join $grid[$r]).TrimEnd()
+        }
+        $out += (' ' * 9) + (($byMonth | ForEach-Object { $_.Label.PadRight(6) }) -join '')
+        $out
+    }) -join "`n"
+)
+
+$SHADE = @([char]0x20, [char]0x2591, [char]0x2592, [char]0x2593, [char]0x2588)
+$LIGHT = [char]0x2591
+$DIAG_UP = [char]0x2571
+$DIAG_DN = [char]0x2572
+$ARROW = [char]0x2192
+function UShade([double]$v, [double]$hi) { $SHADE[[int][math]::Round($v / $hi * 4)] }
+
+# A bar growing leftward can only close on a half or eighth right-edge block,
+# so negative bars round to whole cells while positive bars keep eighth precision.
+function UBarLeft([double]$value, [double]$max, [int]$width) {
+    $cells = [int][math]::Round($value / $max * $width)
+    (([string]$BLK_FULL * $cells)).PadLeft($width)
+}
+
+Add-Unicode 'Dot plot' 'Braille' 'The marker lands on a half-cell, so close values separate' (
+    (& {
+        $lo = ($monthRevenue | Measure-Object -Minimum).Minimum
+        $hi = ($monthRevenue | Measure-Object -Maximum).Maximum
+        $cellsW = 32
+        $byMonth | ForEach-Object {
+            $x = [int][math]::Round(($_.Revenue - $lo) / ($hi - $lo) * ($cellsW * 2 - 1))
+            $line = ''
+            for ($c = 0; $c -lt $cellsW; $c++) {
+                $mask = 0x24
+                if ([math]::Floor($x / 2) -eq $c) { $mask = if ($x % 2 -eq 0) { 0x47 } else { 0xB8 } }
+                $line += [char](0x2800 + $mask)
+            }
+            $_.Label.PadRight(5) + $line + '  ' + (Money $_.Revenue).PadLeft(8)
+        }
+    }) -join "`n"
+)
+
+Add-Unicode 'Grouped bar' 'Block elements' 'Every bar end resolves to an eighth of a cell' (
+    (& {
+        $hiCombo = ($combos | Measure-Object Revenue -Maximum).Maximum
+        $out = @()
+        foreach ($r in $byRegion) {
+            $out += $r.Name
+            foreach ($p in $byProduct) {
+                $v = ($data | Where-Object { $_.region -eq $r.Name -and $_.product -eq $p.Name } |
+                    Measure-Object revenue -Sum).Sum
+                $out += '  ' + $p.Name.PadRight(9) + (UBar $v $hiCombo 28) + ' ' + (Money $v).PadLeft(8)
+            }
+        }
+        $out
+    }) -join "`n"
+)
+
+Add-Unicode 'Small multiples' 'Block elements' 'Eight levels per panel instead of three slash directions' (
+    (& {
+        $byRegion | ForEach-Object {
+            $name = $_.Name
+            $s = [double[]]($byMonth | ForEach-Object { $regionMonth[$name + '|' + $_.Label] })
+            $name.PadRight(8) + (USpark $s) + '   ' + (Money $_.Revenue).PadLeft(9)
+        }
+    }) -join "`n"
+)
+
+Add-Unicode 'Stacked 100% bar' 'Block elements' 'The segment boundary lands mid-cell instead of snapping to one' (
+    (& {
+        $north = $byRegion[0]
+        $width = 60
+        $bar = (UBar $north.Revenue $totalRev $width).TrimEnd()
+        @(
+            $bar + ([string]$LIGHT * ($width - $bar.Length))
+            $byRegion[0].Name + ' ' + ($byRegion[0].Revenue / $totalRev * 100).ToString('N1') + '%  ' +
+            $byRegion[1].Name + ' ' + ($byRegion[1].Revenue / $totalRev * 100).ToString('N1') + '%'
+        )
+    }) -join "`n"
+)
+
+Add-Unicode 'Percentage rows' 'Block elements' 'A 60.4% row ends past the 60% cell, not on it' (
+    (& {
+        $byProduct | ForEach-Object {
+            $bar = (UBar $_.Revenue $totalRev 40).TrimEnd()
+            $_.Name.PadRight(10) + $bar + ([string]$LIGHT * (40 - $bar.Length)) + '  ' +
+            ($_.Revenue / $totalRev * 100).ToString('N1') + '%'
+        }
+    }) -join "`n"
+)
+
+Add-Unicode 'Waffle grid' 'Block elements' 'No fidelity gain; a waffle is whole cells by definition and only the glyph weight changes' (
+    (& {
+        $filled = [int][math]::Round($byRegion[0].Revenue / $totalRev * 100)
+        $out = @()
+        for ($r = 0; $r -lt 5; $r++) {
+            $line = ''
+            for ($c = 0; $c -lt 20; $c++) {
+                $line += if (($r * 20 + $c) -lt $filled) { $BLK_FULL } else { $LIGHT }
+            }
+            $out += $line
+        }
+        $out += [string]$BLK_FULL + ' ' + $byRegion[0].Name + ' ' + $filled + '%   ' +
+                [string]$LIGHT + ' ' + $byRegion[1].Name + ' ' + (100 - $filled) + '%'
+        $out
+    }) -join "`n"
+)
+
+Add-Unicode 'Box plot' 'Box-drawing' 'A doubled stroke separates the box from the whiskers without a legend' (
+    (& {
+        # Same quartiles the ASCII column uses; recomputing them drifted the two apart.
+        $w = 46
+        $at = { param($v) [int][math]::Round(($v - $min) / ($max - $min) * ($w - 1)) }
+        $line = New-Object 'char[]' $w
+        for ($i = 0; $i -lt $w; $i++) { $line[$i] = [char]0x2500 }
+        for ($i = (& $at $q1); $i -le (& $at $q3); $i++) { $line[$i] = [char]0x2550 }
+        $line[0] = [char]0x251C; $line[$w - 1] = [char]0x2524
+        $line[(& $at $q1)] = [char]0x255E; $line[(& $at $q3)] = [char]0x2561
+        $line[(& $at $med)] = [char]0x256A
+        @(
+            (-join $line)
+            'min ' + (Money $min) + '   Q1 ' + (Money $q1) + '   med ' + (Money $med) +
+            '   Q3 ' + (Money $q3) + '   max ' + (Money $max)
+        )
+    }) -join "`n"
+)
+
+Add-Unicode 'Heatmap' 'Block elements' 'One glyph carries the level, so a cell shrinks from five characters to three' (
+    (& {
+        # Same bucket edges as the ASCII Ramp, so both columns tell one story.
+        $out = @(((' ' * 8) + (($byMonth | ForEach-Object { $_.Label.PadRight(4) }) -join '')).TrimEnd())
+        foreach ($r in $byRegion) {
+            $row = $r.Name.PadRight(8)
+            foreach ($m in $byMonth) {
+                $t = ($cells[$r.Name + '|' + $m.Label] - $cMin) / ($cMax - $cMin)
+                $g = if ($t -ge 0.75) { $SHADE[4] } elseif ($t -ge 0.5) { $SHADE[3] } elseif ($t -ge 0.25) { $SHADE[2] } else { $SHADE[1] }
+                $row += ([string]$g * 3) + ' '
+            }
+            $out += $row.TrimEnd()
+        }
+        $out
+    }) -join "`n"
+)
+
+Add-Unicode 'Funnel' 'Block elements' 'Stage widths resolve below a whole character, so small drops stay visible' (
+    (& {
+        $stages | ForEach-Object {
+            $bar = (UBar $_.Value $stages[0].Value 40).TrimEnd()
+            $pad = [math]::Floor((40 - $bar.Length) / 2)
+            (' ' * $pad) + $bar + '  ' + $_.Name.PadRight(10) + $_.Value.ToString('N0').PadLeft(6)
+        }
+    }) -join "`n"
+)
+
+Add-Unicode 'Stage pipeline' 'Box-drawing' 'Closed boxes and real arrows instead of brackets and hyphens' (
+    (& {
+        $names = @('Ingest', 'Clean', 'Select', 'Render', 'Verify')
+        $marks = @('ok', 'ok', 'ok', 'ok', 'WARN')
+        $top = ''; $mid = ''; $bot = ''; $sta = ''
+        for ($i = 0; $i -lt $names.Count; $i++) {
+            $inner = ' ' + $names[$i] + ' '
+            $sep = if ($i -lt $names.Count - 1) { ' ' + $ARROW + ' ' } else { '' }
+            $top += [char]0x250C + ([string][char]0x2500 * $inner.Length) + [char]0x2510 + (' ' * $sep.Length)
+            $mid += [char]0x2502 + $inner + [char]0x2502 + $sep
+            $bot += [char]0x2514 + ([string][char]0x2500 * $inner.Length) + [char]0x2518 + (' ' * $sep.Length)
+            $sta += $marks[$i].PadLeft([math]::Floor(($inner.Length + 2 + $marks[$i].Length) / 2)).PadRight($inner.Length + 2 + $sep.Length)
+        }
+        @($top.TrimEnd(), $mid.TrimEnd(), $bot.TrimEnd(), $sta.TrimEnd())
+    }) -join "`n"
+)
+
+Add-Unicode 'Slope chart' 'Box-drawing' 'Diagonals span corner to corner, so consecutive cells meet where ASCII slashes leave gaps' (
+    (& {
+        $out = @((' ' * 8) + $firstLabel.PadRight(26) + $lastLabel)
+        foreach ($r in $byRegion) {
+            $a = $regionMonth[$r.Name + '|' + $firstLabel]
+            $b = $regionMonth[$r.Name + '|' + $lastLabel]
+            $g = if ($b -ge $a) { $DIAG_UP } else { $DIAG_DN }
+            $out += $r.Name.PadRight(7) + (Money $a).PadLeft(8) + ' ' + ([string]$g * 16) + ' ' + (Money $b).PadLeft(8)
+        }
+        $out
+    }) -join "`n"
+)
+
+Add-Unicode 'Waterfall' 'Block elements' 'Step widths resolve to an eighth, so the margin sliver keeps its true length' (
+    (& {
+        $margin = $totalRev - $grandCost
+        $wMar = [math]::Round($margin / $totalRev * 40)
+        # No light-shaded eighth glyph exists, so the deduction bar stays whole cells.
+        $wCost = [int][math]::Round($grandCost / $totalRev * 40)
+        @(
+            'Revenue  ' + (UBar $totalRev $totalRev 40) + ' ' + (Money $totalRev).PadLeft(9)
+            'Cost     ' + ((' ' * $wMar) + ([string]$LIGHT * $wCost)).PadRight(40) + ' ' + ('-' + (Money $grandCost)).PadLeft(9)
+            'Margin   ' + (UBar $margin $totalRev 40) + ' ' + (Money $margin).PadLeft(9)
+        )
+    }) -join "`n"
+)
+
+Add-Unicode 'Pareto' 'Block elements' 'Bar ends resolve to an eighth while the cumulative share stays text' (
+    (& {
+        $cum = 0
+        $maxC = $combos[0].Revenue
+        $combos | ForEach-Object {
+            $cum += $_.Revenue
+            $bar = (UBar $_.Revenue $maxC 22).TrimEnd()
+            $_.Name.PadRight(16) + $bar + ([string]$LIGHT * (22 - $bar.Length)) + ' ' +
+            (Money $_.Revenue).PadLeft(8) + '  cum ' + ($cum / $totalRev * 100).ToString('N0').PadLeft(3) + '%'
+        }
+    }) -join "`n"
+)
+
+Add-Unicode 'KPI card' 'Box-drawing' 'A closed frame instead of plus signs and hyphens at the corners' (
+    (& {
+        $w = 28
+        $delta = ($byMonth[-1].Revenue - $byMonth[0].Revenue) / $byMonth[0].Revenue * 100
+        $rows = @(
+            '  REVENUE'
+            '  ' + (Money $totalRev)
+            '  ' + (USpark $monthRevenue) + '  +' + $delta.ToString('N1') + '% vs ' + $firstLabel
+        )
+        @([char]0x250C + ([string][char]0x2500 * $w) + [char]0x2510) +
+        ($rows | ForEach-Object { [char]0x2502 + $_.PadRight($w) + [char]0x2502 }) +
+        @([char]0x2514 + ([string][char]0x2500 * $w) + [char]0x2518)
+    }) -join "`n"
+)
+
+Add-Unicode 'Treemap' 'Box-drawing' 'Rectangles close properly, so the split reads as area rather than text columns' (
+    (& {
+        $total = 56
+        $wA = [int][math]::Round($byProduct[0].Revenue / $totalRev * $total)
+        $wB = $total - $wA
+        $h = [char]0x2500
+        @(
+            [char]0x250C + ([string]$h * $wA) + [char]0x252C + ([string]$h * $wB) + [char]0x2510
+            [char]0x2502 + $byProduct[0].Name.PadRight($wA) + [char]0x2502 + $byProduct[1].Name.PadRight($wB) + [char]0x2502
+            [char]0x2502 + ((Money $byProduct[0].Revenue) + '  ' + ($byProduct[0].Revenue / $totalRev * 100).ToString('N0') + '%').PadRight($wA) + [char]0x2502 + ((Money $byProduct[1].Revenue) + '  ' + ($byProduct[1].Revenue / $totalRev * 100).ToString('N0') + '%').PadRight($wB) + [char]0x2502
+            [char]0x2514 + ([string]$h * $wA) + [char]0x2534 + ([string]$h * $wB) + [char]0x2518
+        )
+    }) -join "`n"
+)
+
+Add-Unicode 'Strip plot' 'Braille' 'Collisions stack as separate dots instead of collapsing into a count' (
+    (& {
+        $lo = ($allRevenue | Measure-Object -Minimum).Minimum
+        $hi = ($allRevenue | Measure-Object -Maximum).Maximum
+        $cellsW = 44
+        $out = @()
+        foreach ($r in $byRegion) {
+            $vals = $data | Where-Object { $_.region -eq $r.Name } | ForEach-Object { [double]$_.revenue }
+            $counts = @{}
+            foreach ($v in $vals) {
+                $x = [int][math]::Round(($v - $lo) / ($hi - $lo) * ($cellsW * 2 - 1))
+                if (-not $counts.ContainsKey($x)) { $counts[$x] = 0 }
+                $counts[$x]++
+            }
+            $line = ''
+            for ($c = 0; $c -lt $cellsW; $c++) {
+                $mask = 0
+                foreach ($sub in 0, 1) {
+                    $x = $c * 2 + $sub
+                    if ($counts.ContainsKey($x)) {
+                        for ($k = 0; $k -lt [math]::Min(4, $counts[$x]); $k++) {
+                            $mask = $mask -bor $DOTS[3 - $k][$sub]
+                        }
+                    }
+                }
+                $line += if ($mask -eq 0) { ' ' } else { [char](0x2800 + $mask) }
+            }
+            $out += $r.Name.PadRight(7) + [char]0x2502 + $line.TrimEnd()
+        }
+        $out += (' ' * 7) + [char]0x2514 + ([string][char]0x2500 * 44)
+        $out += (' ' * 8) + (Money $lo) + ' to ' + (Money $hi) + '    dots stack by count'
+        $out
+    }) -join "`n"
+)
+
+Add-Unicode 'Bubble plot' 'Braille' 'Dot density carries magnitude, so size costs no extra column' (
+    (& {
+        $rows = 6; $cellsW = 44
+        $us = [double[]]($data | ForEach-Object { [double]$_.units })
+        $rs = [double[]]($data | ForEach-Object { [double]$_.revenue })
+        $cs = [double[]]($data | ForEach-Object { [double]$_.cost })
+        $uLo = ($us | Measure-Object -Minimum).Minimum; $uHi = ($us | Measure-Object -Maximum).Maximum
+        $rLo = ($rs | Measure-Object -Minimum).Minimum; $rHi = ($rs | Measure-Object -Maximum).Maximum
+        $cLo = ($cs | Measure-Object -Minimum).Minimum; $cHi = ($cs | Measure-Object -Maximum).Maximum
+        $grid = New-Object 'int[,]' $rows, $cellsW
+        for ($i = 0; $i -lt $us.Count; $i++) {
+            $x = [int][math]::Round(($us[$i] - $uLo) / ($uHi - $uLo) * ($cellsW - 1))
+            $y = [int][math]::Round(($rHi - $rs[$i]) / ($rHi - $rLo) * ($rows - 1))
+            $tier = [int][math]::Round(($cs[$i] - $cLo) / ($cHi - $cLo) * 2)
+            $mask = @(0x01, 0x07, 0xFF)[$tier]
+            $grid[$y, $x] = $grid[$y, $x] -bor $mask
+        }
+        $out = @()
+        for ($r = 0; $r -lt $rows; $r++) {
+            $line = ''
+            for ($c = 0; $c -lt $cellsW; $c++) {
+                $line += if ($grid[$r, $c] -eq 0) { ' ' } else { [char](0x2800 + $grid[$r, $c]) }
+            }
+            $out += [char]0x2502 + $line.TrimEnd()
+        }
+        $out += [char]0x2514 + ([string][char]0x2500 * $cellsW)
+        $out += 'units ' + $ARROW + '   ' + [char](0x2800 + 0x01) + ' low cost   ' +
+                [char](0x2800 + 0x07) + ' mid   ' + [char](0x2800 + 0xFF) + ' high cost'
+        $out
+    }) -join "`n"
+)
+
+Add-Unicode 'Parallel coordinates' 'Braille' 'Each tick lands on a half-cell, so near-equal months stop overlapping' (
+    (& {
+        $axes = @(
+            @{ Name = 'revenue'; Values = [double[]]($byMonth | ForEach-Object { $_.Revenue }) }
+            @{ Name = 'units'; Values = [double[]]($byMonth | ForEach-Object { $_.Units }) }
+            @{ Name = 'cost'; Values = [double[]]($byMonth | ForEach-Object { $m = $_.Label; ($data | Where-Object { ([datetime]$_.date).ToString('MMM') -eq $m } | Measure-Object cost -Sum).Sum }) }
+        )
+        $w = 12
+        $out = @((' ' * 8) + 'revenue'.PadRight($w + 2) + 'units'.PadRight($w + 2) + 'cost')
+        for ($m = 0; $m -lt $byMonth.Count; $m++) {
+            $row = $byMonth[$m].Label.PadRight(8)
+            foreach ($ax in $axes) {
+                $lo = ($ax.Values | Measure-Object -Minimum).Minimum
+                $hi = ($ax.Values | Measure-Object -Maximum).Maximum
+                $x = [int][math]::Round(($ax.Values[$m] - $lo) / ($hi - $lo) * ($w * 2 - 1))
+                $seg = ''
+                for ($c = 0; $c -lt $w; $c++) {
+                    $mask = 0x24
+                    if ([math]::Floor($x / 2) -eq $c) { $mask = if ($x % 2 -eq 0) { 0x47 } else { 0xB8 } }
+                    $seg += [char](0x2800 + $mask)
+                }
+                $row += $seg + '  '
+            }
+            $out += $row.TrimEnd()
+        }
+        $out
+    }) -join "`n"
+)
+
+Add-Unicode 'Sankey flow' 'Box-drawing' 'Real corners and joins instead of backslashes and angle brackets' (
+    (& {
+        $n = $byRegion[0]; $s = $byRegion[1]
+        $wN = [int][math]::Round($n.Revenue / $totalRev * 22)
+        $wS = [int][math]::Round($s.Revenue / $totalRev * 22)
+        @(
+            $n.Name.PadRight(7) + (Money $n.Revenue).PadLeft(9) + ' ' + ([string]$BLK_FULL * $wN) +
+                ([string]$LIGHT * (22 - $wN)) + [char]0x2510
+            (' ' * 40) + [char]0x251C + [char]0x2500 + ' Total ' + (Money $totalRev)
+            $s.Name.PadRight(7) + (Money $s.Revenue).PadLeft(9) + ' ' + ([string]$BLK_FULL * $wS) +
+                ([string]$LIGHT * (22 - $wS)) + [char]0x2518
+        )
+    }) -join "`n"
+)
+
+Add-Unicode 'Diverging bar' 'Block elements' 'Growth keeps eighth precision; shortfalls round to whole cells because only right-edge eighths exist' (
+    (& {
+        $devs = $byMonth | ForEach-Object { $_.Revenue - $avgMonth }
+        $peak = ($devs | ForEach-Object { [math]::Abs($_) } | Measure-Object -Maximum).Maximum
+        for ($i = 0; $i -lt $byMonth.Count; $i++) {
+            $d = $devs[$i]
+            $left = if ($d -lt 0) { UBarLeft ([math]::Abs($d)) $peak 24 } else { ' ' * 24 }
+            $right = if ($d -ge 0) { UBar $d $peak 24 } else { ' ' * 24 }
+            $byMonth[$i].Label.PadRight(5) + $left + [char]0x2502 + $right.TrimEnd().PadRight(24) + ' ' +
+            (($(if ($d -ge 0) { '+' } else { '-' }) + (Money ([math]::Abs($d))))).PadLeft(9)
+        }
+    }) -join "`n"
+)
+
+Add-Unicode 'Variance column' 'Block elements' 'A shaded deviation bar replaces the bracketed status word' (
+    (& {
+        $devs = $byMonth | ForEach-Object { $_.Revenue - $avgMonth }
+        $peak = ($devs | ForEach-Object { [math]::Abs($_) } | Measure-Object -Maximum).Maximum
+        for ($i = 0; $i -lt $byMonth.Count; $i++) {
+            $d = $devs[$i]
+            $bar = (UBar ([math]::Abs($d)) $peak 16).TrimEnd()
+            $glyph = if ($d -ge 0) { $BLK_FULL } else { $LIGHT }
+            $byMonth[$i].Label.PadRight(6) + (Money $byMonth[$i].Revenue).PadLeft(8) + '  vs avg ' +
+            (Money $avgMonth).PadLeft(8) + '  ' +
+            ($bar -replace [regex]::Escape([string]$BLK_FULL), [string]$glyph).PadRight(16) + ' ' +
+            (($(if ($d -ge 0) { '+' } else { '-' }) + [math]::Abs([math]::Round($d)).ToString('N0'))).PadLeft(7)
+        }
+    }) -join "`n"
+)
+
+# Unicode variants get the same width discipline as ASCII; only the glyph set differs.
+foreach ($e in $entries) {
+    if (-not $unicodeVariants.ContainsKey($e.Form)) { throw "No Unicode variant for form '$($e.Form)'" }
+}
+foreach ($form in $unicodeVariants.Keys) {
+    $v = $unicodeVariants[$form]
+    if (-not $v.Art) { throw "Unicode variant '$form' produced no output" }
+    foreach ($line in ($v.Art -split "`n")) {
+        if ($line.Length -gt $MAXW) { throw "Unicode variant '$form' exceeds $MAXW chars: $($line.Length)" }
+    }
+    if ($v.Art -match '[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uFF00-\uFF60]') {
+        throw "Unicode variant '$form' contains a wide character that breaks the grid"
+    }
+}
+
+# --- Big Ideas --------------------------------------------------------------
+# The input to chart selection: the one-sentence claim the figure has to carry.
+# Best-when/avoid-when is the output, the form chosen to carry it. Every claim
+# below is checked against sales-sample.csv; an unverifiable claim is a defect.
+$bigIdeas = @{
+    'Horizontal bar'       = 'Widget A brings in 60% of revenue, half again more than Widget B.'
+    'Dot plot'             = 'Monthly revenue rose overall, dipping only in April and June.'
+    'Bullet chart'         = 'North clears the regional revenue mark that South falls short of.'
+    'Grouped bar'          = 'Widget A leads in both regions, so the product gap is not a regional artifact.'
+    'Slope chart'          = 'Both regions grew from January to June and neither changed rank.'
+    'Waterfall'            = 'Cost consumes 70% of revenue, leaving a 30% margin.'
+    'Pareto'               = 'The top two region-product pairs carry 60% of all revenue.'
+    'Gauge'                = 'Revenue reached 95% of the 260,000 target.'
+    'KPI card'             = 'Revenue closed at 246,400, up 16.6% since January.'
+    'Sparkline'            = 'Revenue trended up across the half year despite two monthly dips.'
+    'Column trend'         = 'Every month except April and June beat the month before it.'
+    'Step line'            = 'Revenue holds a level for a month at a time rather than moving continuously.'
+    'Small multiples'      = 'Both regions follow the same monthly shape at different scales.'
+    'Line chart'           = 'Revenue climbed from 36,800 to a May peak of 44,800, then eased.'
+    'Area chart'           = 'Monthly revenue grew steadily, but the totals sit far above zero.'
+    'Stacked 100% bar'     = 'North holds 57% of revenue against South''s 43%.'
+    'Percentage rows'      = 'Widget A holds 60% of revenue against Widget B''s 40%.'
+    'Waffle grid'          = 'About 56 of every 100 revenue dollars come from North.'
+    'Treemap'              = 'Widget A occupies three fifths of the revenue area.'
+    'Histogram'            = 'Most transactions cluster near 10,000 with a thin tail out to 15,100.'
+    'Box plot'             = 'The middle half of transactions falls between 8,300 and 12,500.'
+    'Strip plot'           = 'South clusters at the low end while North spreads across the full range.'
+    'ECDF'                 = 'Half of all transactions come in under about 10,000.'
+    'Scatter plot'         = 'Revenue rises with units sold and no transaction breaks the pattern.'
+    'Heatmap'              = 'North outsells South in every one of the six months.'
+    'Bubble plot'          = 'Higher-revenue transactions carry proportionally higher cost, so margin stays flat.'
+    'Parallel coordinates' = 'Revenue, units, and cost move together because each is derived from the others.'
+    'Funnel'               = 'Each stage loses a predictable share of the stage before it.'
+    'Stage pipeline'       = 'The pipeline clears four stages and flags the fifth for review.'
+    'Sankey flow'          = 'Two regional streams merge into a single 246,400 total.'
+    'Diverging bar'        = 'Three months ran above the monthly average and three below it.'
+    'Variance column'      = 'Monthly revenue stays within about 10% of the half-year average.'
+}
+
+foreach ($e in $entries) {
+    if (-not $bigIdeas.ContainsKey($e.Form)) { throw "No Big Idea for form '$($e.Form)'" }
+}
+
+# A claim naming an entity the figure never plots is the defect a Big Idea exists
+# to prevent. Four claims failed this on first write, two of them swapped.
+foreach ($e in $entries) {
+    if ($e.Source -ne 'real') { continue }
+    $claim = $bigIdeas[$e.Form]
+    foreach ($entity in 'Widget A', 'Widget B', 'North', 'South') {
+        if ($claim -match [regex]::Escape($entity) -and $e.Ascii -notmatch [regex]::Escape($entity)) {
+            throw "Big Idea for '$($e.Form)' names '$entity' but the figure never plots it"
+        }
+    }
+}
+
 # --- render markdown --------------------------------------------------------
 $goals = 'Comparison', 'Change Over Time', 'Proportion', 'Distribution', 'Relationship', 'Flow and Process', 'Deviation'
 $md = [System.Collections.Generic.List[string]]::new()
@@ -584,6 +1255,8 @@ foreach ($g in $goals) {
     $md.Add('')
     foreach ($e in ($entries | Where-Object Goal -eq $g)) {
         $md.Add("### $($e.Form)")
+        $md.Add('')
+        $md.Add("**Big Idea.** $($bigIdeas[$e.Form])")
         $md.Add('')
         $md.Add("Best when $($e.Best). Avoid when $($e.Avoid). Data: **$($e.Source)**.")
         $flint = $flintEquivalents[$e.Form]
@@ -620,7 +1293,7 @@ $html = [System.Collections.Generic.List[string]]::new()
 $html.Add('<!DOCTYPE html>')
 $html.Add('<html lang="en"><head><meta charset="utf-8">')
 $html.Add('<meta name="viewport" content="width=device-width, initial-scale=1">')
-$html.Add('<title>ASCII + Flint Chart Gallery</title>')
+$html.Add('<title>ASCII, Unicode, and Flint Chart Gallery</title>')
 $html.Add('<script src="https://cdn.jsdelivr.net/npm/vega@6"></script>')
 $html.Add('<script src="https://cdn.jsdelivr.net/npm/vega-lite@6"></script>')
 $html.Add('<script src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>')
@@ -639,7 +1312,12 @@ $html.Add('h2{margin:2.5rem 0 1rem;font-size:1.3rem;color:var(--accent);border-b
 $html.Add('.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem 1.25rem;margin:0 0 1.25rem}')
 $html.Add('.card h3{margin:0 0 .35rem;font-size:1.05rem;color:#fff}')
 $html.Add('.meta{margin:0 0 .75rem;color:var(--mute);font-size:.85rem}')
-$html.Add('.comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(18rem,.7fr);gap:1rem;align-items:stretch}')
+$html.Add('.comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(16rem,.62fr);gap:1rem;align-items:stretch}')
+$html.Add('.column:first-child pre{height:calc(100% - 1.15rem)}')
+$html.Add('.uni-note{margin:.4rem 0 0;color:var(--mute);font-size:.72rem;line-height:1.35}')
+$html.Add('.idea{margin:.1rem 0 .3rem;color:var(--ink);font-size:.95rem;line-height:1.45;border-left:3px solid var(--accent);padding-left:.6rem}')
+$html.Add('.idea::before{content:"Big Idea ";color:var(--accent);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.1rem}')
+$html.Add('.uni-tech{color:#c4b5fd;font-weight:700}')
 $html.Add('.column{min-width:0}')
 $html.Add('.column:first-child pre{height:calc(100% - 1.15rem)}')
 $html.Add('.column-label{margin:0 0 .45rem;color:var(--mute);font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}')
@@ -655,18 +1333,21 @@ $html.Add('.real{background:rgba(16,185,129,.15);color:var(--accent)}')
 $html.Add('.illustrative{background:rgba(148,163,184,.15);color:var(--mute)}')
 $html.Add('.approximate{background:rgba(245,158,11,.15);color:#f59e0b}')
 $html.Add('.notviable{background:rgba(148,163,184,.12);color:var(--mute);text-decoration:line-through}')
-$html.Add('pre{margin:0;overflow-x:auto;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:.9rem;color:var(--ink);font:13px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace}')
+# Cascadia leads the stack because it renders braille at one cell; ui-monospace and
+# Consolas substitute a 1.37x glyph that breaks the grid the figures are built on.
+$html.Add('pre{margin:0;overflow-x:auto;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:.9rem;color:var(--ink);font:13px/1.35 "Cascadia Mono","Cascadia Code",ui-monospace,SFMono-Regular,Consolas,monospace}')
 $html.Add('footer{padding:2rem 1.5rem;color:var(--mute);font-size:.85rem;border-top:1px solid var(--line);margin-top:2rem}')
 $html.Add('table{width:100%;border-collapse:collapse;font-size:.88rem}')
 $html.Add('.table-scroll{max-width:100%;overflow-x:auto}')
 $html.Add('.table-scroll table{min-width:42rem}')
 $html.Add('th,td{text-align:left;padding:.42rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}')
 $html.Add('th{color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:.72rem}')
-$html.Add('@media(max-width:800px){.comparison{grid-template-columns:1fr}.column:first-child pre{height:auto}.flint-empty{min-height:5.5rem}}')
+$html.Add('@media(max-width:1100px){.comparison{grid-template-columns:1fr}.column:first-child pre{height:auto}.flint-empty{min-height:auto}}')
 $html.Add('</style></head><body>')
-$html.Add('<header><h1>ASCII + Flint Chart Gallery</h1>')
-$html.Add('<p>Compare each terminal-safe ASCII form with its Flint 0.5.0 Vega-Lite equivalent, organized by Illustrator&#39;s seven communication goals.</p>')
-$html.Add('<p>Exact matches use the same chart form. Nearest matches preserve the analytical intent where character geometry and graphical marks differ.</p>')
+$html.Add('<header><h1>ASCII, Unicode, and Flint Chart Gallery</h1>')
+$html.Add('<p>Three rungs of the same ladder, organized by Illustrator&#39;s seven communication goals: terminal-safe ASCII, sub-cell Unicode, and the Flint 0.5.0 Vega-Lite equivalent.</p>')
+$html.Add('<p>ASCII runs anywhere. Unicode buys resolution inside a character cell through block elements, braille dot matrices, and box-drawing strokes, at the cost of font and locale assumptions. Flint needs a rendering engine.</p>')
+$html.Add('<p>Every form carries a Unicode render, including the few where it buys no fidelity; those say so in the caption, so the comparison stays honest rather than silent. Exact matches use the same chart form. Nearest matches preserve the analytical intent where character geometry and graphical marks differ.</p>')
 $html.Add('</header><main>')
 $html.Add('<nav>')
 foreach ($g in $goals) { $html.Add('<a href="#' + ($g.ToLower() -replace ' ', '-') + '">' + $g + '</a>') }
@@ -677,10 +1358,13 @@ foreach ($g in $goals) {
     foreach ($e in ($entries | Where-Object Goal -eq $g)) {
         $html.Add('<div class="card">')
         $html.Add('<h3>' + (HtmlEscape $e.Form) + '<span class="tag ' + $e.Source + '">' + $e.Source + '</span></h3>')
+        $html.Add('<p class="idea">' + (HtmlEscape $bigIdeas[$e.Form]) + '</p>')
         $html.Add('<p class="meta">Best when ' + (HtmlEscape $e.Best) + '. Avoid when ' + (HtmlEscape $e.Avoid) + '.</p>')
         $flint = $flintEquivalents[$e.Form]
+        $uni = $unicodeVariants[$e.Form]
         $html.Add('<div class="comparison">')
         $html.Add('<div class="column"><p class="column-label">ASCII</p><pre>' + (HtmlEscape $e.Ascii) + '</pre></div>')
+        $html.Add('<div class="column"><p class="column-label">Unicode</p><pre>' + (HtmlEscape $uni.Art) + '</pre><p class="uni-note"><span class="uni-tech">' + (HtmlEscape $uni.Technique) + '</span> - ' + (HtmlEscape $uni.Note) + '</p></div>')
         if ($flint.spec) {
             $html.Add('<div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="' + (HtmlEscape $e.Form) + '"></div><div class="flint-caption"><p class="flint-type">' + (HtmlEscape $flint.type) + '</p><p class="flint-match">' + (HtmlEscape $flint.match) + '</p></div></div></div>')
         }

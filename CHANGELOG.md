@@ -22,7 +22,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `demos/ascii-gallery/build-gallery.ps1` and never hand-edited, so the bundled
   reference cannot drift from the demo.
 - `demos/ascii-gallery/`: self-contained generator, sample dataset, and browsable
-  HTML output.
+  HTML output. Each of the 32 forms is shown three ways side by side: terminal-safe
+  ASCII, sub-cell Unicode, and the Flint 0.5.0 Vega-Lite equivalent, so the cost of
+  each rung is visible rather than argued.
+- Every gallery form carries a Big Idea, the one-sentence claim the figure has to
+  support, above the best-when and avoid-when guidance. The generator refuses to
+  build if a claim names an entity its figure never plots.
+- Unicode renders for all 32 forms using block elements, braille dot matrices, and
+  box-drawing strokes. The handful of forms where sub-cell glyphs buy no fidelity
+  say so in the caption rather than going silent.
+- Shipped Flint 0.5.0 language reference covering the semantic
+  intermediate-language model, grammar boundaries, compiler pipeline, MCP
+  contract, data-access policy, backend limits, rendered-demo evidence, and
+  tagged Microsoft source links.
 - `ascii` handoff flow in the manifest, documenting the entry, selection,
   rendering, and verification path.
 
@@ -45,15 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   goes from nine companions to eight. Its plugin retired with Visual
   Storytelling, and `chart-big-idea` already owns the framing gate in-plugin, so
   the vision loop now needs three installs rather than four.
-
-## [Unreleased]
-
-### Added
-
-- Added a shipped Flint 0.5.0 language reference covering the semantic
-  intermediate-language model, grammar boundaries, compiler pipeline, MCP
-  contract, data-access policy, backend limits, rendered-demo evidence, and
-  tagged Microsoft source links.
 
 ## [2.2.2] - 2026-08-15
 

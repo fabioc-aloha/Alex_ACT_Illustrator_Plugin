@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ASCII + Flint Chart Gallery</title>
+<title>ASCII, Unicode, and Flint Chart Gallery</title>
 <script src="https://cdn.jsdelivr.net/npm/vega@6"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@6"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
@@ -20,7 +20,12 @@ h2{margin:2.5rem 0 1rem;font-size:1.3rem;color:var(--accent);border-bottom:1px s
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem 1.25rem;margin:0 0 1.25rem}
 .card h3{margin:0 0 .35rem;font-size:1.05rem;color:#fff}
 .meta{margin:0 0 .75rem;color:var(--mute);font-size:.85rem}
-.comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(18rem,.7fr);gap:1rem;align-items:stretch}
+.comparison{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(16rem,.62fr);gap:1rem;align-items:stretch}
+.column:first-child pre{height:calc(100% - 1.15rem)}
+.uni-note{margin:.4rem 0 0;color:var(--mute);font-size:.72rem;line-height:1.35}
+.idea{margin:.1rem 0 .3rem;color:var(--ink);font-size:.95rem;line-height:1.45;border-left:3px solid var(--accent);padding-left:.6rem}
+.idea::before{content:"Big Idea ";color:var(--accent);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.1rem}
+.uni-tech{color:#c4b5fd;font-weight:700}
 .column{min-width:0}
 .column:first-child pre{height:calc(100% - 1.15rem)}
 .column-label{margin:0 0 .45rem;color:var(--mute);font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
@@ -36,18 +41,19 @@ h2{margin:2.5rem 0 1rem;font-size:1.3rem;color:var(--accent);border-bottom:1px s
 .illustrative{background:rgba(148,163,184,.15);color:var(--mute)}
 .approximate{background:rgba(245,158,11,.15);color:#f59e0b}
 .notviable{background:rgba(148,163,184,.12);color:var(--mute);text-decoration:line-through}
-pre{margin:0;overflow-x:auto;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:.9rem;color:var(--ink);font:13px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace}
+pre{margin:0;overflow-x:auto;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:.9rem;color:var(--ink);font:13px/1.35 "Cascadia Mono","Cascadia Code",ui-monospace,SFMono-Regular,Consolas,monospace}
 footer{padding:2rem 1.5rem;color:var(--mute);font-size:.85rem;border-top:1px solid var(--line);margin-top:2rem}
 table{width:100%;border-collapse:collapse;font-size:.88rem}
 .table-scroll{max-width:100%;overflow-x:auto}
 .table-scroll table{min-width:42rem}
 th,td{text-align:left;padding:.42rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:.72rem}
-@media(max-width:800px){.comparison{grid-template-columns:1fr}.column:first-child pre{height:auto}.flint-empty{min-height:5.5rem}}
+@media(max-width:1100px){.comparison{grid-template-columns:1fr}.column:first-child pre{height:auto}.flint-empty{min-height:auto}}
 </style></head><body>
-<header><h1>ASCII + Flint Chart Gallery</h1>
-<p>Compare each terminal-safe ASCII form with its Flint 0.5.0 Vega-Lite equivalent, organized by Illustrator&#39;s seven communication goals.</p>
-<p>Exact matches use the same chart form. Nearest matches preserve the analytical intent where character geometry and graphical marks differ.</p>
+<header><h1>ASCII, Unicode, and Flint Chart Gallery</h1>
+<p>Three rungs of the same ladder, organized by Illustrator&#39;s seven communication goals: terminal-safe ASCII, sub-cell Unicode, and the Flint 0.5.0 Vega-Lite equivalent.</p>
+<p>ASCII runs anywhere. Unicode buys resolution inside a character cell through block elements, braille dot matrices, and box-drawing strokes, at the cost of font and locale assumptions. Flint needs a rendering engine.</p>
+<p>Every form carries a Unicode render, including the few where it buys no fidelity; those say so in the caption, so the comparison stays honest rather than silent. Exact matches use the same chart form. Nearest matches preserve the analytical intent where character geometry and graphical marks differ.</p>
 </header><main>
 <nav>
 <a href="#comparison">Comparison</a>
@@ -62,15 +68,19 @@ th{color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.04
 <h2 id="comparison">Comparison</h2>
 <div class="card">
 <h3>Horizontal bar<span class="tag real">real</span></h3>
+<p class="idea">Widget A brings in 60% of revenue, half again more than Widget B.</p>
 <p class="meta">Best when ranking items; long labels. Avoid when more than 15 rows.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>Widget A  ##################################  $148,800
 Widget B  ######################............   $97,600</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>Widget A  ██████████████████████████████████  $148,800
+Widget B  ██████████████████████▎              $97,600</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Eighth-cell bar ends instead of whole characters</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Horizontal bar"></div><div class="flint-caption"><p class="flint-type">Bar Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Dot plot<span class="tag real">real</span></h3>
+<p class="idea">Monthly revenue rose overall, dipping only in April and June.</p>
 <p class="meta">Best when precise values in a tight range. Avoid when audience expects bars.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>Jan  o--------------------------------   $36,800
@@ -79,20 +89,30 @@ Mar  ----------------------o----------   $42,300
 Apr  ---------------o-----------------   $40,600
 May  --------------------------------o   $44,800
 Jun  ------------------------o--------   $42,900</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>Jan  ⡇⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤   $36,800
+Feb  ⠤⠤⠤⠤⠤⠤⠤⠤⢸⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤   $39,000
+Mar  ⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢸⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤   $42,300
+Apr  ⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⡇⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤   $40,600
+May  ⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢸   $44,800
+Jun  ⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⡇⠤⠤⠤⠤⠤⠤⠤   $42,900</pre><p class="uni-note"><span class="uni-tech">Braille</span> - The marker lands on a half-cell, so close values separate</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Dot plot"></div><div class="flint-caption"><p class="flint-type">Lollipop Chart</p><p class="flint-match">Nearest</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Bullet chart<span class="tag real">real</span></h3>
+<p class="idea">North clears the regional revenue mark that South falls short of.</p>
 <p class="meta">Best when actual against a target. Avoid when no agreed benchmark.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>North  ###########################|##....  107%
 South  #######################....|......   83%</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>North  ██████████████████████████████|  $139,100
+South  ███████████████████████▏      |  $107,300</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Sub-cell precision against the target marker</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Bullet chart"></div><div class="flint-caption"><p class="flint-type">Bullet Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Grouped bar<span class="tag real">real</span></h3>
+<p class="idea">Widget A leads in both regions, so the product gap is not a regional artifact.</p>
 <p class="meta">Best when two or three series per category. Avoid when more than three series.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>North
@@ -101,52 +121,76 @@ South  #######################....|......   83%</pre></div>
 South
   Widget A #############.................   $65,500
   Widget B ########......................   $41,800</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>North
+  Widget A ████████████████████████████  $83,300
+  Widget B ██████████████████▊           $55,800
+South
+  Widget A ██████████████████████        $65,500
+  Widget B ██████████████                $41,800</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Every bar end resolves to an eighth of a cell</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Grouped bar"></div><div class="flint-caption"><p class="flint-type">Grouped Bar Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Slope chart<span class="tag real">real</span></h3>
+<p class="idea">Both regions grew from January to June and neither changed rank.</p>
 <p class="meta">Best when two periods and rank changes matter. Avoid when more than about ten rows.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>        Jan                       Jun
 North   $20,800 ////////////////  $24,400
 South   $16,000 ////////////////  $18,500</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>        Jan                       Jun
+North   $20,800 ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱  $24,400
+South   $16,000 ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱  $18,500</pre><p class="uni-note"><span class="uni-tech">Box-drawing</span> - Diagonals span corner to corner, so consecutive cells meet where ASCII slashes leave gaps</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Slope chart"></div><div class="flint-caption"><p class="flint-type">Slope Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Waterfall<span class="tag real">real</span></h3>
+<p class="idea">Cost consumes 70% of revenue, leaving a 30% margin.</p>
 <p class="meta">Best when a total is built from sequential moves. Avoid when the steps are not additive.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>Revenue  ########################################  $246,400
 Cost                 ============================ -$172,480
 Margin   ############                               $73,920</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>Revenue  ████████████████████████████████████████  $246,400
+Cost                 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -$172,480
+Margin   ████████████                               $73,920</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Step widths resolve to an eighth, so the margin sliver keeps its true length</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Waterfall"></div><div class="flint-caption"><p class="flint-type">Waterfall Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Pareto<span class="tag real">real</span></h3>
+<p class="idea">The top two region-product pairs carry 60% of all revenue.</p>
 <p class="meta">Best when a few categories drive most of the total. Avoid when the distribution is flat.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>North Widget A   ######################   $83,300  cum  34%
 South Widget A   #################.....   $65,500  cum  60%
 North Widget B   ###############.......   $55,800  cum  83%
 South Widget B   ###########...........   $41,800  cum 100%</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>North Widget A  ██████████████████████  $83,300  cum  34%
+South Widget A  █████████████████▎░░░░  $65,500  cum  60%
+North Widget B  ██████████████▊░░░░░░░  $55,800  cum  83%
+South Widget B  ███████████░░░░░░░░░░░  $41,800  cum 100%</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Bar ends resolve to an eighth while the cumulative share stays text</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Pareto"></div><div class="flint-caption"><p class="flint-type">Bar Chart</p><p class="flint-match">Partial: bars only</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Gauge<span class="tag real">real</span></h3>
+<p class="idea">Revenue reached 95% of the 260,000 target.</p>
 <p class="meta">Best when one headline number against a scale. Avoid when several measures need comparing.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>0%                 50%                100%
 [======================================&gt;.]  95%
 Revenue $246,400 against target $260,000</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>0%                 50%                100%
+[█████████████████████████████████████▉  ]  95%
+Revenue $246,400 against target $260,000</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Progress resolves to 1/8 of a cell</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Gauge"></div><div class="flint-caption"><p class="flint-type">Bullet Chart</p><p class="flint-match">Nearest</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>KPI card<span class="tag real">real</span></h3>
+<p class="idea">Revenue closed at 246,400, up 16.6% since January.</p>
 <p class="meta">Best when one measure with trend and delta. Avoid when the reader needs the full series.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>+----------------------------+
@@ -154,21 +198,30 @@ Revenue $246,400 against target $260,000</pre></div>
 |  $246,400                  |
 |  //\/\  +16.6% vs Jan      |
 +----------------------------+</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>┌────────────────────────────┐
+│  REVENUE                   │
+│  $246,400                  │
+│  ▁▃▆▄█▆  +16.6% vs Jan     │
+└────────────────────────────┘</pre><p class="uni-note"><span class="uni-tech">Box-drawing</span> - A closed frame instead of plus signs and hyphens at the corners</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="KPI card"></div><div class="flint-caption"><p class="flint-type">KPI Card</p><p class="flint-match">Partial: no trend</p></div></div></div>
 </div>
 </div>
 <h2 id="change-over-time">Change Over Time</h2>
 <div class="card">
 <h3>Sparkline<span class="tag real">real</span></h3>
+<p class="idea">Revenue trended up across the half year despite two monthly dips.</p>
 <p class="meta">Best when inline trend beside a KPI. Avoid when exact values matter more than shape.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>Revenue  //\/\   $36,800 -&gt; $42,900
 Months   JFMAMJ</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>Revenue  ▁▃▆▄█▆   $36,800 -&gt; $42,900
+Months   JFMAMJ</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Eight levels instead of three slash directions</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Sparkline"></div><div class="flint-caption"><p class="flint-type">Sparkline</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Column trend<span class="tag real">real</span></h3>
+<p class="idea">Every month except April and June beat the month before it.</p>
 <p class="meta">Best when discrete periods; magnitude visible. Avoid when many periods (use sparkline).</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>                  ##    ##    ##    ##
@@ -177,11 +230,19 @@ Months   JFMAMJ</pre></div>
       ##    ##    ##    ##    ##    ##
       ##    ##    ##    ##    ##    ##
       Ja    Fe    Ma    Ap    Ma    Ju</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>    ▂▂  ▅▅  ▄▄  ██  ▆▆
+▇▇  ██  ██  ██  ██  ██
+██  ██  ██  ██  ██  ██
+██  ██  ██  ██  ██  ██
+██  ██  ██  ██  ██  ██
+██  ██  ██  ██  ██  ██
+Ja  Fe  Ma  Ap  Ma  Ju</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Column tops land between rows, not on them</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Column trend"></div><div class="flint-caption"><p class="flint-type">Bar Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Step line<span class="tag real">real</span></h3>
+<p class="idea">Revenue holds a level for a month at a time rather than moving continuously.</p>
 <p class="meta">Best when values hold then jump. Avoid when smooth continuous change.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>Jan  _________________________|   $36,800
@@ -190,20 +251,31 @@ Mar  ____________________________|   $42,300
 Apr  ___________________________|   $40,600
 May  ______________________________|   $44,800
 Jun  _____________________________|   $42,900</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre> $44,800 |                        ╭─────╮
+ $43,200 |                        │     ╰─────
+ $41,600 |            ╭─────╮     │
+ $40,000 |            │     ╰─────╯
+ $38,400 |      ╭─────╯
+ $36,800 |──────╯
+         Jan   Feb   Mar   Apr   May   Jun</pre><p class="uni-note"><span class="uni-tech">Box-drawing</span> - Connected strokes instead of separated underscores</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Step line"></div><div class="flint-caption"><p class="flint-type">Line Chart</p><p class="flint-match">Nearest</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Small multiples<span class="tag real">real</span></h3>
+<p class="idea">Both regions follow the same monthly shape at different scales.</p>
 <p class="meta">Best when comparing trends across categories. Avoid when fewer than four categories.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>North   //\/\    $139,100
 South   //\/\    $107,300</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>North   ▁▃▆▄█▇    $139,100
+South   ▁▃▆▄█▆    $107,300</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Eight levels per panel instead of three slash directions</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Small multiples"></div><div class="flint-caption"><p class="flint-type">Line Chart</p><p class="flint-match">Exact, faceted</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Line chart<span class="tag real">real</span></h3>
+<p class="idea">Revenue climbed from 36,800 to a May peak of 44,800, then eased.</p>
 <p class="meta">Best when a continuous series where shape matters. Avoid when categories rather than time.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre> $44,800 |                      *
@@ -214,11 +286,18 @@ South   //\/\    $107,300</pre></div>
  $36,800 |  *
          +------------------------------
           Jan  Feb  Mar  Apr  May  Jun</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre> $44,800 |                                 ⣀⡤⠞⠉⠓⠒⠦⠤⣄⣀⡀
+ $42,800 |                ⣀⣠⠤⣄⣀⣀       ⢀⡤⠖⠋⠁         ⠉⠉⠓
+ $40,800 |           ⢀⣠⠤⠖⠋⠁    ⠈⠉⠙⠒⠒⠦⠴⠚⠉
+ $38,800 |      ⣀⣠⠤⠖⠚⠉
+ $36,800 |⣠⠤⠴⠒⠋⠉⠁
+         Jan     Feb     Mar     Apr     May     Jun</pre><p class="uni-note"><span class="uni-tech">Braille</span> - Eight vertical positions per row instead of one</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Line chart"></div><div class="flint-caption"><p class="flint-type">Line Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Area chart<span class="tag real">real</span></h3>
+<p class="idea">Monthly revenue grew steadily, but the totals sit far above zero.</p>
 <p class="meta">Best when volume under the line is the point. Avoid when values sit far above zero, which flattens the visible variation as it does here.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>        |           ####      #### ####
@@ -229,30 +308,46 @@ South   //\/\    $107,300</pre></div>
         | #### #### #### #### #### ####
         +------------------------------
          Jan  Feb  Mar  Apr  May  Jun</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>        |                    ████
+        |          ▅▅▅▅      ████ ████
+        |          ████ ▅▅▅▅ ████ ████
+        |     ▆▆▆▆ ████ ████ ████ ████
+        |▄▄▄▄ ████ ████ ████ ████ ████
+        |████ ████ ████ ████ ████ ████
+        +-----------------------------
+         Jan  Feb  Mar  Apr  May  Jun
+         floor $34,000, not zero</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Fills from a nonzero floor so the variation stays visible</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Area chart"></div><div class="flint-caption"><p class="flint-type">Area Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <h2 id="proportion">Proportion</h2>
 <div class="card">
 <h3>Stacked 100% bar<span class="tag real">real</span></h3>
+<p class="idea">North holds 57% of revenue against South's 43%.</p>
 <p class="meta">Best when two to four parts of a whole. Avoid when many small slices.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>##################################==========================
 North 56.5% South 43.5%</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>█████████████████████████████████▉░░░░░░░░░░░░░░░░░░░░░░░░░░
+North 56.5%  South 43.5%</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - The segment boundary lands mid-cell instead of snapping to one</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Stacked 100% bar"></div><div class="flint-caption"><p class="flint-type">Stacked Bar Chart</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Percentage rows<span class="tag real">real</span></h3>
+<p class="idea">Widget A holds 60% of revenue against Widget B's 40%.</p>
 <p class="meta">Best when ranked shares needing exact values. Avoid when shares change over time.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>Widget A  ########################................  60.4%
 Widget B  ################........................  39.6%</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>Widget A  ████████████████████████▏░░░░░░░░░░░░░░░  60.4%
+Widget B  ███████████████▉░░░░░░░░░░░░░░░░░░░░░░░░  39.6%</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - A 60.4% row ends past the 60% cell, not on it</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Percentage rows"></div><div class="flint-caption"><p class="flint-type">Bar Table</p><p class="flint-match">Nearest</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Waffle grid<span class="tag real">real</span></h3>
+<p class="idea">About 56 of every 100 revenue dollars come from North.</p>
 <p class="meta">Best when part of a whole as countable units. Avoid when precise decimals matter.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>####################
@@ -261,23 +356,35 @@ Widget B  ################........................  39.6%</pre></div>
 ....................
 ....................
 # North 56%   . South 44%</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>████████████████████
+████████████████████
+████████████████░░░░
+░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░
+█ North 56%   ░ South 44%</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - No fidelity gain; a waffle is whole cells by definition and only the glyph weight changes</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Waffle grid"></div><div class="flint-caption"><p class="flint-type">Stacked Bar Chart</p><p class="flint-match">Nearest</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Treemap<span class="tag real">real</span></h3>
+<p class="idea">Widget A occupies three fifths of the revenue area.</p>
 <p class="meta">Best when nested share of a total. Avoid when more than about eight leaves.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>+----------------------------------+----------------------+
 |Widget A                          |Widget B              |
 |$148,800  60%                     |$97,600  40%          |
 +----------------------------------+----------------------+</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>┌──────────────────────────────────┬──────────────────────┐
+│Widget A                          │Widget B              │
+│$148,800  60%                     │$97,600  40%          │
+└──────────────────────────────────┴──────────────────────┘</pre><p class="uni-note"><span class="uni-tech">Box-drawing</span> - Rectangles close properly, so the split reads as area rather than text columns</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel flint-empty"><p class="flint-type">No direct type</p><p class="flint-match">ASCII only</p></div></div>
 </div>
 </div>
 <h2 id="distribution">Distribution</h2>
 <div class="card">
 <h3>Histogram<span class="tag real">real</span></h3>
+<p class="idea">Most transactions cluster near 10,000 with a thin tail out to 15,100.</p>
 <p class="meta">Best when shape of a single variable. Avoid when fewer than 20 observations.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>  $6,000  ############################## n=6
@@ -285,31 +392,46 @@ Widget B  ################........................  39.6%</pre></div>
  $10,000  #########################..... n=5
  $12,000  ####################.......... n=4
  $14,000  ###############............... n=3</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>  $6,200 ██████████████████████████████ 6
+  $7,683 ███████████████                3
+  $9,167 █████████████████████████      5
+ $10,650 ████████████████████           4
+ $12,133 ██████████                     2
+ $13,617 ████████████████████           4</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Bin heights resolve below a full row</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Histogram"></div><div class="flint-caption"><p class="flint-type">Histogram</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Box plot<span class="tag real">real</span></h3>
+<p class="idea">The middle half of transactions falls between 8,300 and 12,500.</p>
 <p class="meta">Best when spread and outliers at a glance. Avoid when audience unfamiliar with quartiles.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>|---------[=========+==========[------------|
 min $6,200   Q1 $8,300   med $10,200   Q3 $12,500   max $15,100</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>├──────────╞════════╪═══════════╡────────────┤
+min $6,200   Q1 $8,300   med $10,200   Q3 $12,500   max $15,100</pre><p class="uni-note"><span class="uni-tech">Box-drawing</span> - A doubled stroke separates the box from the whiskers without a legend</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Box plot"></div><div class="flint-caption"><p class="flint-type">Boxplot</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Strip plot<span class="tag real">real</span></h3>
+<p class="idea">South clusters at the low end while North spreads across the full range.</p>
 <p class="meta">Best when every observation should stay visible. Avoid when hundreds of overlapping points.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>North  |          o  oo oo o          o  o   o o o o
 South  |o  8ooo          o o  o o o o
        +--------------------------------------------
         $6,200 to $15,100    8 marks a collision</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>North  │          ⢀  ⡀⡀ ⡀⢀ ⢀           ⡀ ⢀   ⡀ ⡀ ⡀ ⢀
+South  │⡀  ⣀⢀⢀⢀          ⢀ ⢀  ⢀ ⢀ ⡀ ⢀
+       └────────────────────────────────────────────
+        $6,200 to $15,100    dots stack by count</pre><p class="uni-note"><span class="uni-tech">Braille</span> - Collisions stack as separate dots instead of collapsing into a count</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Strip plot"></div><div class="flint-caption"><p class="flint-type">Strip Plot</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>ECDF<span class="tag real">real</span></h3>
+<p class="idea">Half of all transactions come in under about 10,000.</p>
 <p class="meta">Best when the question is what share falls below a value. Avoid when a very small sample.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre> 100% |                               ________
@@ -319,12 +441,19 @@ South  |o  8ooo          o o  o o o o
   20% |_____
       +----------------------------------------
        $6,200                          $15,100</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre> 100% |                           ⢀⣀⣀⣀⣀⣀⣠⠤⠤⠖⠒⠚⠉
+  75% |                 ⣀⣀⣀⡤⠴⠒⠒⠒⠋⠉⠉
+  50% |         ⣀⣀⣀⡤⠤⠴⠚⠉⠁
+  25% |⣀⣀⣠⠴⠚⠉⠉⠉⠉⠁
+      +----------------------------------------
+       $6,200                          $15,100</pre><p class="uni-note"><span class="uni-tech">Braille</span> - The step edge lands on a dot, not a whole cell</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="ECDF"></div><div class="flint-caption"><p class="flint-type">ECDF Plot</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <h2 id="relationship">Relationship</h2>
 <div class="card">
 <h3>Scatter plot<span class="tag real">real</span></h3>
+<p class="idea">Revenue rises with units sold and no transaction breaks the pattern.</p>
 <p class="meta">Best when correlation between two measures. Avoid when more than a few hundred points.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>|                                       * * *
@@ -337,21 +466,33 @@ South  |o  8ooo          o o  o o o o
 |   ***
 +--------------------------------------------
 units -&gt;                          revenue on y axis</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>                                    ⢀⣀⡤⠤⠴⠒⠚⠉
+                              ⢀⣀⡤⠤⠖⠚⠉
+                  ⣀⣀⣀⣀⣠⠤⠤⠤⠖⠚⠉⠉⠉
+          ⣀⡤⠴⠒⠒⠚⠉⠉⠁
+⣠⠤⠤⠴⠒⠒⠒⠒⠋⠉⠁
++--------------------------------------------
+units ascending -&gt;</pre><p class="uni-note"><span class="uni-tech">Braille</span> - Each cell carries eight addressable points</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Scatter plot"></div><div class="flint-caption"><p class="flint-type">Scatter Plot</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Heatmap<span class="tag real">real</span></h3>
+<p class="idea">North outsells South in every one of the six months.</p>
 <p class="meta">Best when two categorical axes, one measure. Avoid when precise values needed.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>        Jan   Feb   Mar   Apr   May   Jun
 North   ###.. ####. ##### ####. ##### #####
 South   #.... #.... ##... #.... ##... ##...</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>        Jan Feb Mar Apr May Jun
+North   ▓▓▓ ▓▓▓ ███ ▓▓▓ ███ ███
+South   ░░░ ░░░ ▒▒▒ ░░░ ▒▒▒ ▒▒▒</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - One glyph carries the level, so a cell shrinks from five characters to three</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Heatmap"></div><div class="flint-caption"><p class="flint-type">Heatmap</p><p class="flint-match">Exact</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Bubble plot<span class="tag real">real</span></h3>
+<p class="idea">Higher-revenue transactions carry proportionally higher cost, so margin stays flat.</p>
 <p class="meta">Best when a third measure sizes each point. Avoid when sizes differ by less than about twice.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>|                                     @ @ @ @
@@ -362,11 +503,20 @@ South   #.... #.... ##... #.... ##... ##...</pre></div>
 |   oooo
 +--------------------------------------------
 units -&gt;       o low cost    O mid    @ high cost</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>│                                         ⣿ ⣿
+│                              ⠇  ⣿   ⣿ ⣿
+│                      ⠇ ⠇ ⠇ ⠇
+│             ⠇⠇ ⠇⠇ ⠇
+│    ⠁⠁⠁   ⠁
+│⠁  ⠁
+└────────────────────────────────────────────
+units →   ⠁ low cost   ⠇ mid   ⣿ high cost</pre><p class="uni-note"><span class="uni-tech">Braille</span> - Dot density carries magnitude, so size costs no extra column</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Bubble plot"></div><div class="flint-caption"><p class="flint-type">Scatter Plot</p><p class="flint-match">Exact, size channel</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Parallel coordinates<span class="tag real">real</span></h3>
+<p class="idea">Revenue, units, and cost move together because each is derived from the others.</p>
 <p class="meta">Best when several measures compared per record. Avoid when the measures are derived from each other, which makes every line identical as it does here.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>        revenue       units         cost
@@ -376,43 +526,65 @@ Mar     -----*------  -----*------  -----*------
 Apr     -----*------  -----*------  -----*------
 May     ------*-----  ------*-----  ------*-----
 Jun     ------*-----  ------*-----  ------*-----</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>        revenue       units         cost
+Jan     ⡇⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤  ⡇⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤  ⡇⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤
+Feb     ⠤⠤⠤⡇⠤⠤⠤⠤⠤⠤⠤⠤  ⠤⠤⠤⡇⠤⠤⠤⠤⠤⠤⠤⠤  ⠤⠤⠤⡇⠤⠤⠤⠤⠤⠤⠤⠤
+Mar     ⠤⠤⠤⠤⠤⠤⠤⠤⡇⠤⠤⠤  ⠤⠤⠤⠤⠤⠤⠤⠤⡇⠤⠤⠤  ⠤⠤⠤⠤⠤⠤⠤⠤⡇⠤⠤⠤
+Apr     ⠤⠤⠤⠤⠤⢸⠤⠤⠤⠤⠤⠤  ⠤⠤⠤⠤⠤⢸⠤⠤⠤⠤⠤⠤  ⠤⠤⠤⠤⠤⢸⠤⠤⠤⠤⠤⠤
+May     ⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢸  ⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢸  ⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢸
+Jun     ⠤⠤⠤⠤⠤⠤⠤⠤⠤⡇⠤⠤  ⠤⠤⠤⠤⠤⠤⠤⠤⠤⡇⠤⠤  ⠤⠤⠤⠤⠤⠤⠤⠤⠤⡇⠤⠤</pre><p class="uni-note"><span class="uni-tech">Braille</span> - Each tick lands on a half-cell, so near-equal months stop overlapping</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel flint-empty"><p class="flint-type">No direct type</p><p class="flint-match">ASCII only</p></div></div>
 </div>
 </div>
 <h2 id="flow-and-process">Flow and Process</h2>
 <div class="card">
 <h3>Funnel<span class="tag illustrative">illustrative</span></h3>
+<p class="idea">Each stage loses a predictable share of the stage before it.</p>
 <p class="meta">Best when stage-by-stage drop-off. Avoid when stages are not sequential.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>########################################  Leads      4,000
         ########################  Qualified  2,400
               ###########  Proposal   1,100
                   ####  Won          420</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>████████████████████████████████████████  Leads      4,000
+        ████████████████████████  Qualified  2,400
+              ███████████  Proposal   1,100
+                 ████▎  Won          420</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Stage widths resolve below a whole character, so small drops stay visible</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Funnel"></div><div class="flint-caption"><p class="flint-type">Bar Chart</p><p class="flint-match">Nearest</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Stage pipeline<span class="tag illustrative">illustrative</span></h3>
+<p class="idea">The pipeline clears four stages and flags the fifth for review.</p>
 <p class="meta">Best when steps with hand-offs. Avoid when branching or looping flows.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>[ Ingest ] -&gt; [ Clean ] -&gt; [ Select ] -&gt; [ Render ] -&gt; [ Verify ]
     ok          ok           ok            ok           WARN</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>┌────────┐   ┌───────┐   ┌────────┐   ┌────────┐   ┌────────┐
+│ Ingest │ → │ Clean │ → │ Select │ → │ Render │ → │ Verify │
+└────────┘   └───────┘   └────────┘   └────────┘   └────────┘
+    ok          ok           ok           ok          WARN</pre><p class="uni-note"><span class="uni-tech">Box-drawing</span> - Closed boxes and real arrows instead of brackets and hyphens</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Stage pipeline"></div><div class="flint-caption"><p class="flint-type">Gantt Chart</p><p class="flint-match">Partial: sequence only</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Sankey flow<span class="tag real">real</span></h3>
+<p class="idea">Two regional streams merge into a single 246,400 total.</p>
 <p class="meta">Best when quantities merge or split between stages. Avoid when many crossing links.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>North   $139,100 ===========---------\
                                       &gt;  Total $246,400
 South   $107,300 =========-----------/</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>North   $139,100 ████████████░░░░░░░░░░┐
+                                        ├─ Total $246,400
+South   $107,300 ██████████░░░░░░░░░░░░┘</pre><p class="uni-note"><span class="uni-tech">Box-drawing</span> - Real corners and joins instead of backslashes and angle brackets</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel flint-empty"><p class="flint-type">No direct type</p><p class="flint-match">ASCII only</p></div></div>
 </div>
 </div>
 <h2 id="deviation">Deviation</h2>
 <div class="card">
 <h3>Diverging bar<span class="tag real">real</span></h3>
+<p class="idea">Three months ran above the monthly average and three below it.</p>
 <p class="meta">Best when above and below a reference. Avoid when no meaningful midpoint.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>Jan                        ##|                         -$4,267
@@ -421,11 +593,18 @@ Mar                          |#                        +$1,233
 Apr                          |                         -$467
 May                          |##                       +$3,733
 Jun                          |#                        +$1,833</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>Jan  ████████████████████████│                           -$4,267
+Feb              ████████████│                           -$2,067
+Mar                          │███████                    +$1,233
+Apr                       ███│                             -$467
+May                          │█████████████████████      +$3,733
+Jun                          │██████████▍                +$1,833</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - Growth keeps eighth precision; shortfalls round to whole cells because only right-edge eighths exist</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Diverging bar"></div><div class="flint-caption"><p class="flint-type">Bar Chart</p><p class="flint-match">Nearest</p></div></div></div>
 </div>
 </div>
 <div class="card">
 <h3>Variance column<span class="tag real">real</span></h3>
+<p class="idea">Monthly revenue stays within about 10% of the half-year average.</p>
 <p class="meta">Best when actual against plan per period. Avoid when no plan exists.</p>
 <div class="comparison">
 <div class="column"><p class="column-label">ASCII</p><pre>Jan    $36,800  vs avg   $41,067     -4,267  [UNDER]
@@ -434,6 +613,12 @@ Mar    $42,300  vs avg   $41,067     +1,233  [OK]
 Apr    $40,600  vs avg   $41,067       -467  [UNDER]
 May    $44,800  vs avg   $41,067     +3,733  [OK]
 Jun    $42,900  vs avg   $41,067     +1,833  [OK]</pre></div>
+<div class="column"><p class="column-label">Unicode</p><pre>Jan    $36,800  vs avg  $41,067  ░░░░░░░░░░░░░░░░  -4,267
+Feb    $39,000  vs avg  $41,067  ░░░░░░░▊          -2,067
+Mar    $42,300  vs avg  $41,067  ████▋             +1,233
+Apr    $40,600  vs avg  $41,067  ░▊                  -467
+May    $44,800  vs avg  $41,067  ██████████████    +3,733
+Jun    $42,900  vs avg  $41,067  ██████▉           +1,833</pre><p class="uni-note"><span class="uni-tech">Block elements</span> - A shaded deviation bar replaces the bracketed status word</p></div>
 <div class="column"><p class="column-label">Flint equivalent</p><div class="flint-panel"><div class="flint-chart" data-form="Variance column"></div><div class="flint-caption"><p class="flint-type">Bar Chart</p><p class="flint-match">Nearest</p></div></div></div>
 </div>
 </div>
