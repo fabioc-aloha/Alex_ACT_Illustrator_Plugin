@@ -33,14 +33,14 @@ Five authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and
 
 <!-- markdownlint-disable MD033 MD049 -->
 
-### Demo — the heart chart, with meaning (Flint feature walkthrough)
+### Demo — the heart chart, with meaning (direct Vega-Lite narrative artifact)
 
 > **Big Idea** — _Love's iconic silhouette **is** the four-archetype map of love: the heart's two upper lobes sit in the high-passion quadrants (infatuation left, consummate right), and its two lower sides sit in the low-passion quadrants (indifference left, companionate right)._
 
 That one sentence — the load-bearing output of the [`chart-big-idea`](.github/skills/chart-big-idea/SKILL.md) skill — is what makes this a chart _with meaning_ instead of _decoration_. Everything downstream is a direct consequence of it: the story arc (Relationship with quadrant annotation), the audience read (Read / General / Persuasive), the TRADITIONAL-vs-INNOVATIVE stance (INNOVATIVE, because the heart-as-mnemonic argument is irreducibly geometric), the chartType (layered `scatter_plot`), the 12-layer composition (shaded quadrants → midpoint rules → parametric heart curve → archetype dots → axis subtitles), and the archetype placement (each of the heart's four lobes lands in its matching semantic quadrant).
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/heart-chart.svg" alt="A heart-shaped curve traced onto an Intimacy × Passion plane, rendered as a layered Vega-Lite chart via the flint-chart MCP server. The x-axis is Intimacy (subtitle: trust, vulnerability, shared meaning), the y-axis is Passion (subtitle: desire, chemistry, excitement). Both axes run from low to high. Dashed lines partition the plot into four quadrants labeled INFATUATION (top left), CONSUMMATE LOVE (top right, on a warm cream background), INDIFFERENCE (bottom left, on a cool gray background), and FRIENDSHIP (bottom right). A red heart curve fills the plane; four bold dots sit at the heart's lobes, each labeled with an archetype that matches its semantic quadrant." width="480" />
+  <img src="https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/heart-chart.svg" alt="A direct Vega-Lite heart-shaped curve traced onto an Intimacy × Passion plane. The x-axis is Intimacy (subtitle: trust, vulnerability, shared meaning), the y-axis is Passion (subtitle: desire, chemistry, excitement). Both axes run from low to high. Dashed lines partition the plot into four quadrants labeled INFATUATION (top left), CONSUMMATE LOVE (top right, on a warm cream background), INDIFFERENCE (bottom left, on a cool gray background), and FRIENDSHIP (bottom right). A red heart curve fills the plane; four bold dots sit at the heart's lobes, each labeled with an archetype that matches its semantic quadrant." width="480" />
 </p>
 
 **Skill-to-chart flow** — what the `chart-big-idea` skill did before the first line of the Vega-Lite spec was authored:
@@ -50,7 +50,7 @@ That one sentence — the load-bearing output of the [`chart-big-idea`](.github/
 3. **Steps 2–4 — story arc + audience + style stance.** Relationship-with-annotation, general-audience read, INNOVATIVE (justified because the argument itself is 2D-geometric).
 4. **Step 5 — emit the Chart Brief.** The brief is what `/alex-act-illustrator-plugin render-chart` then handed to the [`flint-chart`](.github/skills/flint-chart/SKILL.md) skill for chartType selection and rendering.
 
-The source repository includes the [`demos/heart-with-axes/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/demos/heart-with-axes) interactive report and its Chart Brief. Design decisions and the plugin's genesis live in the source [`docs/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/docs) tree; neither directory is part of the installable Mall payload.
+The source repository includes the [`demos/heart-with-axes/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/demos/heart-with-axes) interactive report and its Chart Brief. It is direct Vega-Lite artwork rather than a `ChartAssemblyInput` conformance fixture; see the [Flint MCP 0.5.0 capability matrix](docs/flint-mcp-0.5.0-capability-matrix.md) for pinned-runtime evidence. Design decisions and the plugin's genesis live in the source [`docs/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/docs) tree; neither directory is part of the installable Mall payload.
 
 ## Architecture — one framing gate, five authoring routes
 

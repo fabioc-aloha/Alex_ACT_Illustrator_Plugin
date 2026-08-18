@@ -306,6 +306,18 @@ test('Flint 0.5.x runtime contracts expose themes and source-owned authoring gui
   assert.doesNotMatch(flint.notes, /0\.4\.1/);
 });
 
+test('Flint verifier covers the documented backend artifact boundaries', () => {
+  const verifier = read('scripts/verify-install.mjs');
+
+  assert.match(verifier, /WANT_ARTIFACTS/);
+  assert.match(verifier, /Vega-Lite themed bar SVG/);
+  assert.match(verifier, /ECharts Tree SVG/);
+  assert.match(verifier, /Chart\.js bar PNG/);
+  assert.match(verifier, /chartjs backend supports png output only/i);
+  assert.match(verifier, /compile_chart \(\$\{spec\.name\}\)/);
+  assert.match(verifier, /render_chart \(\$\{spec\.name\}\)/);
+});
+
 test('Flint language reference stays linked to the pinned grammar and rendered evidence', () => {
   const reference = read('.github/skills/flint-chart/references/flint-language-reference.md');
   const skill = read('.github/skills/flint-chart/SKILL.md');
@@ -331,6 +343,35 @@ test('Flint language reference stays linked to the pinned grammar and rendered e
   const flintSkill = manifest.assets.skills.find((skillEntry) => skillEntry.name === 'flint-chart');
   assert(flintSkill.bundled_resources.some((resource) =>
     resource.path === '.github/skills/flint-chart/references/flint-language-reference.md'));
+});
+
+test('Flint matrix and guidance qualify backend capabilities and demo provenance', () => {
+  const matrix = read('docs/flint-mcp-0.5.0-capability-matrix.md');
+  const conformance = read('docs/flint-mcp-conformance.md');
+  const handoff = read('docs/flint-illustrator-svg-handoff.md');
+  const skill = read('.github/skills/flint-chart/SKILL.md');
+  const prompt = read('.github/prompts/render-chart.prompt.md');
+  const demo = read('demos/README.md');
+  const readme = read('README.md');
+
+  for (const boundary of [
+    /Vega-Lite themed bar/,
+    /ECharts Tree/,
+    /Chart\.js bar/,
+    /Chart\.js rejects SVG/,
+    /create_chart_view.*Vega-Lite/is,
+  ]) assert.match(matrix, boundary);
+  assert.match(skill, /`"Tree"` \(ECharts only\)/);
+  assert.doesNotMatch(skill, /Hierarchy Tree\s*\|\s*Not in Flint's scope/);
+  assert.match(skill, /"Sankey Diagram"/);
+  assert.match(prompt, /For a Vega-Lite candidate, default to `create_chart_view`/);
+  assert.match(prompt, /Chart\.js renders PNG only/);
+  assert.match(demo, /illustrative direct Vega-Lite demo/);
+  assert.match(readme, /direct Vega-Lite narrative artifact/);
+  assert.match(readme, /rather than a `ChartAssemblyInput` conformance fixture/);
+  assert.match(conformance, /ARTIFACT_SPECS/);
+  assert.match(handoff, /Chart\.js is PNG-only/);
+  assert.match(handoff, /manual import acceptance checklist/i);
 });
 
 test('render-chart orchestrates bounded expert storytelling over one semantic truth layer', () => {

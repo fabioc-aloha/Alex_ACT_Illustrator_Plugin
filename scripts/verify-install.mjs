@@ -7,6 +7,7 @@
 //   node scripts/verify-install.mjs
 //   node scripts/verify-install.mjs --catalog     (also list backends + chart-type counts)
 //   node scripts/verify-install.mjs --compat      (also validate this plugin's spec patterns)
+//   node scripts/verify-install.mjs --artifacts   (also render representative backend artifacts)
 //   node scripts/verify-install.mjs --replicate   (also handshake replicate MCP; needs REPLICATE_API_TOKEN)
 //   node scripts/verify-install.mjs --playwright  (also handshake playwright MCP; needs a browser)
 //   node scripts/verify-install.mjs --all-mcps    (all three MCP servers with graceful skip)
@@ -25,6 +26,11 @@
 // one set of skill content can serve two pinned versions at once: a dual range
 // like `^0.3.0||^0.4.0` is only safe if every pattern validates on both.
 // A failing spec here does not fail the run — it is reported for judgment.
+//
+// `--artifacts` validates, compiles, and renders three small fixtures that pin
+// the documented backend boundaries: Vega-Lite themes plus SVG, ECharts Tree
+// plus SVG, and Chart.js PNG-only output. It fails if the catalog, response
+// shape, or format boundary changes.
 //
 // `--replicate` handshakes the optional `replicate` MCP server declared in
 // `.vscode/mcp.json` (`replicate-mcp@0.9.0`, the Replicate feature). Skips if
@@ -172,6 +178,7 @@ const PACKAGE = FALLBACK_PACKAGE;
 const PACKAGE_SOURCE = '.vscode/mcp.json via plugin-private runtime';
 const WANT_CATALOG = process.argv.includes('--catalog');
 const WANT_COMPAT = process.argv.includes('--compat');
+const WANT_ARTIFACTS = process.argv.includes('--artifacts');
 const WANT_ALL_MCPS = process.argv.includes('--all-mcps');
 const WANT_REPLICATE = WANT_ALL_MCPS || process.argv.includes('--replicate');
 const WANT_PLAYWRIGHT = WANT_ALL_MCPS || process.argv.includes('--playwright');
@@ -264,6 +271,115 @@ const COMPAT_SPECS = [
 ];
 const COMPAT_BASE_ID = 10;
 
+const ARTIFACT_BASE_ID = 100;
+const ARTIFACT_SPECS = [
+  {
+    name: 'Vega-Lite themed bar SVG',
+    backend: 'vegalite',
+    chartType: 'Bar Chart',
+    format: 'svg',
+    input: {
+      data: {
+        values: [
+          { category: 'North', value: 12 },
+          { category: 'South', value: 9 },
+        ],
+      },
+      semantic_types: { category: 'Category', value: 'Quantity' },
+      theme_spec: 'economist',
+      chart_spec: {
+        chartType: 'Bar Chart',
+        encodings: { x: { field: 'category' }, y: { field: 'value' } },
+      },
+    },
+  },
+  {
+    name: 'ECharts Tree SVG',
+    backend: 'echarts',
+    chartType: 'Tree',
+    format: 'svg',
+    input: {
+      data: {
+        values: [
+          { node: 'North', parent: 'All regions', value: 6 },
+          { node: 'South', parent: 'All regions', value: 4 },
+        ],
+      },
+      semantic_types: { node: 'Category', parent: 'Category', value: 'Quantity' },
+      chart_spec: {
+        chartType: 'Tree',
+        encodings: {
+          color: { field: 'parent' },
+          detail: { field: 'node' },
+          size: { field: 'value' },
+        },
+      },
+    },
+  },
+  {
+    name: 'Chart.js bar PNG',
+    backend: 'chartjs',
+    chartType: 'Bar Chart',
+    format: 'png',
+    unsupportedFormat: 'svg',
+    input: {
+      data: {
+        values: [
+          { category: 'North', value: 12 },
+          { category: 'South', value: 9 },
+        ],
+      },
+      semantic_types: { category: 'Category', value: 'Quantity' },
+      chart_spec: {
+        chartType: 'Bar Chart',
+        encodings: { x: { field: 'category' }, y: { field: 'value' } },
+      },
+    },
+  },
+];
+
+function artifactId(index, offset) {
+  return ARTIFACT_BASE_ID + (index * 10) + offset;
+}
+
+function artifactRequests() {
+  return ARTIFACT_SPECS.flatMap((spec, index) => {
+    const input = { ...spec.input, backend: spec.backend };
+    const requests = [
+      {
+        jsonrpc: '2.0',
+        id: artifactId(index, 1),
+        method: 'tools/call',
+        params: { name: 'validate_chart', arguments: input },
+      },
+      {
+        jsonrpc: '2.0',
+        id: artifactId(index, 2),
+        method: 'tools/call',
+        params: { name: 'compile_chart', arguments: input },
+      },
+      {
+        jsonrpc: '2.0',
+        id: artifactId(index, 3),
+        method: 'tools/call',
+        params: { name: 'render_chart', arguments: { ...input, format: spec.format } },
+      },
+    ];
+    if (spec.unsupportedFormat) {
+      requests.push({
+        jsonrpc: '2.0',
+        id: artifactId(index, 4),
+        method: 'tools/call',
+        params: {
+          name: 'render_chart',
+          arguments: { ...input, format: spec.unsupportedFormat },
+        },
+      });
+    }
+    return requests;
+  });
+}
+
 const EXPECTED_TOOLS = [
   'render_chart',
   'compile_chart',
@@ -329,6 +445,7 @@ const REQUESTS = [
       },
     },
   })),
+  ...(WANT_ARTIFACTS ? artifactRequests() : []),
 ];
 
 console.log(`      spec: ${PACKAGE}  (from ${PACKAGE_SOURCE})`);
@@ -437,6 +554,7 @@ function report() {
 
   if (WANT_CATALOG) reportCatalog(messages);
   if (WANT_COMPAT) reportCompat(messages);
+  if (WANT_ARTIFACTS) reportArtifactConformance(messages);
 
   const optionalChecks = [];
   if (WANT_REPLICATE) optionalChecks.push(verifyOptionalMcp(OPTIONAL_MCPS.replicate));
@@ -511,6 +629,93 @@ function reportCatalog(messages) {
     }
   } catch (error) {
     fail(`--catalog: ${error.message}`);
+  }
+}
+
+function toolMessage(messages, id, name) {
+  const message = messages.find((entry) => entry.id === id);
+  if (!message?.result?.content) fail(`${name} returned no content for request ${id}`);
+  return message;
+}
+
+function textContent(message, name) {
+  const text = message.result.content.find((content) => content.type === 'text')?.text;
+  if (!text) fail(`${name} returned no text content`);
+  return text;
+}
+
+function parsedToolJson(messages, id, name) {
+  const text = textContent(toolMessage(messages, id, name), name);
+  try {
+    return JSON.parse(text);
+  } catch {
+    fail(`${name} returned unparseable JSON`);
+  }
+}
+
+function assertValidFixture(messages, id, spec) {
+  const result = parsedToolJson(messages, id, `validate_chart (${spec.name})`);
+  if (result.valid !== true || !Array.isArray(result.warnings) || result.warnings.length > 0) {
+    fail(`validate_chart (${spec.name}) did not return a warning-free valid result`);
+  }
+}
+
+function assertCompiledFixture(messages, id, spec) {
+  const result = parsedToolJson(messages, id, `compile_chart (${spec.name})`);
+  if (!result?.spec || !Array.isArray(result.warnings) || result.warnings.length > 0) {
+    fail(`compile_chart (${spec.name}) did not return a warning-free backend spec`);
+  }
+}
+
+function assertRenderedFixture(messages, id, spec) {
+  const message = toolMessage(messages, id, `render_chart (${spec.name})`);
+  const content = message.result.content;
+  const note = content.find((entry) => entry.type === 'text' && entry.text.includes(' · '))?.text;
+  if (!note?.startsWith(`${spec.backend} · ${spec.format} · `)) {
+    fail(`render_chart (${spec.name}) returned an unexpected backend or format note`);
+  }
+
+  if (spec.format === 'svg') {
+    const svg = content.find((entry) => entry.type === 'text' && /^\s*<svg\b/i.test(entry.text))?.text;
+    if (!svg || !/<\/svg>\s*$/i.test(svg)) {
+      fail(`render_chart (${spec.name}) did not return a complete SVG document`);
+    }
+    return;
+  }
+
+  const image = content.find((entry) => entry.type === 'image');
+  if (!image?.data || image.mimeType !== 'image/png') {
+    fail(`render_chart (${spec.name}) did not return a PNG image payload`);
+  }
+}
+
+function assertUnsupportedFormat(messages, id, spec) {
+  const message = toolMessage(messages, id, `render_chart (${spec.name}, ${spec.unsupportedFormat})`);
+  const text = textContent(message, `render_chart (${spec.name}, ${spec.unsupportedFormat})`);
+  if (message.result.isError !== true || !/chartjs backend supports png output only/i.test(text)) {
+    fail(`render_chart (${spec.name}) did not reject ${spec.unsupportedFormat} as PNG-only`);
+  }
+}
+
+function reportArtifactConformance(messages) {
+  let catalog;
+  try {
+    catalog = parseCatalogEntries(messages);
+  } catch (error) {
+    fail(`--artifacts: ${error.message}`);
+  }
+
+  console.log('\n      artifact conformance:');
+  for (const [index, spec] of ARTIFACT_SPECS.entries()) {
+    const backend = catalog.find((entry) => entry.backend === spec.backend);
+    if (!backend?.chartTypes.some((entry) => entry?.chartType === spec.chartType)) {
+      fail(`--artifacts: ${spec.chartType} is absent from the ${spec.backend} catalog`);
+    }
+    assertValidFixture(messages, artifactId(index, 1), spec);
+    assertCompiledFixture(messages, artifactId(index, 2), spec);
+    assertRenderedFixture(messages, artifactId(index, 3), spec);
+    if (spec.unsupportedFormat) assertUnsupportedFormat(messages, artifactId(index, 4), spec);
+    console.log(`        valid    ${spec.name}`);
   }
 }
 

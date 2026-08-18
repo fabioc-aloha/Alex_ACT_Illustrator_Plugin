@@ -66,7 +66,7 @@
         "install_to": ".github/skills/local/render-verify/SKILL.md",
         "role": "verification (runs after rendering; closes the loop the flint-chart skill deliberately opens). Not chart-specific — applies to any rendered visual artifact",
         "frontmatter": {
-          "description": "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
+          "description": "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart, after a Vega-Lite create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
         }
       },
       {
@@ -324,7 +324,7 @@
       "author one data + semantic_types truth layer; enrich ambiguous fields with intrinsicDomain, unit, or sortOrder",
       "load chart-vocabulary technique router + flint-chart; for open-ended work author one familiar and one expressive treatment that differ materially in chart_spec, arrangement, technique, or theme",
       "call list_themes for a preset OR load flint-theme → flint://theme-skill / author_flint_theme → Theme Lab corpus iteration",
-      "render serious candidates via flint MCP (create_chart_view | render_chart); use validate_chart and compile_chart for their narrower contracts",
+      "for Vega-Lite candidates use create_chart_view when the host supports MCP Apps; for ECharts or Chart.js use render_chart or compile_chart, with SVG available only from Vega-Lite/ECharts; use validate_chart for its narrower contract",
       "load render-verify → inspect errors + failure catalog + first focal point + reading order + context + accessibility + Big Idea visibility",
       "iterate the smallest responsible layer → report selected treatment, verification evidence, caption/alt text, and strongest rejected alternative",
       "fast path: diagnostic chart, fully formed spec, or explicit treatment skips alternative generation"

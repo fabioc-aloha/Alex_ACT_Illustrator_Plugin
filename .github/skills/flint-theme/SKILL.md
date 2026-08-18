@@ -44,7 +44,8 @@ Theme Lab iteration, and visual verification.
 ## Boundaries
 
 - ThemeSpec currently affects Vega-Lite in Flint `0.5.0`; ECharts and Chart.js
-  ignore it. Do not claim cross-backend theme parity.
+  ignore it. Use a Vega-Lite render or App view to assess the theme; do not
+  claim cross-backend theme parity.
 - Keep data semantics in `semantic_types` and rhetorical choices in
   `chart_spec`. A theme may reinforce meaning but cannot rewrite it.
 - Do not vendor Flint's schema, presets, or type tables here. The MCP resource

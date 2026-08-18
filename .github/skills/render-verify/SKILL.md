@@ -1,6 +1,6 @@
 ---
 name: render-verify
-description: "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart / create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
+description: "Verify a rendered visual artifact actually says what it was supposed to say — open it, read its console errors, walk a failure catalog, and check it against the claim it was meant to carry. Works on charts, generated HTML reports, SVG, dashboards, diagrams, and any other output meant to be looked at. Use after render_chart, after a Vega-Lite create_chart_view, after editing a post-Flint Vega-Lite spec, and before committing any generated HTML/SVG/PNG. Satisfied by the host's built-in browser tools or by the optional playwright MCP server."
 lastReviewed: 2026-08-14
 ---
 

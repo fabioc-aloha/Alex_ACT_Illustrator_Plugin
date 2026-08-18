@@ -169,9 +169,9 @@ Excel artifacts. Illustrator's pinned MCP runtime renders only:
 
 | MCP backend | Use it for | Important boundary |
 | --- | --- | --- |
-| `vegalite` | Broadest chart coverage, declarative output, and Flint 0.5 ThemeSpec | Default Illustrator backend |
-| `echarts` | Rich hierarchical and interactive chart families | Verify chart type support first |
-| `chartjs` | Lightweight common chart families | Static PNG only; no SVG engine |
+| `vegalite` | Broadest chart coverage, declarative output, and Flint 0.5 ThemeSpec | PNG or SVG; the only backend used by `create_chart_view` |
+| `echarts` | Rich hierarchy, flow, gauge, and calendar chart families | PNG or SVG; ThemeSpec is ignored; use static render or compiled JSON |
+| `chartjs` | Lightweight common chart families | Static PNG only; no SVG engine, ThemeSpec, or MCP App view |
 
 The MCP server's `list_chart_types` is the live contract for the installed
 version and backend. Do not copy a chart type from a website gallery without
@@ -196,15 +196,16 @@ For the pinned server, load `flint://agent-skill` or invoke
 
 | Tool | Use |
 | --- | --- |
-| `create_chart_view` | Preferred interactive view when the host supports MCP Apps |
-| `render_chart` | Static PNG or SVG artifact |
+| `create_chart_view` | Interactive Vega-Lite SVG view when the host supports MCP Apps |
+| `render_chart` | Static PNG for all backends; SVG only for Vega-Lite and ECharts |
 | `compile_chart` | Backend-native JSON |
 | `validate_chart` | Validity, warnings, errors, and computed size |
 | `list_chart_types` | Installed chart-type and encoding catalog |
 | `list_themes` | Installed theme presets and guidance |
 
 Use `create_chart_view` only where the host supports the MCP App UI. Otherwise
-use `render_chart` for an artifact. `validate_chart` proves grammar and
+use `render_chart` for an artifact. The App path is Vega-Lite-only; select
+`render_chart` or `compile_chart` for ECharts and Chart.js. `validate_chart` proves grammar and
 computed layout, but it cannot prove that the rendered visual tells the intended
 story. Follow rendering with Illustrator's `render-verify` skill.
 
