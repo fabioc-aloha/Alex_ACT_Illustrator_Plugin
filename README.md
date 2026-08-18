@@ -16,7 +16,7 @@ An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization
 > install remains pinned under its old ID and does not migrate automatically:
 > install the current ID, verify it, then remove the old entry.
 
-**Current compatibility:** Core `v3.0.1` provides the baseline runtime; native
+**Current compatibility:** Core `v3.1.1` provides the baseline runtime; native
 Copilot CLI commands provide plugin lifecycle operations.
 
 ## What it does
