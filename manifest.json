@@ -42,7 +42,14 @@
         "role": "selection + rendering (consumes the Chart Brief)",
         "frontmatter": {
           "description": "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
-        }
+        },
+        "bundled_resources": [
+          {
+            "path": ".github/skills/flint-chart/references/flint-language-reference.md",
+            "install_to": ".github/skills/local/flint-chart/references/flint-language-reference.md",
+            "role": "published Flint 0.5.0 language model, runtime boundaries, rendered-demo evidence, and tagged Microsoft source links"
+          }
+        ]
       },
       {
         "name": "flint-theme",

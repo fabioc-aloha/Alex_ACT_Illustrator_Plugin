@@ -306,6 +306,33 @@ test('Flint 0.5.x runtime contracts expose themes and source-owned authoring gui
   assert.doesNotMatch(flint.notes, /0\.4\.1/);
 });
 
+test('Flint language reference stays linked to the pinned grammar and rendered evidence', () => {
+  const reference = read('.github/skills/flint-chart/references/flint-language-reference.md');
+  const skill = read('.github/skills/flint-chart/SKILL.md');
+
+  assert.match(reference, /Pinned runtime.*flint-chart-mcp@0\.5\.0/is);
+  assert.match(reference, /ChartAssemblyInput/);
+  assert.match(reference, /semantic_types/);
+  assert.match(reference, /chart_spec/);
+  assert.match(reference, /create_chart_view/);
+  assert.match(reference, /--disable-file-reference/);
+  assert.match(reference, /Heart with Axes demo/);
+  assert.match(reference, /https:\/\/github\.com\/fabioc-aloha\/Alex_ACT_Illustrator_Plugin\/blob\/main\/demos\/heart-with-axes\/report\.html/);
+  for (const link of [
+    'https://github.com/microsoft/flint-chart/blob/0.5/docs/api-reference.md',
+    'https://github.com/microsoft/flint-chart/blob/0.5/docs/design-semantics.md',
+    'https://github.com/microsoft/flint-chart/blob/0.5/docs/architecture.md',
+    'https://github.com/microsoft/flint-chart/blob/0.5/packages/flint-mcp/README.md',
+  ]) {
+    assert(reference.includes(link), `missing Flint reference link: ${link}`);
+  }
+  assert.match(skill, /references\/flint-language-reference\.md/);
+  const manifest = JSON.parse(read('manifest.json'));
+  const flintSkill = manifest.assets.skills.find((skillEntry) => skillEntry.name === 'flint-chart');
+  assert(flintSkill.bundled_resources.some((resource) =>
+    resource.path === '.github/skills/flint-chart/references/flint-language-reference.md'));
+});
+
 test('render-chart orchestrates bounded expert storytelling over one semantic truth layer', () => {
   const prompt = read('.github/prompts/render-chart.prompt.md');
   const flint = read('.github/skills/flint-chart/SKILL.md');

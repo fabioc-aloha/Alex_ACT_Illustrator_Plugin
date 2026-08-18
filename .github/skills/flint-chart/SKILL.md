@@ -1,7 +1,7 @@
 ---
 name: flint-chart
 description: "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
-lastReviewed: 2026-08-15
+lastReviewed: 2026-08-17
 ---
 
 # flint-chart: pick, author, and render a chart
@@ -13,6 +13,13 @@ source-owned resource carries the exact semantic types, chart templates,
 properties, and backend boundaries for the installed MCP version. This skill
 adds Alex-owned framing, creative treatment selection, configured-runtime
 setup, and `render-verify`; it does not replace Flint's language reference.
+
+For the conceptual grammar, compiler model, data-access boundary, backend
+contract, rendered-demo evidence, and tagged Microsoft links, read
+[`references/flint-language-reference.md`](references/flint-language-reference.md).
+It describes the published `0.5.0` contract that Illustrator pins. Use the MCP
+resource, `list_chart_types`, and `list_themes` as the final authority for the
+runtime actually installed in the host.
 
 ## What you produce (and what you do NOT)
 

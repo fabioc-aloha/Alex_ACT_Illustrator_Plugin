@@ -5,6 +5,7 @@ Long-form documentation about the plugin's design, decisions, and open questions
 ## Contents
 
 - **[`publishing-to-mall.md`](publishing-to-mall.md)** — dry-run, approval, vendoring, validation, and publication runbook using the Mall-owned maintenance scripts. Read this before running a publish.
+- **[Flint language reference](../.github/skills/flint-chart/references/flint-language-reference.md)** — shipped Flint 0.5.0 language model, grammar boundaries, compiler pipeline, backend and MCP contract, rendered-demo evidence, and links to the tagged Microsoft sources.
 - **[`shell/README.md`](shell/README.md)** — canonical technical reference for the `docs-shell` pattern: manifest schema, URL scheme, theme system, path rewriting, optional features, adoption walkthrough, and troubleshooting. Ported from Alex_ACT_Steward on 2026-07-29 as the source-of-truth going forward.
 - [`plans/`](plans/) — decision documents that captured the plugin's genesis, including locked-decisions tables and post-hoc amendments
   - [`2026-07-24-mall-plugin.md`](plans/2026-07-24-mall-plugin.md) — original plan (9 tasks, 7 locked decisions D1–D7, 5 sub-decisions S1–S5) + amendment covering the two-skill + prompt + MCP-sidecar reshape

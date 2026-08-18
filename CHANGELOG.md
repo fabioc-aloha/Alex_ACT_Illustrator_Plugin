@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a shipped Flint 0.5.0 language reference covering the semantic
+  intermediate-language model, grammar boundaries, compiler pipeline, MCP
+  contract, data-access policy, backend limits, rendered-demo evidence, and
+  tagged Microsoft source links.
+
 ## [2.2.2] - 2026-08-15
 
 ### Fixed

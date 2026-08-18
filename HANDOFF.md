@@ -1,6 +1,6 @@
 # Session Handoff
 
-Last updated: 2026-08-15
+Last updated: 2026-08-17
 
 ## Current State
 
@@ -10,6 +10,12 @@ Last updated: 2026-08-15
 - A disposable 2026-08-14 source canary passed Flint `0.5.0`, protocol `2024-11-05`, six tools, ten themes, two authoring resources, two prompts, catalogs `35/37/22`, all seven compatibility specs, and temporary cleanup.
 - MCP packages install once through npm's configured registry; every runtime invocation uses the plugin-private Node launcher and fails closed on missing runtime state.
 - `scripts/verify-install.mjs` rejects loose package versions and any hardcoded `registry.npmjs.org` reference in `.vscode/mcp.json`, `plugin.json`, or `manifest.json`.
+- The shipped `flint-chart` skill now bundles
+  `references/flint-language-reference.md`. It anchors grammar links to the
+  published Flint `0.5` tag, preserves the installed `0.5.0` runtime boundary,
+  and records that Flint `0.5.1` is visible upstream but unavailable through
+  the configured Microsoft package proxy. The reference also distinguishes the
+  rendered direct Vega-Lite heart demo from an MCP conformance fixture.
 
 ## Registry Boundary
 
