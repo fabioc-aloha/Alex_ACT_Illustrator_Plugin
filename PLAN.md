@@ -6,9 +6,8 @@
 
 ## Goal
 
-Make the plugin's Flint guidance, examples, verification, and Illustrator
-handoff accurately represent the capabilities of the pinned
-`flint-chart-mcp@0.5.0` runtime.
+Make the plugin's Flint guidance, examples, and verification accurately
+represent the capabilities of the pinned `flint-chart-mcp@0.5.0` runtime.
 
 This is **MCP parity**, not parity with every package exported by the upstream
 `flint-chart` library. Plotly and Excel are library-level capabilities and
@@ -33,9 +32,8 @@ remain out of scope unless the plugin deliberately adds a non-MCP integration.
 | G1 | The root and demo documentation present a direct Vega-Lite 0.3.0 heart artifact as a Flint MCP feature walkthrough. | The main visual example cannot prove the pinned MCP contract. | High |
 | G2 | The coverage table says Hierarchy Tree is outside Flint even though ECharts 0.5 includes `Tree`. | Supported work can be incorrectly routed away from Flint. | High |
 | G3 | Compatibility tests validate mostly legacy/Vega-Lite input patterns and do not retain or inspect actual rendered artifacts. | Backend, format, and generated-output claims have no executable proof. | High |
-| G4 | The plugin has no explicit Illustrator vector-delivery contract. | “SVG output” can be mistaken for reliable editable-vector import. | High |
 | G5 | `create_chart_view` and ThemeSpec guidance can be read as cross-backend behavior. | Users can select a backend that cannot satisfy the requested interaction or theme. | Medium |
-| G6 | The withdrawn hand-drawn SVG proposal is correctly historical but needs a durable product boundary. | A future change could revive an unsafe post-SVG approach. | Medium |
+| G4 | The withdrawn hand-drawn SVG proposal is correctly historical but needs a durable product boundary. | A future change could revive an unsafe post-SVG approach. | Medium |
 
 ## Decision Guardrails
 
@@ -47,9 +45,8 @@ remain out of scope unless the plugin deliberately adds a non-MCP integration.
 3. Qualify every capability by **surface**, **backend**, **format**, and
    **version**. Never infer cross-backend parity from one renderer.
 4. Preserve `ChartAssemblyInput`, backend name, MCP package version, and
-   generated output as separate artifacts. An edited backend specification or
-   imported Illustrator SVG is a terminal presentation artifact, not a
-   regenerable Flint input.
+   generated output as separate artifacts. An edited backend specification is a
+   terminal presentation artifact, not regenerable Flint input.
 5. Do not revive the generic SVG roughening prototype. A hand-drawn treatment
    remains a future upstream-design question after parity work is complete.
 
@@ -83,11 +80,11 @@ versioned matrix.
 2. For every documented chart type, record:
    - MCP surface: `create_chart_view`, `render_chart`, and/or `compile_chart`
    - Backend and exact registered chart type
-   - Required channels and relevant constraints
+   - A link to the live catalog for required channels and relevant constraints;
+     do not copy a stale 94-row channel schema into the matrix
    - Static formats
    - ThemeSpec behavior
-   - Illustrator delivery classification: SVG candidate, PNG-only, or not
-     applicable
+   - Static output classification: SVG, PNG, or both
 3. Separate library-only capabilities from MCP capabilities.
 4. Include explicit rows for the boundary cases:
    - Vega-Lite + ThemeSpec + SVG
@@ -142,8 +139,8 @@ matrix.
 
 | Fixture | Calls | Assertions |
 | --- | --- | --- |
-| Vega-Lite themed bar | `list_chart_types`, `validate_chart`, `compile_chart`, `render_chart` | Catalog contains type; ThemeSpec is accepted; returned SVG is nonempty and parseable; warnings are reviewed. |
-| ECharts Tree | `list_chart_types`, `validate_chart`, `compile_chart`, `render_chart` | Tree is in the ECharts catalog; required data/channels validate; returned SVG is nonempty and parseable. |
+| Vega-Lite themed bar | `list_chart_types`, `validate_chart`, `compile_chart`, `render_chart` | Catalog contains type; ThemeSpec is accepted; returned SVG has a complete document envelope; warnings are reviewed. |
+| ECharts Tree | `list_chart_types`, `validate_chart`, `compile_chart`, `render_chart` | Tree is in the ECharts catalog; required data/channels validate; returned SVG has a complete document envelope. |
 | Chart.js common chart | `list_chart_types`, `validate_chart`, `compile_chart`, `render_chart` | PNG render succeeds; SVG request is rejected or unavailable as documented. |
 
 4. Retain generated validation evidence in a temporary test location only.
@@ -177,33 +174,7 @@ matrix.
 - A reader can distinguish demonstration artwork from MCP-generated evidence
   without following external links or reading implementation details.
 
-### Phase 5 — Define Illustrator SVG delivery acceptance
-
-**Objective:** Turn “SVG output” into a narrow, testable handoff promise.
-
-1. Document the target Illustrator version(s) and operating-system scope.
-2. Define which output paths are eligible:
-   - Vega-Lite SVG: eligible for inspection.
-   - ECharts SVG: eligible for inspection.
-   - Chart.js PNG: not an editable-vector delivery path.
-3. Define import acceptance checks:
-   - File opens without Illustrator repair prompts.
-   - Text/font substitution behavior is recorded.
-   - Marks, labels, and legends remain visible and readable.
-   - Required objects are selectable/editable where expected.
-   - Transforms, clipping, grouping, and embedded styles do not invalidate the
-     delivery requirement.
-4. Preserve the original unmodified SVG and metadata beside any Illustrator
-   edited export. Mark the edited file as terminal artwork.
-5. Perform manual review on the Phase 3 Vega-Lite and ECharts SVG artifacts at
-   a useful desktop size and a narrow review size.
-
-**Exit criteria**
-
-- The plugin makes only tested claims about editable-vector import and clearly
-  excludes the raster Chart.js path.
-
-### Phase 6 — Defer and bound the hand-drawn renderer question
+### Phase 5 — Defer and bound the hand-drawn renderer question
 
 **Objective:** Avoid treating a new Flint capability as parity remediation.
 
@@ -211,7 +182,7 @@ matrix.
    evidence.
 2. Do not add roughening dependencies, fonts, SVG filters, or post-SVG geometry
    mutation to this plugin for the parity release.
-3. Reassess only after Phases 0-5 pass and a concrete user need remains.
+3. Reassess only after Phases 0-4 pass and a concrete user need remains.
 4. If reassessment is approved, prepare a private design brief that evaluates
    ThemeSpec extension, a renderer-stage treatment API, and other
    transform-safe designs. Require deterministic output, semantic-role
@@ -234,8 +205,7 @@ matrix.
 | P2 | Correct backend-qualified guidance | P1 | Complete | Tree, exact ECharts chart names, App, SVG/PNG, ThemeSpec, manifest, and demo-provenance statements corrected |
 | P3 | Add artifact conformance fixtures | P0, P1 | Complete | `--artifacts` verifies Vega-Lite themed SVG, ECharts Tree SVG, and Chart.js PNG/SVG rejection |
 | P4 | Relabel heart demo and add MCP evidence example | P1, P3 | Complete | Heart demo is labeled direct Vega-Lite; dedicated conformance-fixture reference documents reproducible MCP evidence |
-| P5 | Define and execute Illustrator SVG acceptance | P3 | Deferred (optional) | The project has no Adobe Illustrator integration. The handoff contract remains available only if a future delivery needs editable-vector import evidence. |
-| P6 | Decide whether to research a renderer treatment | P0-P5 | Deferred | Approved product requirement and design brief |
+| P5 | Decide whether to research a renderer treatment | P0-P4 | Deferred | Approved product requirement and design brief |
 
 ## Completion Definition
 
@@ -247,8 +217,7 @@ The work is complete when:
 3. Representative Vega-Lite, ECharts, and Chart.js artifacts are rendered and
    verified by the existing test infrastructure.
 4. The direct Vega-Lite heart demo is not represented as MCP conformance.
-5. Any future editable-Illustrator SVG handoff claim has manual acceptance evidence.
-6. No release material describes ThemeSpec or a generic SVG postprocessor as a
+5. No release material describes ThemeSpec or a generic SVG postprocessor as a
    hand-drawn Flint renderer.
 
 ## Execution Log
@@ -261,6 +230,3 @@ The work is complete when:
 | 2026-08-18 | P0 | Complete | Provisioned the approved private runtime and verified Flint 0.5.0: protocol `2024-11-05`, six tools, ten themes, two authoring resources, two prompts, 35/37/22 backend catalogs, and all seven legacy compatibility patterns. |
 | 2026-08-18 | P1-P2 | Complete | Added the version-pinned capability matrix and corrected backend-qualified guidance: ECharts `Tree`, exact ECharts type names, Vega-Lite-only App/ThemeSpec behavior, SVG/PNG limits, and direct-Vega heart-demo provenance. |
 | 2026-08-18 | P3-P4 | Complete | Added `--artifacts` conformance checks plus fixture documentation. The live runtime validated, compiled, and rendered Vega-Lite themed SVG and ECharts Tree SVG; Chart.js returned PNG and rejected SVG. |
-| 2026-08-18 | P5 | Awaiting manual review | Added the SVG handoff contract and acceptance-record template. Automated SVG rendering is proven; Illustrator import, font substitution, selectability, and export still need human verification in the delivery version. |
-| 2026-08-18 | P5 | Blocked | Read-only inspection found no `Illustrator.exe` in the standard `C:\Program Files\Adobe` or `C:\Program Files (x86)\Adobe` locations and no running Illustrator process. Complete the documented acceptance checklist on a target machine before claiming editable-vector delivery. |
-| 2026-08-18 | P5 | Deferred (optional) | Confirmed that this is an agent visual-authoring plugin, not an Adobe Illustrator extension. SVG import acceptance is not required for Flint MCP parity and does not block the core release. |

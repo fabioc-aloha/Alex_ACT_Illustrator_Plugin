@@ -28,15 +28,11 @@ the pinned server.
 
 ## Backend delivery matrix
 
-| Backend | Runtime catalog | Delivery classification | Important boundary |
+| Backend | Runtime catalog | Static output | Important boundary |
 | --- | ---: | --- | --- |
-| `vegalite` | 35 chart types | SVG candidate or PNG | Default semantic renderer; supports ThemeSpec and the MCP App. |
-| `echarts` | 37 chart types | SVG candidate or PNG | Adds hierarchy, flow, gauge, and calendar structures; ThemeSpec is ignored. |
+| `vegalite` | 35 chart types | SVG or PNG | Default semantic renderer; supports ThemeSpec and the MCP App. |
+| `echarts` | 37 chart types | SVG or PNG | Adds hierarchy, flow, gauge, and calendar structures; ThemeSpec is ignored. |
 | `chartjs` | 22 chart types | PNG-only | Use only when raster output is acceptable; ThemeSpec is ignored and the MCP App is unavailable. |
-
-“SVG candidate” means Flint returned vector serialization. It is not a promise
-that every generated object will remain separately editable after Illustrator
-import; apply the SVG handoff acceptance checklist before making that claim.
 
 ## Exact registered chart types
 
@@ -71,9 +67,7 @@ high-risk distinctions this plugin documents; use `render-verify` for each
 deliverable.
 
 For fixture provenance and exact execution behavior, see the
-[conformance-fixture reference](flint-mcp-conformance.md). For the manual
-boundary between a returned SVG and editable Illustrator artwork, see the
-[SVG handoff contract](flint-illustrator-svg-handoff.md).
+[conformance-fixture reference](flint-mcp-conformance.md).
 
 ## Related sources
 

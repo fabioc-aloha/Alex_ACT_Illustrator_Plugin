@@ -348,7 +348,6 @@ test('Flint language reference stays linked to the pinned grammar and rendered e
 test('Flint matrix and guidance qualify backend capabilities and demo provenance', () => {
   const matrix = read('docs/flint-mcp-0.5.0-capability-matrix.md');
   const conformance = read('docs/flint-mcp-conformance.md');
-  const handoff = read('docs/flint-illustrator-svg-handoff.md');
   const skill = read('.github/skills/flint-chart/SKILL.md');
   const prompt = read('.github/prompts/render-chart.prompt.md');
   const demo = read('demos/README.md');
@@ -370,8 +369,6 @@ test('Flint matrix and guidance qualify backend capabilities and demo provenance
   assert.match(readme, /direct Vega-Lite narrative artifact/);
   assert.match(readme, /rather than a `ChartAssemblyInput` conformance fixture/);
   assert.match(conformance, /ARTIFACT_SPECS/);
-  assert.match(handoff, /Chart\.js is PNG-only/);
-  assert.match(handoff, /manual import acceptance checklist/i);
 });
 
 test('render-chart orchestrates bounded expert storytelling over one semantic truth layer', () => {
