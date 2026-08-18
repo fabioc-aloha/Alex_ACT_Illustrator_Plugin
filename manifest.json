@@ -1,6 +1,6 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "shape": "fourteen-skill + four-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Expert visual-storytelling and authoring bundle for AI agents. Thirteen skills across five authoring areas plus install composition and runtime setup: Flint chart and ThemeSpec language, Print figures, Replicate, Shell, Banner, install-visual-companions, and setup-illustrator-runtime. Shared framing, bounded creative exploration, and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
@@ -244,7 +244,7 @@
         "install_to": ".github/prompts/local/install-visual-companions.prompt.md",
         "role": "verb-prompt workflow entry point (/install-visual-companions)",
         "frontmatter": {
-          "description": "Offer to install nine marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval."
+          "description": "Offer to install eight marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval."
         }
       },
       {

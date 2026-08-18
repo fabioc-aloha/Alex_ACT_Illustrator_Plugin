@@ -5,6 +5,15 @@ All notable changes to this plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2026-08-18
+
+### Fixed
+
+- Manifest entry for the `install-visual-companions` prompt still advertised nine
+  companion plugins. The 2.3.0 retirement updated the skill and the prompt file
+  but missed the manifest's copy of the prompt description, so `verify-install`
+  failed on a clean 2.3.0 install. Both now read eight.
+
 ## [2.3.0] - 2026-08-18
 
 ### Added
