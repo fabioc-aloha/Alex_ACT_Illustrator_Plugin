@@ -5,6 +5,32 @@ All notable changes to this plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+The changes below target `2.4.0`. The current public release remains `v2.3.1`.
+
+### Added
+
+- `annotate-screenshot` skill: the annotation pipeline for rasters this plugin did
+  not render. Covers the upscale-then-annotate ordering, supersampled shape
+  rendering with natively drawn text, measured rather than eyeballed callout
+  placement, and the render-and-look check. Pillow is the only hard dependency;
+  the optional `image-annotations` companion can supply collision-aware
+  automatic placement and pixel-diff cluster inspection.
+
+  The companion stays a separate plugin, pulled at install time. It is third-party
+  content from `github/awesome-copilot`, and vendoring an upstream plugin invites
+  fork drift and skill-name collision per PLUGIN-INTEGRATION section 5.
+
+### Fixed
+
+- `install-visual-companions` and its prompt still described nine companion
+  plugins in the anti-pattern rows and falsifiers. The 2.3.0 retirement dropped
+  `storytelling-requirements` and updated the catalog table but missed the
+  surrounding prose. All counts now read eight.
+- The shared installation guide advertised Illustrator 2.3.0 while 2.3.1 shipped,
+  so the plugin contradicted its own bundled guide.
+
 ## [2.3.1] - 2026-08-18
 
 ### Fixed

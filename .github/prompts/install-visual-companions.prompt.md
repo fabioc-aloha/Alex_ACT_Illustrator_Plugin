@@ -17,4 +17,4 @@ Steps:
 6. Print install-time caveats for the plugins that need manual post-install steps (`chromium-control-canvas`, `eyeball`, `napkin`, `visual-pr` — Playwright-based, ~100 MiB Chromium download each).
 7. Report installed / skipped / caveats-outstanding, and note whether the vision-loop bundle is complete.
 
-**Would revise if**: the `install-visual-companions` skill is retired, the 9-plugin catalog changes, or Fabio reassigns visual-companion ownership back to Core.
+**Would revise if**: the `install-visual-companions` skill is retired, the 8-plugin catalog changes, or Fabio reassigns visual-companion ownership back to Core.

@@ -254,9 +254,9 @@ test('catalog parsing fails on missing or malformed requested output', () => {
 test('manifest copies current discovery metadata and report dependencies', () => {
   const manifest = JSON.parse(read('manifest.json'));
   const plugin = JSON.parse(read('plugin.json'));
-  assert.equal(manifest.version, '2.3.1');
-  assert.equal(plugin.version, '2.3.1');
-  assert.match(read('README.md'), /Current release: v2\.2\.2/);
+  assert.equal(manifest.version, '2.4.0');
+  assert.equal(plugin.version, '2.4.0');
+  assert.match(read('README.md'), /Current release: v2\.3\.1/);
   assert.match(read('CHANGELOG.md'), /## \[2\.2\.2\] - 2026-08-15/);
   const skills = new Map(manifest.assets.skills.map((skill) => [skill.name, skill]));
   for (const name of ['docs-shell', 'setup-illustrator-runtime', 'svg-banner']) {
@@ -433,9 +433,10 @@ test('storytelling composition preserves focused owners and optional companions'
   const names = manifest.assets.skills.map((skill) => skill.name);
   const companions = read('.github/skills/install-visual-companions/SKILL.md');
 
-  assert.equal(names.length, 14);
+  assert.equal(names.length, 15);
   assert(names.includes('flint-theme'));
   assert(names.includes('ascii-chart'));
+  assert(names.includes('annotate-screenshot'));
   assert(!names.includes('flint-chart-author'));
   assert(!names.includes('visual-storytelling'));
   // storytelling-requirements retired with its plugin under ADR-039; chart-big-idea owns the framing gate.

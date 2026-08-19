@@ -416,6 +416,7 @@ path inside that folder. Verified 2026-07-25: a bare filename leaked into
 - [`print-svg-style-guide`](../print-svg-style-guide/SKILL.md) — the visual grammar the shipped SVG obeys. The failure-catalog entries in this skill fire when that grammar is violated.
 - [`figure-generator`](../figure-generator/SKILL.md) — where the "fix in the generator, never in the SVG" rule for the SVG XML invalid catalog entry lives.
 - [`corpus-qa-sweep`](../corpus-qa-sweep/SKILL.md) — the corpus-scale companion. That skill sweeps every item against machine-checkable invariants and triages the flags; this one judges a single artifact against the failure catalog. Sweep to find candidates, then verify one.
+- [`annotate-screenshot`](../annotate-screenshot/SKILL.md) — inherits Step 2's open-and-read discipline for a different output. Where this skill judges whether a render says what it should, that one marks the answer onto the image, and its own failures (a badge covering the feature it points at, a clipped caption) are only visible by rendering and looking.
 
 ## Would Revise If
 

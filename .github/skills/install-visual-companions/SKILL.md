@@ -36,7 +36,7 @@ Discovered and verified via the Steward GH-APP-SUPPORT feedback loop (private go
 | `eyeball` | `awesome-copilot` | Screenshot audit with claim-proof output doc | ✅ (see caveats) |
 | `diagram-viewer` | `awesome-copilot` | SVG / diagram drill-down preview | ✅ clean install |
 | `napkin` | `awesome-copilot` | Whiteboard for iterative chart design | ⚪ Untested |
-| `image-annotations` | `alex-mall` | PIL callouts + labels on screenshots | ✅ |
+| `image-annotations` | `alex-mall` | PIL callouts + labels on screenshots. Optional: [`annotate-screenshot`](../annotate-screenshot/SKILL.md) covers this in-plugin; reach for the companion only for automatic multi-label placement or pixel diffing | ✅ |
 | `chart-interpretation` | `alex-mall` | Read charts, extract insights (reverse of authoring) | ✅ |
 | `visual-artifact-qa` | `alex-mall` | Render-time verification (visual output that passes static checks can still fail to render) | ✅ |
 | `visual-pr` | `awesome-copilot` | PR screenshot + annotation embed workflow | ⚪ Skills-only, needs real PR to exercise |
@@ -159,13 +159,13 @@ Print a summary:
 - Plugins installed (with marketplace + version)
 - Plugins skipped (with reason: marketplace-browse failed / heir declined / already installed)
 - Manual post-install steps outstanding (per caveats above; the heir must run them)
-- Vision loop status: if all 4 vision-loop plugins are installed, tell the heir "vision loop is complete — you can invoke the composition end-to-end via any of the render-verify workflows"
+- Vision loop status: if all 3 external vision-loop companions are installed, tell the heir "vision loop is complete — you can invoke the composition end-to-end via any of the render-verify workflows"
 
 ## Anti-patterns
 
 | Anti-pattern | Correction |
 |---|---|
-| Bundle all 9 without asking | Consent-gated, per-plugin. The 9 are heir-workload-dependent. |
+| Bundle all 8 without asking | Consent-gated, per-plugin. The 8 are heir-workload-dependent. |
 | Install without verifying marketplace-browse | Per Core's `plugin-management` Safety rule — plugin names can be LLM-hallucinated. Verify first. |
 | Skip the caveats step | Chromium download + Python Playwright + OneDrive-redirect trip most heirs on first use. Print them proactively. |
 | Install into `.github/copilot/settings.json` at repo scope | Visual companions are heir-scoped tools, not project-scoped. User scope only. |
@@ -183,7 +183,7 @@ Print a summary:
 This skill is decorative if by 2026-11-01 (90 days):
 
 - Heirs never invoke `/alex-act-illustrator-plugin install-visual-companions` and always install companions ad-hoc
-- The 9-plugin catalog goes stale (a plugin is retired or moved to a different marketplace) and is not refreshed
+- The 8-plugin catalog goes stale (a plugin is retired or moved to a different marketplace) and is not refreshed
 - The vision-loop composition pattern proves brittle in practice (Round 4 verified it on 2026-07-31, but sustained use may surface issues)
 - The move from Core Step 7 to Illustrator produces reader confusion about where the install offer lives — heirs keep asking Core to install visual companions
 

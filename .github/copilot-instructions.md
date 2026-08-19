@@ -8,9 +8,9 @@ This repo is _not_ an Alex ACT heir workspace — it ships an [Alex ACT constell
 
 ## What this repo is
 
-An Alex ACT constellation plugin for visual authoring. Ships **six visual-authoring areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), Shell (browsable / gallery / catalog surface), Banner (deterministic SVG brand assets), and ASCII (monospace delivery where no rendering engine exists). Currently:
+An Alex ACT constellation plugin for visual authoring. Ships **seven visual-authoring areas**: Flint (statistical chart authoring), Print figures (hand-authored print-quality SVG for books / reports), Replicate (AI image generation), Shell (browsable / gallery / catalog surface), Banner (deterministic SVG brand assets), ASCII (monospace delivery where no rendering engine exists), and Annotate (Pillow-based raster callouts). Currently:
 
-- **Fourteen skills** — `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `flint-theme`, `render-verify`, `corpus-qa-sweep`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `setup-illustrator-runtime`, `docs-shell`, `svg-banner`, `install-visual-companions`, and `ascii-chart`
+- **Fifteen skills** — `annotate-screenshot`, `chart-big-idea`, `chart-vocabulary`, `flint-chart`, `flint-theme`, `render-verify`, `corpus-qa-sweep`, `print-svg-style-guide`, `figure-generator`, `replicate-imagery`, `setup-illustrator-runtime`, `docs-shell`, `svg-banner`, `install-visual-companions`, and `ascii-chart`
 - **Four slash-command prompts** — `/alex-act-illustrator-plugin render-chart`, `/alex-act-illustrator-plugin banner`, `/alex-act-illustrator-plugin install-visual-companions`, and `/alex-act-illustrator-plugin setup-illustrator-runtime`
 - **Three MCP sidecars** in `.vscode/mcp.json` — exact `flint-chart-mcp@0.5.0` (required), exact `replicate-mcp@0.9.0` (optional; needs `REPLICATE_API_TOKEN`), and exact `@playwright/mcp@0.0.78` (optional browser sidecar). Install once through npm's configured registry, then every runtime invocation uses the plugin-private Node launcher; never probe or override the public registry.
 - **Stable-version audit** — `setup-illustrator-runtime --check-updates` compares all three reviewed pins with `dist-tags.latest` through npm's configured registry. Report drift; never auto-upgrade before compatibility checks and a governed release.
@@ -21,6 +21,7 @@ This repo is the **source of truth**. The [Alex ACT Plugin Mall](https://github.
 
 | Path                                     | Purpose                                                                     |
 | ---------------------------------------- | --------------------------------------------------------------------------- |
+| `.github/skills/annotate-screenshot/`    | Installable skill (Pillow raster annotation, Annotate feature)              |
 | `.github/skills/chart-big-idea/`         | Installable skill (framing, shared across features)                         |
 | `.github/skills/chart-vocabulary/`       | Installable skill (chart selection catalog, Flint feature)                  |
 | `.github/skills/flint-chart/`            | Installable skill (chart family router + spec authoring, Flint feature)     |

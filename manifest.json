@@ -1,8 +1,8 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "2.3.1",
-  "shape": "fourteen-skill + four-prompt + three-mcp-sidecars + vscode-settings",
-  "description": "Expert visual-storytelling and authoring bundle for AI agents. Thirteen skills across five authoring areas plus install composition and runtime setup: Flint chart and ThemeSpec language, Print figures, Replicate, Shell, Banner, install-visual-companions, and setup-illustrator-runtime. Shared framing, bounded creative exploration, and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
+  "version": "2.4.0",
+  "shape": "fifteen-skill + four-prompt + three-mcp-sidecars + vscode-settings",
+  "description": "Expert visual-storytelling and authoring bundle for AI agents. Fifteen skills across seven authoring areas plus install composition and runtime setup: Flint charts and themes, print figures, Replicate imagery, documentation shells, banners, ASCII charts, and raster annotation. Shared framing, bounded creative exploration, and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
   "license": "MIT",
   "authors": [
@@ -17,6 +17,15 @@
   ],
   "assets": {
     "skills": [
+      {
+        "name": "annotate-screenshot",
+        "path": ".github/skills/annotate-screenshot/SKILL.md",
+        "install_to": ".github/skills/local/annotate-screenshot/SKILL.md",
+        "role": "annotation pipeline for rasters the plugin did not render: resolution ordering, supersampled shape rendering, measured callout placement, color semantics, shape vocabulary, and the render-and-look check. Pillow is the only hard prerequisite. The optional image-annotations companion adds collision-aware automatic placement and pixel-diff cluster inspection; it is pulled at install time, never vendored.",
+        "frontmatter": {
+          "description": "Add callouts to a raster you did not author, using Pillow, at a resolution that stays legible. Covers upscale-then-annotate ordering, supersampled shape rendering, measured callout placement, color and font conventions, and the render-and-look check. Use when marking up a screenshot, dashboard capture, chart image, or any PNG or JPG whose source resolution you do not control. Pillow is the only dependency."
+        }
+      },
       {
         "name": "chart-big-idea",
         "path": ".github/skills/chart-big-idea/SKILL.md",
@@ -197,9 +206,9 @@
         "name": "install-visual-companions",
         "path": ".github/skills/install-visual-companions/SKILL.md",
         "install_to": ".github/skills/local/install-visual-companions/SKILL.md",
-        "role": "install-composition surface: offers to install 8 marketplace companion plugins (chromium-control-canvas, eyeball, diagram-viewer, napkin, image-annotations, chart-interpretation, visual-artifact-qa, visual-pr) that compose visual-authoring workflows around Illustrator. Consent-gated, per-plugin. Vision loop: chart-big-idea (in-plugin) \u2192 visual-artifact-qa \u2192 chart-interpretation \u2192 eyeball. Ownership moved from alex-act-core install-constellation Step 7 on 2026-08-01 per Fabio directive. The ninth companion, storytelling-requirements, was dropped on 2026-08-18 when its plugin retired under ADR-039 and chart-big-idea took over the framing gate.",
+        "role": "install-composition surface: offers to install 8 marketplace companion plugins (chromium-control-canvas, eyeball, diagram-viewer, napkin, image-annotations, chart-interpretation, visual-artifact-qa, visual-pr) that compose visual-authoring workflows around Illustrator. Consent-gated, per-plugin. Vision loop: chart-big-idea (in-plugin) → visual-artifact-qa → chart-interpretation → eyeball. Ownership moved from alex-act-core install-constellation Step 7 on 2026-08-01 per Fabio directive. The ninth companion, storytelling-requirements, was dropped on 2026-08-18 when its plugin retired under ADR-039 and chart-big-idea took over the framing gate.",
         "frontmatter": {
-          "description": "Offer to install eight marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin \u2014 never bundled without explicit heir approval. Use when the heir asks to enable visual-workflow tooling, or when the illustrator's chart / figure / print-SVG authoring produces artifacts that need runtime verification (multimodal vision loop). Companion to install-constellation in alex-act-core."
+          "description": "Offer to install eight marketplace plugins that compose visual-authoring workflows around Illustrator (chart rendering, screenshot verification, whiteboard iteration, PR annotation). Consent-gated, per-plugin — never bundled without explicit heir approval. Use when the heir asks to enable visual-workflow tooling, or when the illustrator's chart / figure / print-SVG authoring produces artifacts that need runtime verification (multimodal vision loop). Companion to install-constellation in alex-act-core."
         }
       },
       {
@@ -374,6 +383,14 @@
       "load ascii-chart skill → consult references/ascii-gallery.md for the worked form and the Flint coverage matrix → render on the monospace grid within the width constant",
       "ascii-chart Module 5 alignment QA replaces render-verify Steps 1-3 because there is no artifact to open",
       "load render-verify skill → Steps 4 and 5 only: Storytelling read-back, mutation check on decision-bearing values, honest report"
+    ],
+    "annotate": [
+      "user asks to annotate, mark up, or add callouts to an image the agent did not render",
+      "check Image.open(path).size and dpi first; treat DPI as print metadata, not proof of capture scale",
+      "load annotate-screenshot skill -> upscale the base with LANCZOS before drawing, never after",
+      "detect callout coordinates from pixel geometry and calibrate against a value the image already prints",
+      "draw shapes supersampled on a transparent layer, then draw text once at final size",
+      "load render-verify skill -> open the output and check for covered marks, clipped captions, and off-by-one placement"
     ]
   },
   "prerequisites": {

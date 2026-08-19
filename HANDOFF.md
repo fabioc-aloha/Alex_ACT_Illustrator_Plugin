@@ -1,21 +1,23 @@
 # Session Handoff
 
-Last updated: 2026-08-17
+Last updated: 2026-08-18
 
 ## Current State
 
-- Release source targets `v2.2.0` with `flint-chart-mcp@0.5.0`; installed runtime remains separately gated until source, tag, GitHub Release, and Mall origin are coherent.
-- MCP package specs in source are exact: Flint `0.5.0`, Replicate MCP `0.9.0`, Playwright MCP `0.0.78`.
-- Source now carries thirteen skills, including thin `flint-theme` composition, and an expert `/render-chart` workflow that explores familiar and expressive treatments over one semantic truth layer.
-- A disposable 2026-08-14 source canary passed Flint `0.5.0`, protocol `2024-11-05`, six tools, ten themes, two authoring resources, two prompts, catalogs `35/37/22`, all seven compatibility specs, and temporary cleanup.
-- MCP packages install once through npm's configured registry; every runtime invocation uses the plugin-private Node launcher and fails closed on missing runtime state.
-- `scripts/verify-install.mjs` rejects loose package versions and any hardcoded `registry.npmjs.org` reference in `.vscode/mcp.json`, `plugin.json`, or `manifest.json`.
-- The shipped `flint-chart` skill now bundles
-  `references/flint-language-reference.md`. It anchors grammar links to the
-  published Flint `0.5` tag, preserves the installed `0.5.0` runtime boundary,
-  and records that Flint `0.5.1` is visible upstream but unavailable through
-  the configured Microsoft package proxy. The reference also distinguishes the
-  rendered direct Vega-Lite heart demo from an MCP conformance fixture.
+- Published release remains `v2.3.1`. Source is an unreleased `2.4.0` candidate;
+  do not describe it as published until its commit, tag, GitHub Release, and Mall
+  origin record agree.
+- The candidate carries fifteen skills, four prompts, seven authoring areas, and
+  three MCP sidecars. `annotate-screenshot` is the new fifteenth skill; Pillow is
+  its only hard dependency, and `image-annotations` remains optional.
+- Exact runtime package specs remain Flint `0.5.0`, Replicate MCP `0.9.0`, and
+  Playwright MCP `0.0.78`, launched directly from plugin-private state.
+- The 2.4.0 candidate passed the language check and the 35-test install and
+  contract suite. The suite exercises compatibility, catalog parsing, malformed
+  runtime output, artifact conformance, and negative paths.
+- DPI metadata is not treated as proof of source scale. Raster annotation uses
+  pixel dimensions, intended display size, and visual inspection to decide
+  whether upscaling is needed.
 
 ## Registry Boundary
 
@@ -30,6 +32,9 @@ Do not probe, compare, or override the public npm registry from a corporate mach
 ## Verification
 
 ```pwsh
+node scripts/check-language.mjs
+node --test scripts/test-verify-install.mjs
+node scripts/verify-contract.mjs
 node scripts/verify-install.mjs --catalog --compat
 ```
 
@@ -39,14 +44,20 @@ Expected first line:
 OK    npm registry policy: exact pins, provisioned cache, offline runtime
 ```
 
-The verifier must report Flint `0.5.0`, six tools, ten themes, both authoring resources and prompts, three backends, and valid documented spec patterns.
+The verifier must report Flint `0.5.0`, six tools, ten themes, both authoring
+resources and prompts, three backends, and valid documented spec patterns.
 
 ## Pending
 
-- Installed-runtime provisioning and canary execution remain separately gated.
+- Inspect the complete candidate diff and confirm no unrelated work is staged.
+- Decide whether launch requires hosted CI; this repository currently has no
+  `.github/workflows/` directory.
+- Commit and push the source candidate only after all local gates pass.
+- Tag, publish the GitHub Release, and advance the Mall origin record only under
+  separate release authorization.
 
 ## Resume Point
 
-Illustrator `v2.2.0` is published from source `3b3c7a0` and Mall origin record
-`3ae61a1`. Do not mutate the installed private runtime without separate
-approval.
+Finish the local 2.4.0 candidate review. Preserve `v2.3.1` as the public-release
+claim until publication is complete. Do not mutate the installed private runtime
+without separate approval.

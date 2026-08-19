@@ -6,11 +6,10 @@
 
 Alex ACT Illustrator turns visual work into one governed expert-storytelling workflow: frame the idea, inspect the evidence, explore materially different treatments, choose the right medium and visual system, author the artifact, critique the render, and iterate until readers see the intended story. Charts, figures, imagery, documentation shells, and banners share one communication standard instead of competing guidance.
 
-An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
+An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for seven visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, branded SVG banners, ASCII delivery, and raster annotation. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers eight independently maintained runtime inspection plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Current release: v2.2.2.** This PATCH release synchronizes the shared
+> **Current release: v2.3.1.** This PATCH release synchronizes the shared
 > installation guide with the managed-source MSFT delivery boundary.
-> preview copy control and keeps Mermaid diagrams to one visual frame.
 > The repository was renamed from `flint-chart-plugin` on 2026-07-29; v0.6.0
 > was the first release under `alex-act-illustrator-plugin@alex-mall`. A legacy
 > install remains pinned under its old ID and does not migrate automatically:
@@ -21,7 +20,7 @@ Copilot CLI commands provide plugin lifecycle operations.
 
 ## What it does
 
-Six authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and verification pass (`render-verify` Prose-coupling check):
+Seven authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and verification pass (`render-verify` Prose-coupling check):
 
 1. **Flint — expert statistical storytelling.** `chart-big-idea` → `chart-vocabulary` (chart families + storytelling techniques) → familiar/expressive `flint-chart` treatments over one `semantic_types` truth layer → optional preset or custom `flint-theme` visual system → render via `flint-chart-mcp` (Vega-Lite / ECharts / Chart.js, local) → comparative `render-verify` critique and iteration. Data never leaves the machine. Entry point: `/alex-act-illustrator-plugin render-chart`.
 2. **Print figures — hand-authored SVG for books and reports.** `chart-big-idea` (Step 0.5 earn-a-figure gate) → `print-svg-style-guide` (canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four composition idioms) → `figure-generator` (`.mjs` generator + `data/<slug>.json` + `data-sha256` audit hash + contract tests + dataset inversion). Book-tested across 53 figures in *The Defensible Decision* (Fabio Correa).
@@ -30,7 +29,9 @@ Six authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and 
 5. **Banner — deterministic brand identity.** `svg-banner` reads the active palette and brand structure, then generates a reproducible 1200×320 SVG for READMEs, plans, notes, and release artifacts. Entry point: `/alex-act-illustrator-plugin banner`.
 6. **ASCII — delivery where no renderer exists.** `chart-big-idea` → `chart-vocabulary` → `ascii-chart` renders bar, dot, sparkline, histogram, box plot, scatter, bubble, heatmap, funnel, waterfall, treemap, gauge, and KPI forms on a monospace grid for terminals, log files, pull request comments, and context windows. The only delivery path here with zero runtime dependency: no MCP server, no browser, no token. Its bundled gallery carries 32 worked forms, a Flint coverage matrix, and an explicit list of what ASCII cannot carry. Adopted from the retired Visual Storytelling plugin on 2026-08-18.
 
-**Install composition** is adjacent rather than a seventh authoring area: `install-visual-companions` offers the visual runtime shelf per plugin, with explicit consent and marketplace verification before installation.
+7. **Annotate — callouts on a raster you did not render.** `annotate-screenshot` marks up a screenshot, dashboard capture, or chart image with numbered callouts using Pillow. It owns the part that decides whether the result is legible: upscale before annotating rather than after, supersample shapes because Pillow does not anti-alias curves, measure callout coordinates instead of placing them by eye, then open the output and check. Pillow is the only dependency. Color and font conventions are adapted with attribution from the `image-annotations` skill in [github/awesome-copilot](https://github.com/github/awesome-copilot) (MIT).
+
+**Install composition** is adjacent rather than an eighth authoring area: `install-visual-companions` offers the visual runtime shelf per plugin, with explicit consent and marketplace verification before installation.
 
 <!-- markdownlint-disable MD033 MD049 -->
 
@@ -53,14 +54,14 @@ That one sentence — the load-bearing output of the [`chart-big-idea`](.github/
 
 The source repository includes the [`demos/heart-with-axes/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/demos/heart-with-axes) interactive report and its Chart Brief. It is direct Vega-Lite artwork rather than a `ChartAssemblyInput` conformance fixture; see the [Flint MCP 0.5.0 capability matrix](docs/flint-mcp-0.5.0-capability-matrix.md) for pinned-runtime evidence. Design decisions and the plugin's genesis live in the source [`docs/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/docs) tree; neither directory is part of the installable Mall payload.
 
-## Architecture — one framing gate, five authoring routes
+## Architecture — one framing gate, seven authoring routes
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"edgeLabelBackground":"#ffffff","lineColor":"#57606a","primaryColor":"#ddf4ff"}}}%%
 flowchart TB
     A["Visual request"]:::blue
     B["Shared Big Idea<br/>framing"]:::purple
-  C["Choose authoring route<br/>Flint chart/theme · Print SVG · Replicate<br/>Shell · Banner"]:::gold
+    C["Choose authoring route<br/>Flint · Print SVG · Replicate · Shell<br/>Banner · ASCII · Raster annotation"]:::gold
     G["Visual artifact"]:::neutral
     H["Render verification"]:::gold
     I["Verified output"]:::green
@@ -99,10 +100,12 @@ Each authoring skill can still run independently when the framing or verificatio
 | `.github/skills/ascii-chart/SKILL.md`           | Pure-ASCII chart and dashboard rendering on a monospace grid for terminals, logs, PR comments, and context windows. No renderer, no browser, no MCP. Adopted 2026-08-18.          |
 | `.github/skills/ascii-chart/references/ascii-gallery.md` | 32 worked ASCII forms by communication goal, a Flint coverage matrix, and the forms ASCII cannot carry. Generated, never hand-edited.                                    |
 | `demos/ascii-gallery/`                          | Self-contained gallery generator, sample dataset, and browsable HTML output. Regenerates both the demo and the bundled skill reference from one source.                          |
+| `.github/skills/annotate-screenshot/SKILL.md`   | Pillow-based raster annotation pipeline with resolution-aware ordering, supersampled shapes, measured placement, and visual verification.                                      |
 | `install-visual-companions` skill               | Consent-gated installer for eight independently maintained visual-workflow companion plugins; verifies marketplace identity before offering each install.                        |
 | `.github/prompts/render-chart.prompt.md`        | `/alex-act-illustrator-plugin render-chart <request>` entry point (loads the three chart skills)                                                                                 |
 | `.github/prompts/banner.prompt.md`              | `/alex-act-illustrator-plugin banner` entry point (invokes the svg-banner skill)                                                                                                 |
 | `install-visual-companions` prompt              | `/alex-act-illustrator-plugin install-visual-companions` entry point for choosing and installing companions one at a time.                                                       |
+| `.github/prompts/setup-illustrator-runtime.prompt.md` | `/alex-act-illustrator-plugin setup-illustrator-runtime` entry point for runtime audit, provisioning, and verification.                                                    |
 | `.vscode/mcp.json`                              | MCP server registration — `flint` (required) + `replicate` (optional, needs `REPLICATE_API_TOKEN`) + `playwright` (optional; see Install)                                        |
 | `.vscode/settings.json`                         | Registers the `local/` skill + prompt discovery roots                                                                                                                            |
 | `manifest.json`                                 | Plugin manifest — declares all shipping assets, install paths, prerequisites                                                                                                     |
@@ -203,7 +206,7 @@ The swatch has an opaque white backing so its captions remain readable in light 
 
 **Additional prerequisites for CLI-plugin install** (once per machine, on top of the Prerequisites section above):
 
-- **Copilot CLI ≥ 1.0.75** — [install docs](https://docs.github.com/copilot/how-tos/set-up/install-copilot-cli). Update with `winget upgrade --id GitHub.CopilotCLI` on Windows.
+- **Copilot CLI ≥ 1.0.75** — [install docs](https://docs.github.com/copilot/how-tos/set-up/install-copilot-cli). Update with `winget upgrade --id GitHub.Copilot` on Windows.
 - **GitHub CLI authenticated** — `gh auth login` and confirm with `gh auth status`.
 
 Full brand-new-user walkthrough (four personas, five install stages, anti-patterns): see [Alex ACT Core install guide](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md).
