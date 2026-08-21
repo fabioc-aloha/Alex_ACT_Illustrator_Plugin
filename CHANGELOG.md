@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.1] - 2026-08-21
+
+### Fixed
+
+- Synchronized Illustrator's own shared installation guide to the released
+  `2.5.1` row after the constellation integration gate caught the stale `2.4.0`
+  entry in the immutable `v2.5.0` source tag.
+
 ## [2.5.0] - 2026-08-21
 
 ### Added

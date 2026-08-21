@@ -1,9 +1,9 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "status": "released",
   "distribution": {
-    "published_version": "2.5.0"
+    "published_version": "2.5.1"
   },
   "shape": "fifteen-skill + four-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Expert visual-storytelling and authoring bundle for AI agents. Fifteen skills across seven authoring areas plus install composition and runtime setup: Flint charts and themes, print figures, Replicate imagery, documentation shells, banners, ASCII charts, and raster annotation. Shared framing, bounded creative exploration, and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
