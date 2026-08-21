@@ -256,7 +256,7 @@ test('manifest copies current discovery metadata and report dependencies', () =>
   const plugin = JSON.parse(read('plugin.json'));
   assert.equal(manifest.version, '2.4.0');
   assert.equal(plugin.version, '2.4.0');
-  assert.match(read('README.md'), /Current release: v2\.3\.1/);
+  assert.match(read('README.md'), /Current release: v2\.4\.0/);
   assert.match(read('CHANGELOG.md'), /## \[2\.2\.2\] - 2026-08-15/);
   const skills = new Map(manifest.assets.skills.map((skill) => [skill.name, skill]));
   for (const name of ['docs-shell', 'setup-illustrator-runtime', 'svg-banner']) {

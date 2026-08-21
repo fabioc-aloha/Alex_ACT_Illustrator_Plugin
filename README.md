@@ -8,14 +8,15 @@ Alex ACT Illustrator turns visual work into one governed expert-storytelling wor
 
 An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for seven visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, branded SVG banners, ASCII delivery, and raster annotation. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers eight independently maintained runtime inspection plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Current release: v2.3.1.** This PATCH release synchronizes the shared
-> installation guide with the managed-source MSFT delivery boundary.
+> **Current release: v2.4.0.** This MINOR release adds `annotate-screenshot`,
+> the fifteenth skill and seventh authoring area, for high-quality raster
+> callouts using Pillow.
 > The repository was renamed from `flint-chart-plugin` on 2026-07-29; v0.6.0
 > was the first release under `alex-act-illustrator-plugin@alex-mall`. A legacy
 > install remains pinned under its old ID and does not migrate automatically:
 > install the current ID, verify it, then remove the old entry.
 
-**Current compatibility:** Core `v3.1.1` provides the baseline runtime; native
+**Current compatibility:** Core `v4.0.0` provides the baseline runtime; native
 Copilot CLI commands provide plugin lifecycle operations.
 
 ## What it does
