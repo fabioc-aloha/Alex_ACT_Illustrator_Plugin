@@ -9,7 +9,7 @@ const runtimeRoot = process.env.ALEX_ACT_ILLUSTRATOR_RUNTIME_ROOT
   || join(homedir(), '.copilot', 'plugin-data', 'alex-act-illustrator-plugin', 'runtime');
 const routes = {
   flint: {
-    expectedVersion: '0.5.0',
+    expectedVersion: '0.5.1',
     packagePath: join(runtimeRoot, 'node_modules', 'flint-chart-mcp', 'package.json'),
     target: join(runtimeRoot, 'node_modules', 'flint-chart-mcp', 'dist', 'cli.js'),
   },

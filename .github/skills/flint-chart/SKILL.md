@@ -1,7 +1,7 @@
 ---
 name: flint-chart
 description: "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
-lastReviewed: 2026-08-17
+lastReviewed: 2026-08-21
 ---
 
 # flint-chart: pick, author, and render a chart
@@ -17,7 +17,7 @@ setup, and `render-verify`; it does not replace Flint's language reference.
 For the conceptual grammar, compiler model, data-access boundary, backend
 contract, rendered-demo evidence, and tagged Microsoft links, read
 [`references/flint-language-reference.md`](references/flint-language-reference.md).
-It describes the published `0.5.0` contract that Illustrator pins. Use the MCP
+It describes the published `0.5.1` contract that Illustrator pins. Use the MCP
 resource, `list_chart_types`, and `list_themes` as the final authority for the
 runtime actually installed in the host.
 
@@ -164,7 +164,7 @@ directly (not to render via MCP).
   the project's approved compatibility decision.
 
    ```bash
-  npm install --save-exact flint-chart@0.5.0
+  npm install --save-exact flint-chart@0.5.1
    ```
 
   Add renderer peer dependencies only through the same project dependency
@@ -216,7 +216,7 @@ For JavaScript or TypeScript projects, use the approved project dependency
 workflow and preserve the lockfile:
 
 ```bash
-  npm install --save-exact flint-chart@0.5.0
+  npm install --save-exact flint-chart@0.5.1
 ```
 
 Do not add or upgrade renderer dependencies unless the user explicitly requests
@@ -272,12 +272,26 @@ text:
 - Omit both only when a surrounding caption already supplies the same reading,
   such as a sparkline in a table or a dashboard tile beneath a titled panel.
 
-Flint `0.5.0` realizes the title and subtitle in the Vega-Lite backend. When
+Flint `0.5.1` realizes the title and subtitle in the Vega-Lite backend. When
 ECharts or Chart.js is the delivery target, keep the authored text with the
 `ChartAssemblyInput` and make it visible in the surrounding artifact after
 inspecting the compiled result. Do not move the claim into `theme_spec`:
 themes govern presentation, while title and subtitle state what the reader is
 meant to understand.
+
+## Calendar Heatmap in Flint 0.5.1
+
+Use `"Calendar Heatmap"` when the question is about daily intensity, recurrence,
+or gaps over a long time span. Bind `x` to a date field and `color` to the daily
+measure; Flint sums multiple rows from the same day into one GitHub-style
+week-by-week cell.
+
+Calendar Heatmap is available on the `vegalite` and `echarts` backends in the
+reviewed `0.5.1` runtime. For an interactive MCP App use Vega-Lite with
+`create_chart_view`; use `render_chart` or `compile_chart` for ECharts. It is
+not listed for Chart.js, so choose a standard `Heatmap` or another supported
+alternative there. Always call `list_chart_types` when the runtime version is
+unknown or has changed.
 
 ## Choose a visual theme
 
@@ -287,7 +301,7 @@ load `flint-theme` for a custom or inherited ThemeSpec. ThemeSpec controls
 presentation and compiler behavior; it does not choose fields, aggregation,
 filtering, sorting, titles, or values.
 
-Flint `0.5.0` themes apply to Vega-Lite. ECharts and Chart.js ignore ThemeSpec,
+Flint `0.5.1` themes apply to Vega-Lite. ECharts and Chart.js ignore ThemeSpec,
 so do not claim cross-backend parity. For a custom system, validate the bare
 ThemeSpec in Theme Lab and inspect a representative chart corpus before using it
 in a deliverable.
@@ -613,7 +627,7 @@ This is the authoritative reference for **what Flint actually does**; §0.2–0.
 Use the official [Flint documentation](https://microsoft.github.io/flint-chart/#/documentation/overview)
 for language design, semantics, layout, APIs, and backend architecture. Runtime
 resources remain authoritative for the installed server's exact vocabulary.
-The library documents Plotly and Excel, but the `0.5.0` MCP tool schema exposes
+The library documents Plotly and Excel, but the `0.5.1` MCP tool schema exposes
 only Vega-Lite, ECharts, and Chart.js; treat other backends as project-code
 integration, not MCP capability.
 
@@ -1094,5 +1108,5 @@ Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fire
   headless tools. If they become tool-reachable and match or beat §0.2 on the
   same question, call upstream and keep only Alex framing on top.
 - **The backend list changes.** §0.4 and the worked examples assume Vega-Lite /
-  ECharts / Chart.js because those are the `0.5.0` MCP enum values. If a future
+  ECharts / Chart.js because those are the `0.5.1` MCP enum values. If a future
   server accepts Plotly or Excel, rework coverage and ThemeSpec boundaries.

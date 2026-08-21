@@ -1,7 +1,7 @@
 ---
 name: flint-theme
 description: "Creates and refines reusable Flint ThemeSpec visual systems from brand guidance, websites, decks, design tokens, or publication references. Use when a user asks for a custom Flint theme, wants to translate a visual identity into charts, or needs to test theme behavior across a chart corpus."
-lastReviewed: 2026-08-14
+lastReviewed: 2026-08-21
 ---
 
 # Flint Theme
@@ -43,7 +43,7 @@ Theme Lab iteration, and visual verification.
 
 ## Boundaries
 
-- ThemeSpec currently affects Vega-Lite in Flint `0.5.0`; ECharts and Chart.js
+- ThemeSpec currently affects Vega-Lite in Flint `0.5.1`; ECharts and Chart.js
   ignore it. Use a Vega-Lite render or App view to assess the theme; do not
   claim cross-backend theme parity.
 - Keep data semantics in `semantic_types` and rhetorical choices in

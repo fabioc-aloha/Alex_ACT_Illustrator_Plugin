@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnCommand } from '../../../../scripts/process-launch.mjs';
 
 const PINNED_PACKAGES = [
-  { name: 'flint-chart-mcp', version: '0.5.0' },
+  { name: 'flint-chart-mcp', version: '0.5.1' },
   { name: 'replicate-mcp', version: '0.9.0' },
   { name: '@playwright/mcp', version: '0.0.78' },
 ];

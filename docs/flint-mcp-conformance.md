@@ -1,6 +1,6 @@
-# Flint MCP 0.5.0 Conformance Fixtures
+# Flint MCP 0.5.1 Conformance Fixtures
 
-**Runtime:** `flint-chart-mcp@0.5.0`
+**Runtime:** `flint-chart-mcp@0.5.1`
 **Status:** Executable evidence
 **Source fixtures:** `ARTIFACT_SPECS` in
 [`scripts/verify-install.mjs`](../scripts/verify-install.mjs)
@@ -32,6 +32,7 @@ and assertions live in the repository.
 | Vega-Lite themed bar | `Bar Chart`, `theme_spec: "economist"`, SVG | Catalog presence; warning-free validation and compilation; complete SVG document. |
 | ECharts Tree | `Tree` with `detail`, `color`, and `size`, SVG | Catalog presence; warning-free validation and compilation; complete SVG document. |
 | Chart.js bar | `Bar Chart`, PNG plus an SVG-negative test | Catalog presence; warning-free validation and compilation; PNG payload; SVG request rejected as PNG-only. |
+| Calendar Heatmap | Date `x`, daily-value `color`, SVG | Catalog presence, warning-free validation and compilation, and complete SVG documents on Vega-Lite and ECharts. |
 
 The conformance suite does not substitute for visual review. Run
 [`render-verify`](../.github/skills/render-verify/SKILL.md) for every chart

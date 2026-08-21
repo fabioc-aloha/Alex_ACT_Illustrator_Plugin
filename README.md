@@ -8,9 +8,8 @@ Alex ACT Illustrator turns visual work into one governed expert-storytelling wor
 
 An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for seven visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, branded SVG banners, ASCII delivery, and raster annotation. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers eight independently maintained runtime inspection plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Current release: v2.4.0.** This MINOR release adds `annotate-screenshot`,
-> the fifteenth skill and seventh authoring area, for high-quality raster
-> callouts using Pillow.
+> **Current release: v2.5.0.** This MINOR release pins Flint MCP `0.5.1` and
+> adds tested Calendar Heatmap authoring for Vega-Lite and ECharts.
 > The repository was renamed from `flint-chart-plugin` on 2026-07-29; v0.6.0
 > was the first release under `alex-act-illustrator-plugin@alex-mall`. A legacy
 > install remains pinned under its old ID and does not migrate automatically:
@@ -53,7 +52,7 @@ That one sentence — the load-bearing output of the [`chart-big-idea`](.github/
 3. **Steps 2–4 — story arc + audience + style stance.** Relationship-with-annotation, general-audience read, INNOVATIVE (justified because the argument itself is 2D-geometric).
 4. **Step 5 — emit the Chart Brief.** The brief is what `/alex-act-illustrator-plugin render-chart` then handed to the [`flint-chart`](.github/skills/flint-chart/SKILL.md) skill for chartType selection and rendering.
 
-The source repository includes the [`demos/heart-with-axes/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/demos/heart-with-axes) interactive report and its Chart Brief. It is direct Vega-Lite artwork rather than a `ChartAssemblyInput` conformance fixture; see the [Flint MCP 0.5.0 capability matrix](docs/flint-mcp-0.5.0-capability-matrix.md) for pinned-runtime evidence. Design decisions and the plugin's genesis live in the source [`docs/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/docs) tree; neither directory is part of the installable Mall payload.
+The source repository includes the [`demos/heart-with-axes/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/demos/heart-with-axes) interactive report and its Chart Brief. It is direct Vega-Lite artwork rather than a `ChartAssemblyInput` conformance fixture; see the [Flint MCP 0.5.1 capability matrix](docs/flint-mcp-0.5.1-capability-matrix.md) for pinned-runtime evidence. Design decisions and the plugin's genesis live in the source [`docs/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/docs) tree; neither directory is part of the installable Mall payload.
 
 ## Architecture — one framing gate, seven authoring routes
 
@@ -427,13 +426,14 @@ first one that fails tells you where the fault is.
   appear under `alex-act-illustrator-plugin`; describe a chart, print figure,
   image, shell, or banner task to verify skill discovery. If MCP tools work but
   plugin prompts and skills do not, the plugin or discovery roots are missing.
-4. **Render.** Ask for any chart. `list_chart_types` should return 35 Vega-Lite
+4. **Render.** Ask for any chart. `list_chart_types` should return 36 Vega-Lite
    chart types, and a render should produce an image.
 
 This repo runs the same checks against its own [`.vscode/`](.vscode/) config.
-The 2026-08-14 disposable source canary passed `flint-chart-mcp` 0.5.0,
+The 2026-08-21 disposable source canary passed `flint-chart-mcp` 0.5.1,
 protocol `2024-11-05`, six tools, ten themes, both authoring resources and
-prompts, catalogs `35/37/22`, and all seven documented specs through the
+prompts, catalogs `36/37/22`, Calendar Heatmap validation on Vega-Lite and
+ECharts, and all nine documented specs through the
 configured registry and direct Node launcher. The temporary runtime was removed.
 
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).
@@ -608,7 +608,7 @@ while the approved registry is reachable. The setup preview shows the effective
 registry and exact pins before applying. Afterward, the direct Node launcher
 uses the plugin-private runtime without invoking npm.
 
-**Registry and version policy** — the plugin pins `flint-chart-mcp@0.5.0`,
+**Registry and version policy** — the plugin pins `flint-chart-mcp@0.5.1`,
 `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` exactly. Provisioning uses
 npm's configured registry once; runtime uses the plugin-private launcher. There is no
 public-registry fallback or automatic version-discovery request. Version changes

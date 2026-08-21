@@ -56,7 +56,8 @@ import { evaluateCompatibility, parseCatalogEntries } from './verify-contract.mj
 // `.vscode/mcp.json` means bumping the pin in one place cannot leave this
 // checker silently validating a different version than the host will launch.
 const ROOT_PATH = join(dirname(fileURLToPath(import.meta.url)), '..');
-const FALLBACK_PACKAGE = 'flint-chart-mcp@0.5.0';
+const FALLBACK_PACKAGE = 'flint-chart-mcp@0.5.1';
+const EXPECTED_SERVER_VERSION = '0.5.1';
 const CONFIG_PATH = join(ROOT_PATH, '.vscode', 'mcp.json');
 
 function registryPolicyFail(reason) {
@@ -268,6 +269,36 @@ const COMPAT_SPECS = [
       encodings: { x: { field: 't' }, y: { field: 'qty' }, color: { field: 'grp' } },
     },
   },
+  {
+    name: 'Calendar Heatmap (0.5.1, Vega-Lite)',
+    backend: 'vegalite',
+    data: {
+      values: [
+        { day: '2026-08-01', qty: 4 },
+        { day: '2026-08-02', qty: 9 },
+      ],
+    },
+    semantic_types: { day: 'Date', qty: 'Quantity' },
+    chart_spec: {
+      chartType: 'Calendar Heatmap',
+      encodings: { x: { field: 'day' }, color: { field: 'qty' } },
+    },
+  },
+  {
+    name: 'Calendar Heatmap (0.5.1, ECharts)',
+    backend: 'echarts',
+    data: {
+      values: [
+        { day: '2026-08-01', qty: 4 },
+        { day: '2026-08-02', qty: 9 },
+      ],
+    },
+    semantic_types: { day: 'Date', qty: 'Quantity' },
+    chart_spec: {
+      chartType: 'Calendar Heatmap',
+      encodings: { x: { field: 'day' }, color: { field: 'qty' } },
+    },
+  },
 ];
 const COMPAT_BASE_ID = 10;
 
@@ -333,6 +364,44 @@ const ARTIFACT_SPECS = [
       chart_spec: {
         chartType: 'Bar Chart',
         encodings: { x: { field: 'category' }, y: { field: 'value' } },
+      },
+    },
+  },
+  {
+    name: 'Vega-Lite Calendar Heatmap SVG',
+    backend: 'vegalite',
+    chartType: 'Calendar Heatmap',
+    format: 'svg',
+    input: {
+      data: {
+        values: [
+          { day: '2026-08-01', value: 4 },
+          { day: '2026-08-02', value: 9 },
+        ],
+      },
+      semantic_types: { day: 'Date', value: 'Quantity' },
+      chart_spec: {
+        chartType: 'Calendar Heatmap',
+        encodings: { x: { field: 'day' }, color: { field: 'value' } },
+      },
+    },
+  },
+  {
+    name: 'ECharts Calendar Heatmap SVG',
+    backend: 'echarts',
+    chartType: 'Calendar Heatmap',
+    format: 'svg',
+    input: {
+      data: {
+        values: [
+          { day: '2026-08-01', value: 4 },
+          { day: '2026-08-02', value: 9 },
+        ],
+      },
+      semantic_types: { day: 'Date', value: 'Quantity' },
+      chart_spec: {
+        chartType: 'Calendar Heatmap',
+        encodings: { x: { field: 'day' }, color: { field: 'value' } },
       },
     },
   },
@@ -402,6 +471,11 @@ const EXPECTED_THEMES = [
 ];
 const EXPECTED_RESOURCES = ['flint://agent-skill', 'flint://theme-skill'];
 const EXPECTED_PROMPTS = ['author_flint_chart', 'author_flint_theme'];
+const EXPECTED_CATALOG = [
+  { backend: 'vegalite', count: 36, required: ['Calendar Heatmap'] },
+  { backend: 'echarts', count: 37, required: ['Calendar Heatmap'] },
+  { backend: 'chartjs', count: 22, excluded: ['Calendar Heatmap'] },
+];
 const TIMEOUT_MS = 120_000;
 
 const REQUESTS = [
@@ -438,10 +512,10 @@ const REQUESTS = [
     params: {
       name: 'validate_chart',
       arguments: {
-        data: { values: ROWS },
-        semantic_types: { qty: 'Quantity' },
+        data: s.data ?? { values: ROWS },
+        semantic_types: s.semantic_types ?? { qty: 'Quantity' },
         chart_spec: s.chart_spec,
-        backend: 'vegalite',
+        backend: s.backend ?? 'vegalite',
       },
     },
   })),
@@ -532,6 +606,9 @@ function report() {
   }
 
   const { name, version } = initialize.result.serverInfo;
+  if (version !== EXPECTED_SERVER_VERSION) {
+    fail(`server version mismatch: expected ${EXPECTED_SERVER_VERSION}, found ${version || '(missing)'}`);
+  }
   console.log(`OK    server: ${name} v${version}`);
   console.log(`OK    protocol: ${initialize.result.protocolVersion}`);
 
@@ -551,6 +628,7 @@ function report() {
 
   console.log(`OK    tools (${found.length}): ${found.join(', ')}`);
   reportLanguageSurface(messages);
+  assertCatalogContract(messages);
 
   if (WANT_CATALOG) reportCatalog(messages);
   if (WANT_COMPAT) reportCompat(messages);
@@ -630,6 +708,28 @@ function reportCatalog(messages) {
   } catch (error) {
     fail(`--catalog: ${error.message}`);
   }
+}
+
+function assertCatalogContract(messages) {
+  let entries;
+  try {
+    entries = parseCatalogEntries(messages);
+  } catch (error) {
+    fail(`chart catalog is invalid: ${error.message}`);
+  }
+  for (const expected of EXPECTED_CATALOG) {
+    const entry = entries.find((candidate) => candidate.backend === expected.backend);
+    if (!entry || entry.count !== expected.count) {
+      fail(`unexpected ${expected.backend} chart catalog: expected ${expected.count}, found ${entry?.count ?? '(missing)'}`);
+    }
+    const names = entry.chartTypes.map((type) => type.chartType);
+    const missing = (expected.required ?? []).filter((name) => !names.includes(name));
+    const unsupported = (expected.excluded ?? []).filter((name) => names.includes(name));
+    if (missing.length || unsupported.length) {
+      fail(`unexpected ${expected.backend} Calendar Heatmap support${missing.length ? `; missing: ${missing.join(', ')}` : ''}${unsupported.length ? `; unsupported backend exposes: ${unsupported.join(', ')}` : ''}`);
+    }
+  }
+  console.log('OK    catalog contract: Vega-Lite 36, ECharts 37, Chart.js 22; Calendar Heatmap on Vega-Lite and ECharts');
 }
 
 function toolMessage(messages, id, name) {

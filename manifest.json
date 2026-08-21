@@ -1,6 +1,10 @@
 {
   "plugin": "alex-act-illustrator-plugin",
-  "version": "2.4.0",
+  "version": "2.5.0",
+  "status": "released",
+  "distribution": {
+    "published_version": "2.5.0"
+  },
   "shape": "fifteen-skill + four-prompt + three-mcp-sidecars + vscode-settings",
   "description": "Expert visual-storytelling and authoring bundle for AI agents. Fifteen skills across seven authoring areas plus install composition and runtime setup: Flint charts and themes, print figures, Replicate imagery, documentation shells, banners, ASCII charts, and raster annotation. Shared framing, bounded creative exploration, and verification apply across the authoring areas. Composes with the public Alex_ACT_Core runtime.",
   "homepage": "https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin",
@@ -56,7 +60,7 @@
           {
             "path": ".github/skills/flint-chart/references/flint-language-reference.md",
             "install_to": ".github/skills/local/flint-chart/references/flint-language-reference.md",
-            "role": "published Flint 0.5.0 language model, runtime boundaries, rendered-demo evidence, and tagged Microsoft source links"
+            "role": "published Flint 0.5.1 language model, runtime boundaries, rendered-demo evidence, and tagged Microsoft source links"
           }
         ]
       },
@@ -283,7 +287,7 @@
           ],
           "transport": "stdio",
           "role": "renders the ChartAssemblyInput (Vega-Lite / ECharts / Chart.js)",
-          "notes": "Exact 0.5.0 package installed once through the configured npm registry into a plugin-private runtime. The direct Node launcher starts no npm or npx process. Adds ThemeSpec discovery plus version-matched chart and theme authoring resources. Version changes require an explicit compatibility review."
+          "notes": "Exact 0.5.1 package installed once through the configured npm registry into a plugin-private runtime. The direct Node launcher starts no npm or npx process. Adds Calendar Heatmap on Vega-Lite and ECharts, ThemeSpec discovery, and version-matched chart and theme authoring resources. Version changes require an explicit compatibility review."
         },
         {
           "server_name": "replicate",

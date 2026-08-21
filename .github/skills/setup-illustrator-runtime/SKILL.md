@@ -25,7 +25,7 @@ The provisioner installs nothing globally and never passes `--registry` or edits
 
 | Pinned package | Runtime role |
 | --- | --- |
-| `flint-chart-mcp@0.5.0` | Required chart rendering, ThemeSpec discovery, and version-matched chart/theme authoring resources |
+| `flint-chart-mcp@0.5.1` | Required chart rendering, Calendar Heatmap support on Vega-Lite and ECharts, ThemeSpec discovery, and version-matched chart/theme authoring resources |
 | `replicate-mcp@0.9.0` | Optional AI image generation |
 | `@playwright/mcp@0.0.78` | Optional browser verification |
 

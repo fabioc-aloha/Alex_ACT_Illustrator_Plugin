@@ -1,9 +1,9 @@
 # Demos
 
 One illustrative direct Vega-Lite demo. It is not a `ChartAssemblyInput` fixture
-and was authored before the current `flint-chart-mcp@0.5.0` pin. It demonstrates
+and was authored before the current `flint-chart-mcp@0.5.1` pin. It demonstrates
 narrative framing and render verification, not the installed MCP grammar. See
-[the capability matrix](../docs/flint-mcp-0.5.0-capability-matrix.md) for
+[the capability matrix](../docs/flint-mcp-0.5.1-capability-matrix.md) for
 version-pinned MCP conformance evidence.
 
 ## What ships

@@ -1,23 +1,22 @@
 # Flint Language Reference
 
-**Reviewed**: 2026-08-17
-**Pinned runtime**: `flint-chart-mcp@0.5.0`
+**Reviewed**: 2026-08-21
+**Pinned runtime**: `flint-chart-mcp@0.5.1`
 **Scope**: Conceptual reference for Illustrator's Flint workflow. The installed
 MCP resources remain authoritative for the exact grammar of the runtime that is
 actually available to the agent.
 
 ## Version Boundary
 
-Illustrator intentionally pins `flint-chart-mcp@0.5.0` through the user's
+Illustrator intentionally pins `flint-chart-mcp@0.5.1` through the user's
 configured npm registry and launches it from plugin-private runtime state. The
-configured Microsoft package proxy currently exposes `0.5.0` as the latest
+configured Microsoft package proxy currently exposes `0.5.1` as the latest
 published package.
 
-Microsoft's `flint-chart` main branch and public website also describe `0.5.1`.
-That source adds Plotly ThemeSpec realization and Vega-Lite Calendar Heatmap
-behavior not available in the pinned `0.5.0` runtime. Do not use those newer
-features until the configured registry supplies a reviewed package and
-Illustrator completes its compatibility and release gates.
+The reviewed runtime adds `Calendar Heatmap` on Vega-Lite and ECharts: bind
+`x` to a date and `color` to the daily measure. Plotly remains outside the MCP
+backend enum, so its library-only ThemeSpec behavior is not an Illustrator MCP
+capability. Use `list_chart_types` for the exact live backend catalog.
 
 ## The Language in One Sentence
 
@@ -169,8 +168,8 @@ Excel artifacts. Illustrator's pinned MCP runtime renders only:
 
 | MCP backend | Use it for | Important boundary |
 | --- | --- | --- |
-| `vegalite` | Broadest chart coverage, declarative output, and Flint 0.5 ThemeSpec | PNG or SVG; the only backend used by `create_chart_view` |
-| `echarts` | Rich hierarchy, flow, gauge, and calendar chart families | PNG or SVG; ThemeSpec is ignored; use static render or compiled JSON |
+| `vegalite` | Broadest chart coverage, declarative output, Flint 0.5 ThemeSpec, and Calendar Heatmap | PNG or SVG; the only backend used by `create_chart_view` |
+| `echarts` | Rich hierarchy, flow, gauge, and Calendar Heatmap | PNG or SVG; ThemeSpec is ignored; use static render or compiled JSON |
 | `chartjs` | Lightweight common chart families | Static PNG only; no SVG engine, ThemeSpec, or MCP App view |
 
 The MCP server's `list_chart_types` is the live contract for the installed
@@ -179,7 +178,7 @@ checking it against that tool.
 
 ## Themes
 
-At the published 0.5.0 runtime, `theme_spec` realizes only in Vega-Lite.
+At the published 0.5.1 runtime, `theme_spec` realizes only in Vega-Lite.
 Use `list_themes` to discover presets. For custom visual systems, load
 `flint://theme-skill` or invoke `author_flint_theme`, then author the smallest
 ThemeSpec that truthfully inherits from a preset where possible.

@@ -128,7 +128,7 @@ test('runtime provisioner previews the configured registry without mutating npm 
     assert.match(result.stdout, /mode:\s+preview/i);
     assert.match(result.stdout, /https:\/\/registry\.example\.invalid\/npm\//);
     for (const packageSpec of [
-      'flint-chart-mcp@0.5.0',
+      'flint-chart-mcp@0.5.1',
       'replicate-mcp@0.9.0',
       '@playwright/mcp@0.0.78',
     ]) {
@@ -168,7 +168,7 @@ test('runtime launcher rejects a stale Flint package after a failed upgrade', ()
       env: { ...process.env, ALEX_ACT_ILLUSTRATOR_RUNTIME_ROOT: runtimeRoot },
     });
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /version mismatch.*expected 0\.5\.0.*found 0\.4\.1/is);
+    assert.match(result.stderr, /version mismatch.*expected 0\.5\.1.*found 0\.4\.1/is);
   } finally {
     rmSync(runtimeRoot, { recursive: true, force: true });
   }
@@ -181,7 +181,7 @@ test('runtime launcher accepts the reviewed Flint package version', () => {
     'scripts', 'runtime-launcher.mjs');
   try {
     mkdirSync(join(packageRoot, 'dist'), { recursive: true });
-    writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ version: '0.5.0' }));
+    writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ version: '0.5.1' }));
     writeFileSync(join(packageRoot, 'dist', 'cli.js'), 'process.exit(0);');
 
     const result = spawnSync(process.execPath, [launcher, 'flint'], {
@@ -202,7 +202,7 @@ test('runtime setup audits stable dist-tags through the configured registry', ()
   assert.match(provisioner, /dist-tags\.latest/);
   assert.match(provisioner, /NPM_CONFIG_REGISTRY:\s*registry/);
   for (const packageSpec of [
-    'flint-chart-mcp@0.5.0',
+    'flint-chart-mcp@0.5.1',
     'replicate-mcp@0.9.0',
     '@playwright/mcp@0.0.78',
   ]) {
@@ -254,9 +254,11 @@ test('catalog parsing fails on missing or malformed requested output', () => {
 test('manifest copies current discovery metadata and report dependencies', () => {
   const manifest = JSON.parse(read('manifest.json'));
   const plugin = JSON.parse(read('plugin.json'));
-  assert.equal(manifest.version, '2.4.0');
-  assert.equal(plugin.version, '2.4.0');
-  assert.match(read('README.md'), /Current release: v2\.4\.0/);
+  assert.equal(manifest.version, '2.5.0');
+  assert.equal(plugin.version, '2.5.0');
+  assert.equal(manifest.status, 'released');
+  assert.equal(manifest.distribution.published_version, '2.5.0');
+  assert.match(read('README.md'), /Current release: v2\.5\.0/);
   assert.match(read('CHANGELOG.md'), /## \[2\.2\.2\] - 2026-08-15/);
   const skills = new Map(manifest.assets.skills.map((skill) => [skill.name, skill]));
   for (const name of ['docs-shell', 'setup-illustrator-runtime', 'svg-banner']) {
@@ -270,7 +272,7 @@ test('manifest copies current discovery metadata and report dependencies', () =>
   assert.match(read('.github/skills/docs-shell/starter/example-report.html'),
     /<script src="assets\/report-topnav\.js" defer><\/script>/);
   const flint = manifest.assets.mcp.servers.find((server) => server.server_name === 'flint');
-  assert.match(flint.notes, /0\.5\.0/);
+  assert.match(flint.notes, /0\.5\.1/);
   assert.doesNotMatch(flint.notes, /0\.4\.1/);
 });
 
@@ -296,13 +298,13 @@ test('Flint 0.5.x runtime contracts expose themes and source-owned authoring gui
   const manifest = JSON.parse(read('manifest.json'));
   const flint = manifest.assets.mcp.servers.find((server) => server.server_name === 'flint');
 
-  assert.match(provisioner, /name:\s*'flint-chart-mcp',\s*version:\s*'0\.5\.0'/);
+  assert.match(provisioner, /name:\s*'flint-chart-mcp',\s*version:\s*'0\.5\.1'/);
   assert.match(verifier, /list_themes/);
   assert.match(verifier, /flint:\/\/agent-skill/);
   assert.match(verifier, /flint:\/\/theme-skill/);
   assert.match(verifier, /author_flint_chart/);
   assert.match(verifier, /author_flint_theme/);
-  assert.match(flint.notes, /0\.5\.0/);
+  assert.match(flint.notes, /0\.5\.1/);
   assert.doesNotMatch(flint.notes, /0\.4\.1/);
 });
 
@@ -322,7 +324,7 @@ test('Flint language reference stays linked to the pinned grammar and rendered e
   const reference = read('.github/skills/flint-chart/references/flint-language-reference.md');
   const skill = read('.github/skills/flint-chart/SKILL.md');
 
-  assert.match(reference, /Pinned runtime.*flint-chart-mcp@0\.5\.0/is);
+  assert.match(reference, /Pinned runtime.*flint-chart-mcp@0\.5\.1/is);
   assert.match(reference, /ChartAssemblyInput/);
   assert.match(reference, /semantic_types/);
   assert.match(reference, /chart_spec/);
@@ -345,8 +347,8 @@ test('Flint language reference stays linked to the pinned grammar and rendered e
     resource.path === '.github/skills/flint-chart/references/flint-language-reference.md'));
 });
 
-test('Flint matrix and guidance qualify backend capabilities and demo provenance', () => {
-  const matrix = read('docs/flint-mcp-0.5.0-capability-matrix.md');
+test('Flint 0.5.1 matrix and guidance qualify backend capabilities and demo provenance', () => {
+  const matrix = read('docs/flint-mcp-0.5.1-capability-matrix.md');
   const conformance = read('docs/flint-mcp-conformance.md');
   const skill = read('.github/skills/flint-chart/SKILL.md');
   const prompt = read('.github/prompts/render-chart.prompt.md');
@@ -359,7 +361,10 @@ test('Flint matrix and guidance qualify backend capabilities and demo provenance
     /Chart\.js bar/,
     /Chart\.js rejects SVG/,
     /create_chart_view.*Vega-Lite/is,
+    /Calendar Heatmap.*Vega-Lite.*ECharts/is,
   ]) assert.match(matrix, boundary);
+  assert.match(skill, /Calendar Heatmap/);
+  assert.match(skill, /Vega-Lite.*ECharts|ECharts.*Vega-Lite/is);
   assert.match(skill, /`"Tree"` \(ECharts only\)/);
   assert.doesNotMatch(skill, /Hierarchy Tree\s*\|\s*Not in Flint's scope/);
   assert.match(skill, /"Sankey Diagram"/);

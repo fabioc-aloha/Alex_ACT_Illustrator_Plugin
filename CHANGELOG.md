@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-08-21
+
+### Added
+
+- Pins `flint-chart-mcp@0.5.1` after a configured-proxy canary.
+  `Calendar Heatmap` is now a tested route on the Vega-Lite and ECharts
+  backends; Chart.js remains unsupported. The runtime verifier asserts the
+  `36/37/22` catalog, both Calendar Heatmap validations, and the exact server
+  version before accepting a provisioned private runtime.
+
 ## [2.4.0] - 2026-08-21
 
 ### Added
