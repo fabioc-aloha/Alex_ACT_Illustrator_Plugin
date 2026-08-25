@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.2] - 2026-08-25
+
+### Fixed
+
+- Corrected the update guidance to distinguish built-in marketplace
+  auto-updates from the Alex Mall's explicit-update default. User-added
+  marketplaces may opt into auto-update only through user-scope configuration.
+
 ## [2.5.1] - 2026-08-21
 
 ### Fixed
