@@ -441,13 +441,20 @@ For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI referen
 
 ### Update
 
-Copilot CLI does not auto-update plugins — updates are manual.
+For the Alex ACT Mall, use a targeted update when you want an explicit version
+transition:
 
 ```powershell
 copilot plugin update alex-act-illustrator-plugin
 ```
 
-Read the [CHANGELOG](CHANGELOG.md) before applying breaking changes. If you have `alex-act-core` installed, its `/update-plugins` prompt reads CHANGELOGs for you and consent-gates breaking updates across the whole constellation.
+GitHub Copilot CLI can auto-update plugins from its built-in marketplaces at
+trusted session start. User-added marketplaces, including `alex-mall`, remain
+manual unless the user enables that marketplace's user-scope `autoUpdate`
+setting. Read the [CHANGELOG](CHANGELOG.md) before applying breaking changes.
+If you have `alex-act-core` installed, its `/update-plugins` prompt reads
+CHANGELOGs for you and consent-gates breaking updates across the whole
+constellation.
 
 ### Uninstall
 
