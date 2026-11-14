@@ -1,5 +1,7 @@
 # Alex ACT Illustrator Plugin
 
+> **Note:** Part of the Alex ACT family. The current flagship release is [Alex_ACT_ONE](https://github.com/fabioc-aloha/Alex_ACT_ONE).
+
 ![Alex ACT Illustrator Plugin](https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/banner.svg)
 
 [Core](https://github.com/fabioc-aloha/Alex_ACT_Core) · [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) · [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) · [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise)
